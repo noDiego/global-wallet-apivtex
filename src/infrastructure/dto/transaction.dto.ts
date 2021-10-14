@@ -1,5 +1,5 @@
 export class TransactionDto {
-  id?: number;
+  id?: string;
   status?: string;
   type?: string;
   orderId: string;
@@ -8,6 +8,8 @@ export class TransactionDto {
   transferId?: string;
   amount: number;
   commerceClientId?: number;
+  currency?: string;
+  paymentId?: string;
 }
 
 export class GetFilterTransactionDto {

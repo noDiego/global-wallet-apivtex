@@ -5,8 +5,10 @@ import { CreatePaymentReq } from "../../infrastructure/dto/createPaymentReq.dto"
 import { CreateTransactionReq } from "../../infrastructure/dto/createTransactionReq.dto";
 import { PaymentResponseDto } from "../../application/dto/payment-response.dto";
 import { CommerceClientDTO } from "../../infrastructure/dto/commerceClient.dto";
-import { VtexStatus } from "../../infrastructure/enums/vtex.enum";
+import { VtexStatus, TransactionStatus } from "../../infrastructure/enums/vtex.enum";
 import { envConfig } from "../../config";
+import { TransactionDto } from "src/infrastructure/dto/transaction.dto";
+import { CancellationResponseDTO, CancellationRequestDTO } from "src/application/dto/cancellation.dto";
 const config = require('../../config/index').ENV;
 
 export class VtexService{
@@ -18,7 +20,6 @@ export class VtexService{
 
 
     async payment(paymentRequest: PaymentRequestDTO): Promise<PaymentResponseDto> {
-
         const origin = paymentRequest.merchantName; //TODO: Revisar
 
         const paymentWalletReq: CreateTransactionReq = {
@@ -45,10 +46,34 @@ export class VtexService{
             delayToCancel: envConfig.vtex.development.delayToCancel,
             nsu: paymentRequest.,
             paymentId: "",
-            status: result.transactions[0].status == 'APPROVED' ? VtexStatus.APPROVED: VtexStatus.UNDEFINED, //TODO: Pendiente
+            status: result.transactions[0].status == TransactionStatus.APPROVED ? VtexStatus.APPROVED: VtexStatus.UNDEFINED,
             tid: paymentRequest.transactionId,
-            paymentUrl: paymentRequest.returnUrl;
+            paymentUrl: paymentRequest.returnUrl
         };
+    }
+
+    async cancellation(cancellationRequest: CancellationRequestDTO): Promise<CancellationResponseDTO> {
+        try{
+            const transactionResult: TransactionDto = await this.walletApiClient.cancel(cancellationRequest.paymentId);
+
+            return {
+                paymentId: transactionResult.paymentId,
+                cancellationId: transactionResult.id,
+                code: 'string',
+                message: 'Sucessfully cancelled',
+                requestId: cancellationRequest.requestId
+            };
+
+        }catch (e) {
+            return {
+                paymentId: cancellationRequest.paymentId,
+                cancellationId: null,
+                code: 'cancel-manually',
+                message: 'Cancellation should be done manually',
+                requestId: cancellationRequest.requestId
+            };
+        }
+       
     }
 
 }

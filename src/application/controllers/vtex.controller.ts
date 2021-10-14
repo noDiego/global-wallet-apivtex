@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Logger, Post, Res, UsePipes } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Logger, Post, Res, UsePipes, Param } from "@nestjs/common";
 import { Response } from 'express'
 import { PaymentMethodsDto } from "../dto/payment-methods.dto";
 import { HeadersDTO } from "../dto/headers.dto";
@@ -7,6 +7,7 @@ import { PaymentRequestDTO } from "../dto/payment-request.dto";
 import { CustomValidationPipe } from "../pipes/custom-validation-pipe.service";
 import { VtexService } from "../../domain/services/vtex.service";
 import { PaymentResponseDto } from "../dto/payment-response.dto";
+import { CancellationRequestDTO, CancellationResponseDTO } from "../dto/cancellation.dto";
 
 @Controller('')
 export class VtexController {
@@ -47,9 +48,21 @@ export class VtexController {
      *
      * @apiDescription
      */
-    @Post('payments')
+    @Post('/payments')
     async payments(@RequestHeader(HeadersDTO) headers: any, @Body() paymentRequest: PaymentRequestDTO): Promise<PaymentResponseDto> {
         //throw new BadRequestException({message: ['asd','dsa']})
         return this.vtexService.payment(paymentRequest);
+    }
+
+    /**
+     * @api {post} /payments Receive information about the transaction
+     * @apiName Payments
+     *
+     * @apiDescription
+     */
+    @Post('/payments/:paymentId/cancellations')
+    async cancellation(@Param('paymentId') paymentId: string, @Body() cancellationRequest: CancellationRequestDTO): Promise<CancellationResponseDTO> {
+        //throw new BadRequestException({message: ['asd','dsa']})
+        return this.vtexService.cancellation(cancellationRequest);
     }
 }
