@@ -4,7 +4,9 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import winstonConfig from './config/winston.config';
 import { envConfig } from './config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { HttpExceptionFilter } from "./application/pipes/http-exception.filter";
+import { CustomValidationPipe } from "./application/pipes/custom-validation-pipe.service";
+global.ENV = require('./config/index').ENV;
 
 async function bootstrap() {
   const logger = new Logger('bootstrap');
@@ -15,7 +17,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, options);
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalPipes(new CustomValidationPipe());
 
   if (envConfig.environment == 'development') app.enableCors();
   else {
@@ -23,17 +26,7 @@ async function bootstrap() {
     app.enableCors({ origin: envConfig.server.origin });
   }
 
-  const documentOptions = new DocumentBuilder()
-    .setTitle('Cencosud Wallet API')
-    .setDescription('Cencosud Wallet API Description')
-    .setVersion('1.0')
-    .addTag('wallet')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, documentOptions);
-  SwaggerModule.setup('api', app, document);
-
-  await app.listen(3002);
+  await app.listen(envConfig.server.port);
 }
 
 bootstrap();
