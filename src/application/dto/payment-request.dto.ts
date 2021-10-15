@@ -104,8 +104,8 @@ export interface Recipient {
     documentType: string;
     document: string;
     role: string;
-    chargeProcessingFee: boolean;
-    chargebackLiable: boolean;
+    chargeProcessingFee?: boolean;
+    chargebackLiable?: boolean;
     amount: number;
 }
 

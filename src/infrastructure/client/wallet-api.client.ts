@@ -7,6 +7,7 @@ import { URLS } from '../../constants/urls';
 import { CreatePaymentReq } from '../dto/createPaymentReq.dto';
 import { CreateTransactionReq } from '../dto/createTransactionReq.dto';
 import { TransactionDto } from '../dto/transaction.dto';
+import { SettlementsRequestDTO } from "../../application/dto/settlements.dto";
 
 export class WalletApiClient {
   private logger = new Logger('BankferClient');
@@ -19,7 +20,7 @@ export class WalletApiClient {
     const headers: any = {
       'x-api-key': envConfig,
     };
-    const url = URLS.bankfer.accountsByUser + '/' + id;
+    const url = URLS.walletApi.payment;
 
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
@@ -37,7 +38,7 @@ export class WalletApiClient {
     } catch (e) {
       this.logger.error(
         `Error al conectar con api wallet para payment, Data: ${JSON.stringify(
-          id,
+            data,
         )}`,
         e.stack,
       );
@@ -50,6 +51,70 @@ export class WalletApiClient {
       'x-api-key': envConfig,
     };
     const url = URLS.bankfer.accountsByUser;
+
+    const requestConfig: AxiosRequestConfig = {
+      method: 'DELETE',
+      headers: headers,
+      url: url,
+      params: { id: paymentId },
+    };
+    this.logger.debug('URL:' + url);
+    try {
+      const response: AxiosResponse<ResponseDTO<TransactionDto>> = await axios(
+        requestConfig,
+      );
+      if (response.data) {
+        const resp: ResponseDTO<TransactionDto> = response.data;
+        return resp.data;
+      }
+    } catch (e) {
+      this.logger.error(
+        `Error al conectar con api wallet para payment, Data: ${JSON.stringify(
+          paymentId,
+        )}`,
+        e.stack,
+      );
+      throw new InternalServerErrorException();
+    }
+  }
+
+  public async settlement(paymentId: string): Promise<TransactionDto> {
+    const headers: any = {
+      'x-api-key': envConfig,
+    };
+    const url = URLS.walletApi.payment;
+
+    const requestConfig: AxiosRequestConfig = {
+      method: 'DELETE',
+      headers: headers,
+      url: url,
+      params: { id: paymentId },
+    };
+    this.logger.debug('URL:' + url);
+    try {
+      const response: AxiosResponse<ResponseDTO<TransactionDto>> = await axios(
+        requestConfig,
+      );
+      if (response.data) {
+        const resp: ResponseDTO<TransactionDto> = response.data;
+        return resp.data;
+      }
+    } catch (e) {
+      this.logger.error(
+        `Error al conectar con api wallet para payment, Data: ${JSON.stringify(
+          paymentId,
+        )}`,
+        e.stack,
+      );
+      throw new InternalServerErrorException();
+    }
+  }
+
+  public async refund(paymentId: string): Promise<TransactionDto> {
+    const headers: any = {
+      'x-api-key': envConfig,
+    };
+    const url = URLS.walletApi.payment;
 
     const requestConfig: AxiosRequestConfig = {
       method: 'DELETE',
