@@ -8,7 +8,18 @@ export const envConfig = {
   },
   walletApi: {
     core: process.env.WALLET_URL,
-    balance: process.env.WALLET_BALANCE_URL
+    balance: process.env.WALLET_BALANCE_URL,
+    kongKey: process.env.KONG_KEY
+  },
+  db: {
+    type: process.env.DB_TYPE,
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    schema: process.env.DB_SCHEMA,
+    synchronize: process.env.NODE_ENV == 'development',
   },
   vtex:{
     development: {

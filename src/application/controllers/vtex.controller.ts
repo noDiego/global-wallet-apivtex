@@ -1,17 +1,16 @@
-import { BadRequestException, Body, Controller, Get, Logger, Post, Res, UsePipes, Param } from "@nestjs/common";
+import { Body, Controller, Get, Logger, Param, Post, Res } from "@nestjs/common";
 import { Response } from 'express'
 import { PaymentMethodsDto } from "../dto/payment-methods.dto";
 import { HeadersDTO } from "../dto/headers.dto";
 import { RequestHeader } from "../dto/request-header.decorator";
 import { PaymentRequestDTO } from "../dto/payment-request.dto";
-import { CustomValidationPipe } from "../pipes/custom-validation-pipe.service";
 import { VtexService } from "../../domain/services/vtex.service";
 import { PaymentResponseDto } from "../dto/payment-response.dto";
 import { CancellationRequestDTO, CancellationResponseDTO } from "../dto/cancellation.dto";
 import { SettlementsRequestDTO, SettlementsResponseDTO } from "../dto/settlements.dto";
 import { RefundRequestDTO, RefundResponseDTO } from "../dto/refund.dto";
 
-@Controller('')
+@Controller('vtex')
 export class VtexController {
     constructor(private vtexService: VtexService,
                 private readonly logger: Logger,) {
@@ -24,7 +23,7 @@ export class VtexController {
      *
      * @apiSuccess {Array} paymentMethods Payment methods VTEX.
      */
-    @Get('/payment-method')
+    @Get('/payment-methods')
     async paymentMethods(@RequestHeader(HeadersDTO) headers: any): Promise<PaymentMethodsDto> {
         return {
             paymentMethods: ['Promissories']

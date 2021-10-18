@@ -1,29 +1,33 @@
 import { WalletApiClient } from "../../infrastructure/client/wallet-api.client";
-import { Logger } from "winston";
 import { PaymentRequestDTO } from "../../application/dto/payment-request.dto";
 import { CreateTransactionReq } from "../../infrastructure/dto/createTransactionReq.dto";
 import { PaymentResponseDto } from "../../application/dto/payment-response.dto";
-import { CommerceClientDTO } from "../../infrastructure/dto/commerceClient.dto";
-import { TransactionStatus, VtexStatus } from "../../infrastructure/enums/vtex.enum";
 import { envConfig } from "../../config";
 import { TransactionDto } from "src/infrastructure/dto/transaction.dto";
 import { CancellationRequestDTO, CancellationResponseDTO } from "src/application/dto/cancellation.dto";
 import { SettlementsRequestDTO, SettlementsResponseDTO } from "../../application/dto/settlements.dto";
 import { RefundRequestDTO, RefundResponseDTO } from "../../application/dto/refund.dto";
+import { VtexRecordRepository } from "../../infrastructure/repository/vtex-record.repository";
+import { Injectable, Logger } from "@nestjs/common";
+import { PaymentFlow, TransactionStatus, VtexStatus } from "../../infrastructure/enums/vtex.enum";
+import { CommerceClientDTO } from "../../infrastructure/dto/commerceClient.dto";
+import { ResponseDTO } from "../../application/dto/api-response.dto";
 
 const config = require('../../config/index').ENV;
 
+@Injectable()
 export class VtexService {
 
     constructor(
         private walletApiClient: WalletApiClient,
+        private vtexRepository: VtexRecordRepository,
         private readonly logger: Logger,
     ) {
     }
 
 
     async payment(paymentRequest: PaymentRequestDTO): Promise<PaymentResponseDto> {
-        const origin = paymentRequest.merchantName; //TODO: Revisar
+        await this.vtexRepository.createRecord(paymentRequest.paymentId, PaymentFlow.PAYMENT, paymentRequest);
 
         const paymentWalletReq: CreateTransactionReq = {
             client: {
@@ -39,31 +43,36 @@ export class VtexService {
 
         }
 
-        const result: CommerceClientDTO = await this.walletApiClient.payment(paymentWalletReq, origin);
+        const result: ResponseDTO<CommerceClientDTO> = await this.walletApiClient.payment(paymentWalletReq, paymentRequest.merchantName);
+        const commerceClient: CommerceClientDTO = result.data;
 
         return {
-            acquirer: null,
-            authorizationId: null,
+            acquirer: paymentRequest.card.holder || 'VTEX',
+            authorizationId: result.data.transactions[0].authorizationCode,
             delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
             delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
             delayToCancel: envConfig.vtex.development.delayToCancel,
-            nsu: null,//TODO
-            paymentId: "",
-            status: result.transactions[0].status == TransactionStatus.APPROVED ? VtexStatus.APPROVED : VtexStatus.UNDEFINED,
+            nsu: result.data.transactions[0].id,
+            paymentId: commerceClient.transactions[0].paymentId,
+            status: commerceClient.transactions[0].status == TransactionStatus.INIT ? VtexStatus.UNDEFINED: VtexStatus.DENIED,
             tid: paymentRequest.transactionId,
-            paymentUrl: paymentRequest.returnUrl
+            paymentUrl: paymentRequest.returnUrl,
+            code:String(result.code),
+            message:result.message
         };
     }
 
     async cancellation(cancellationRequest: CancellationRequestDTO): Promise<CancellationResponseDTO> {
         try {
-            const transactionResult: TransactionDto = await this.walletApiClient.cancel(cancellationRequest.paymentId);
+            await this.vtexRepository.createRecord(cancellationRequest.paymentId, PaymentFlow.CANCELLATION, cancellationRequest);
+
+            const response: ResponseDTO<TransactionDto> = await this.walletApiClient.cancel(cancellationRequest.paymentId);
 
             return {
-                paymentId: transactionResult.paymentId,
-                cancellationId: transactionResult.id,
-                code: 'string',
-                message: 'Sucessfully cancelled',
+                paymentId: response.data.paymentId,
+                cancellationId: response.data.id,
+                code: String(response.code),
+                message: response.message,
                 requestId: cancellationRequest.requestId
             };
 
@@ -76,12 +85,11 @@ export class VtexService {
                 requestId: cancellationRequest.requestId
             };
         }
-
     }
 
     async settlements(settlementReq: SettlementsRequestDTO): Promise<SettlementsResponseDTO> {
         try {
-
+            await this.vtexRepository.createRecord(settlementReq.paymentId, PaymentFlow.SETTLEMENT, settlementReq);
 
             const transactionResult: TransactionDto = await this.walletApiClient.settlement(settlementReq.paymentId);
 
@@ -109,9 +117,9 @@ export class VtexService {
 
     async refund(refundReq: RefundRequestDTO): Promise<RefundResponseDTO> {
         try {
+            await this.vtexRepository.createRecord(refundReq.paymentId, PaymentFlow.REFUND, refundReq);
 
-
-            const transactionResult: TransactionDto = await this.walletApiClient.cancel(refundReq.paymentId);
+            // const transactionResult: TransactionDto = await this.walletApiClient.cancel(refundReq.paymentId);
 
             return {
                 paymentId: refundReq.paymentId,
@@ -132,6 +140,10 @@ export class VtexService {
                 requestId: refundReq.requestId
             };
         }
+
+    }
+
+    private getMerchantKey(merchantName: string){
 
     }
 

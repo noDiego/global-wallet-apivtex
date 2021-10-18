@@ -10,3 +10,18 @@ export enum VtexStatus {
     DENIED = 'denied',
     UNDEFINED = 'undefined',
 }
+
+
+export enum PaymentFlow {
+    PAYMENT = 'payment',
+    CANCELLATION = 'cancellation',
+    SETTLEMENT = 'settlement',
+    REFUND = 'refund',
+}
+
+
+
+export enum MerchantKeys {
+    PARIS = '97faafabdf7d9212ef4ec343b0350cb262238b9417936b7ac046d62df1c388e54cc2b8d0e3165b6f535f6a353636d14c07206b636376',
+    JUMBO = '97faafabdf7d9212ef57df5db35802bc232f918f0d956021d85eb7229fcd86a440c9b997fb0e1c7954446023302ddc400c2d656b2e2922',
+}

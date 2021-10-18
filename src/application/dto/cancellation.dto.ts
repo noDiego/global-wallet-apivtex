@@ -8,8 +8,7 @@ export class CancellationRequestDTO {
   @IsNotEmpty()
   authorizationId: string;
   @IsOptional()
-  @IsBoolean()
-  sandboxMode: boolean;
+  sandboxMode: boolean|string;
 }
 
 export class CancellationResponseDTO {

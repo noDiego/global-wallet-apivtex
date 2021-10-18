@@ -1,24 +1,25 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { envConfig } from '../../config';
 import { ResponseDTO } from '../dto/wallet-response.dto';
 import { CommerceClientDTO } from '../dto/commerceClient.dto';
 import { URLS } from '../../constants/urls';
-import { CreatePaymentReq } from '../dto/createPaymentReq.dto';
 import { CreateTransactionReq } from '../dto/createTransactionReq.dto';
 import { TransactionDto } from '../dto/transaction.dto';
-import { SettlementsRequestDTO } from "../../application/dto/settlements.dto";
+import { MerchantKeys } from "../enums/vtex.enum";
 
+@Injectable()
 export class WalletApiClient {
   private logger = new Logger('BankferClient');
 
   public async payment(
     data: CreateTransactionReq,
     origin: string,
-  ): Promise<CommerceClientDTO> {
+  ): Promise<ResponseDTO<CommerceClientDTO>> {
     // (como id puede venir el commerceUserId, userDni, emailUser, userId)
     const headers: any = {
-      'x-api-key': envConfig,
+      'x-consumer-key': MerchantKeys[origin],
+      'x-api-key': envConfig.walletApi.kongKey,
     };
     const url = URLS.walletApi.payment;
 
@@ -26,14 +27,14 @@ export class WalletApiClient {
       method: 'POST',
       headers: headers,
       url: url,
+      data: data,
     };
     this.logger.debug('URL:' + url);
     try {
       const response: AxiosResponse<ResponseDTO<CommerceClientDTO>> =
         await axios(requestConfig);
       if (response.data) {
-        const resp: ResponseDTO<CommerceClientDTO> = response.data;
-        return resp.data;
+        return response.data;
       }
     } catch (e) {
       this.logger.error(
@@ -46,11 +47,12 @@ export class WalletApiClient {
     }
   }
 
-  public async cancel(paymentId: string): Promise<TransactionDto> {
+  public async cancel(paymentId: string): Promise<ResponseDTO<TransactionDto>> {
     const headers: any = {
-      'x-api-key': envConfig,
+      'x-consumer-key': MerchantKeys[origin],
+      'x-api-key': envConfig.walletApi.kongKey,
     };
-    const url = URLS.bankfer.accountsByUser;
+    const url = URLS.walletApi.payment;
 
     const requestConfig: AxiosRequestConfig = {
       method: 'DELETE',
@@ -63,15 +65,12 @@ export class WalletApiClient {
       const response: AxiosResponse<ResponseDTO<TransactionDto>> = await axios(
         requestConfig,
       );
-      if (response.data) {
-        const resp: ResponseDTO<TransactionDto> = response.data;
-        return resp.data;
-      }
+        return response.data;
     } catch (e) {
       this.logger.error(
         `Error al conectar con api wallet para payment, Data: ${JSON.stringify(
           paymentId,
-        )}`,
+        )}. Error:${e.message}`,
         e.stack,
       );
       throw new InternalServerErrorException();
@@ -80,7 +79,8 @@ export class WalletApiClient {
 
   public async settlement(paymentId: string): Promise<TransactionDto> {
     const headers: any = {
-      'x-api-key': envConfig,
+      'x-consumer-key': MerchantKeys[origin],
+      'x-api-key': envConfig.walletApi.kongKey,
     };
     const url = URLS.walletApi.payment;
 
@@ -112,7 +112,8 @@ export class WalletApiClient {
 
   public async refund(paymentId: string): Promise<TransactionDto> {
     const headers: any = {
-      'x-api-key': envConfig,
+      'x-consumer-key': MerchantKeys[origin],
+      'x-api-key': envConfig.walletApi.kongKey,
     };
     const url = URLS.walletApi.payment;
 

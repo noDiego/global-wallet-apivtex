@@ -1,5 +1,6 @@
 export class TransactionDto {
   id?: string;
+  authorizationCode: string;
   status?: string;
   type?: string;
   orderId: string;
