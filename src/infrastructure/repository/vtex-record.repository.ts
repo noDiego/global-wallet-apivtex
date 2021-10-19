@@ -13,11 +13,13 @@ export class VtexRecordRepository extends Repository<VtexRecord> {
     paymentId: string,
     flowStep: PaymentFlow,
     vtexRequest: any,
+    vtexResponse: any,
   ): Promise<VtexRecordDto> {
     const record: VtexRecord = new VtexRecord();
     record.paymentId= paymentId;
     record.flowStep=flowStep;
     record.requestData=vtexRequest;
+    record.responseData=vtexResponse;
     record.date=new Date();
     try {
       const recordSaved = await record.save();

@@ -50,16 +50,24 @@ export class VtexController {
      * @apiDescription
      */
     @Post('/payments')
-    async payments(@RequestHeader(HeadersDTO) headers: any, @Body() paymentRequest: PaymentRequestDTO): Promise<PaymentResponseDto> {
+    async payments(@RequestHeader(HeadersDTO) headers: any, @Body() paymentRequest: PaymentRequestDTO, @Res() response: Response): Promise<PaymentResponseDto> {
         //throw new BadRequestException({message: ['asd','dsa']})
-        return this.vtexService.payment(paymentRequest);
+        const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
+        response.status(result.tid ? 200 : 500).send(result).end();
+        return;
     }
 
     /**
-     * @api {post} /payments Receive information about the transaction
-     * @apiName Payments
+     * @api {post} /payments/:paymentId/cancellations Cancels a payment that was not yet approved or captured
+     * @apiName Cancel Payment
      *
-     * @apiDescription
+     * @apiParam {String} id payment unique ID.
+     *
+     * @apiSuccess {String} paymentId      VTEX payment ID from this payment.
+     * @apiSuccess {String} cancellationId Provider's cancellation identifier.
+     * @apiSuccess {String} code           Provider's operation/error code to be logged.
+     * @apiSuccess {String} message        Provider's operation/error message to be logged.
+     * @apiSuccess {String} requestId      The unique identifier for this request to ensure its idempotency.
      */
     @Post('/payments/:paymentId/cancellations')
     async cancellation(@RequestHeader(HeadersDTO) headers: any,
@@ -68,10 +76,9 @@ export class VtexController {
                        @Res() response: Response): Promise<CancellationResponseDTO> {
         const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest);
 
-        if(!result.cancellationId) {
+        if (!result.cancellationId) {
             response.status(500).send(result).end();
-        }
-        else {
+        } else {
             return result;
         }
     }
@@ -91,15 +98,14 @@ export class VtexController {
      */
     @Post('/payments/:paymentId/settlements')
     async settlements(@RequestHeader(HeadersDTO) headers: any,
-                       @Param('paymentId') paymentId: string,
-                       @Body() settlementsRequest: SettlementsRequestDTO,
-                       @Res() response: Response): Promise<SettlementsResponseDTO> {
+                      @Param('paymentId') paymentId: string,
+                      @Body() settlementsRequest: SettlementsRequestDTO,
+                      @Res() response: Response): Promise<SettlementsResponseDTO> {
         const result: SettlementsResponseDTO = await this.vtexService.settlements(settlementsRequest);
 
-        if(!result.settleId) {
+        if (!result.settleId) {
             response.status(500).send(result).end();
-        }
-        else {
+        } else {
             return result;
         }
     }
@@ -119,15 +125,14 @@ export class VtexController {
      */
     @Post('/payments/:paymentId/refunds')
     async refund(@RequestHeader(HeadersDTO) headers: any,
-                       @Param('paymentId') paymentId: string,
-                       @Body() refundRequest: RefundRequestDTO,
-                       @Res() response: Response): Promise<SettlementsResponseDTO> {
+                 @Param('paymentId') paymentId: string,
+                 @Body() refundRequest: RefundRequestDTO,
+                 @Res() response: Response): Promise<SettlementsResponseDTO> {
         const result: RefundResponseDTO = await this.vtexService.refund(refundRequest);
 
-        if(!result.refundId) {
+        if (!result.refundId) {
             response.status(500).send(result).end();
-        }
-        else {
+        } else {
             return result;
         }
     }

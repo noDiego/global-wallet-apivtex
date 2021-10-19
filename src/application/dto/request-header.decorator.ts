@@ -13,10 +13,10 @@ export const RequestHeader = createParamDecorator(
 
         // Validate
         return validateOrReject(dto).then(
-            (res) => {
+            () => {
                 return dto;
             },
-            (err) => {
+            () => {
                 throw new BadRequestException({
                     message: "Error in Credentials",
                     status: 'error',

@@ -11,6 +11,8 @@ export class VtexRecord extends BaseEntity {
     flowStep: PaymentFlow;
     @Column({ nullable: false, type: "json" })
     requestData: any;
+    @Column({ nullable: false, type: "json" })
+    responseData: any;
     @Column({nullable: false})
     date: Date;
 }
