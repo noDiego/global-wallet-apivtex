@@ -125,6 +125,7 @@ export class VtexController {
         const result: RefundResponseDTO = await this.vtexService.refund(refundRequest);
 
         response.status(result.refundId ? 200 : 500).send(result).end();
+
         return;
     }
 }
