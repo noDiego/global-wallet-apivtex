@@ -32,8 +32,6 @@ spec:
         app.gitlab.com/app: ${CI_PROJECT_PATH_SLUG}
         app.gitlab.com/env: ${CI_ENVIRONMENT_SLUG}
     spec:
-      serviceAccountName: ${KUBE_NAMESPACE}
-      automountServiceAccountToken: true
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
