@@ -8,7 +8,7 @@ export class VtexRecord extends BaseEntity {
     @Column({ nullable: false, unique: false })
     paymentId: string;
     @Column({ nullable: false })
-    flowStep: PaymentFlow;
+    operationType: PaymentFlow;
     @Column({ nullable: false, type: "json" })
     requestData: any;
     @Column({ nullable: false, type: "json" })

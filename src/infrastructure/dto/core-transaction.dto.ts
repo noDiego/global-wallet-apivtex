@@ -1,6 +1,5 @@
-export class TransactionDto {
-  id?: number;
-  status?: string;
+export class CoreTransactionDto {
+  id?: number|string;
   type?: string;
   orderId: string;
   creditNoteId?: string;
@@ -10,7 +9,6 @@ export class TransactionDto {
   origin?: string;
   dni?: string;
   email?: string;
-  paymentId?: string;
   authorizationCode?: string;
   balance?: number;
 }

@@ -1,4 +1,4 @@
-import { ClientDTO } from './client.dto';
+import { ClientDTO } from "./createPaymentReq.dto";
 
 export class CreateTransactionDetail {
   orderId: string;
