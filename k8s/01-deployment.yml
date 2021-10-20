@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${CI_PROJECT_NAME}
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    deployer: "${GITLAB_USER_NAME} ${GITLAB_USER_EMAIL}"
+    project_url: "${CI_PROJECT_URL}"
+    description: "Deployment ${CI_PROJECT_NAME}"
+    changelog: "${CI_COMMIT_TITLE}"
+    app.gitlab.com/app: ${CI_PROJECT_PATH_SLUG}
+    app.gitlab.com/env: ${CI_ENVIRONMENT_SLUG}
+spec:
+  selector:
+    matchLabels:
+      app: ${CI_PROJECT_NAME}
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: ${CI_PROJECT_NAME}
+      annotations:
+        deployer: "${GITLAB_USER_NAME} ${GITLAB_USER_EMAIL}"
+        project_url: "${CI_PROJECT_URL}"
+        description: "Deployment ${CI_PROJECT_NAME}"
+        changelog: "${CI_COMMIT_TITLE}"
+        app.gitlab.com/app: ${CI_PROJECT_PATH_SLUG}
+        app.gitlab.com/env: ${CI_ENVIRONMENT_SLUG}
+    spec:
+      serviceAccountName: ${KUBE_NAMESPACE}
+      automountServiceAccountToken: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: failure-domain.beta.kubernetes.io/zone
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      nodeSelector:
+        node.kubernetes.io/role: "user"
+      containers:
+        - name: ${CI_PROJECT_NAME}
+          image: ${CI_REGISTRY_IMAGE}:${CI_PIPELINE_IID}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3002
+              name: http
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: secret-${CI_PROJECT_NAME}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3002 
+            initialDelaySeconds: 70
+            timeoutSeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3002 
+            initialDelaySeconds: 45
+            timeoutSeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              memory: 125Mi
+              cpu: '64m'
+            limits:
+              memory: 500Mi
+              cpu: '256m'
+      imagePullSecrets:
+        - name: gitlab-registry-credentials

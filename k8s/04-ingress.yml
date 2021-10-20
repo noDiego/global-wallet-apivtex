@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${CI_PROJECT_NAME}
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: "api-gw"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    konghq.com/strip-path: "true"
+    konghq.com/plugins: "${CI_PROJECT_NAME}-apikey,${CI_PROJECT_NAME}-acl"
+  labels:
+    app: ${CI_PROJECT_NAME}
+spec:
+  rules:
+    - host: ${HOST_COMMON}.${ENDPOINT}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ${CI_PROJECT_NAME}
+              servicePort: http
