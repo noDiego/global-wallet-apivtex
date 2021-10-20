@@ -1,4 +1,4 @@
-import { ClientDTO } from './client.dto';
+import { CoreTransactionDto } from "./core-transaction.dto";
 
 export class CreatePaymentDetail {
   orderId: string;
@@ -11,4 +11,19 @@ export class CreatePaymentReq {
   origin: string;
   client: ClientDTO;
   transaction: CreatePaymentDetail;
+}
+
+export class ClientDTO {
+  id?: number;
+  dni?: string;
+  email?: string;
+  commercesClients?: CommerceClientDTO[];
+}
+
+export class CommerceClientDTO {
+  id?: number;
+  origin?: string;
+  commerceUserId?: string;
+  client?: ClientDTO;
+  transactions?: CoreTransactionDto[];
 }

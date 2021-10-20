@@ -75,12 +75,9 @@ export class VtexController {
                        @Body() cancellationRequest: CancellationRequestDTO,
                        @Res() response: Response): Promise<CancellationResponseDTO> {
         const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest);
+        response.status(result.cancellationId ? 200 : 500).send(result).end();
+        return;
 
-        if (!result.cancellationId) {
-            response.status(500).send(result).end();
-        } else {
-            return result;
-        }
     }
 
     /**
@@ -103,11 +100,8 @@ export class VtexController {
                       @Res() response: Response): Promise<SettlementsResponseDTO> {
         const result: SettlementsResponseDTO = await this.vtexService.settlements(settlementsRequest);
 
-        if (!result.settleId) {
-            response.status(500).send(result).end();
-        } else {
-            return result;
-        }
+        response.status(result.settleId ? 200 : 500).send(result).end();
+        return;
     }
 
     /**
@@ -130,10 +124,7 @@ export class VtexController {
                  @Res() response: Response): Promise<SettlementsResponseDTO> {
         const result: RefundResponseDTO = await this.vtexService.refund(refundRequest);
 
-        if (!result.refundId) {
-            response.status(500).send(result).end();
-        } else {
-            return result;
-        }
+        response.status(result.refundId ? 200 : 500).send(result).end();
+        return;
     }
 }

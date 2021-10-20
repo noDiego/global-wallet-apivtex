@@ -2,11 +2,10 @@ import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { envConfig } from '../../config';
 import { ResponseDTO } from '../dto/wallet-response.dto';
-import { CommerceClientDTO } from '../dto/commerceClient.dto';
 import { URLS } from '../../constants/urls';
 import { CreateTransactionReq } from '../dto/createTransactionReq.dto';
-import { TransactionDto } from '../dto/transaction.dto';
 import { MerchantKeys } from "../enums/vtex.enum";
+import { CoreTransactionDto } from "../dto/core-transaction.dto";
 
 @Injectable()
 export class WalletApiClient {
@@ -15,7 +14,7 @@ export class WalletApiClient {
   public async payment(
     data: CreateTransactionReq,
     origin: string,
-  ): Promise<ResponseDTO<TransactionDto>> {
+  ): Promise<ResponseDTO<CoreTransactionDto>> {
     // (como id puede venir el commerceUserId, userDni, emailUser, userId)
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
@@ -31,7 +30,7 @@ export class WalletApiClient {
     };
     this.logger.debug('URL:' + url);
     try {
-      const response: AxiosResponse<ResponseDTO<TransactionDto>> =
+      const response: AxiosResponse<ResponseDTO<CoreTransactionDto>> =
         await axios(requestConfig);
       if (response.data) {
         return response.data;
@@ -47,7 +46,7 @@ export class WalletApiClient {
     }
   }
 
-  public async cancel(paymentId: string, authorizationCode: string): Promise<ResponseDTO<TransactionDto>> {
+  public async cancel(paymentId: string, authorizationCode: string): Promise<ResponseDTO<CoreTransactionDto>> {
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
       'x-api-key': envConfig.walletApi.kongKey,
@@ -62,7 +61,7 @@ export class WalletApiClient {
     };
     this.logger.debug('URL:' + url);
     try {
-      const response: AxiosResponse<ResponseDTO<TransactionDto>> = await axios(
+      const response: AxiosResponse<ResponseDTO<CoreTransactionDto>> = await axios(
         requestConfig,
       );
         return response.data;
@@ -77,7 +76,7 @@ export class WalletApiClient {
     }
   }
 
-  public async settlement(paymentId: string): Promise<ResponseDTO<TransactionDto>> {
+  public async settlement(paymentId: string): Promise<ResponseDTO<CoreTransactionDto>> {
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
       'x-api-key': envConfig.walletApi.kongKey,
@@ -92,11 +91,11 @@ export class WalletApiClient {
     };
     this.logger.debug('URL:' + url);
     try {
-      const response: AxiosResponse<ResponseDTO<TransactionDto>> = await axios(
+      const response: AxiosResponse<ResponseDTO<CoreTransactionDto>> = await axios(
         requestConfig,
       );
       if (response.data) {
-        const resp: ResponseDTO<TransactionDto> = response.data;
+        const resp: ResponseDTO<CoreTransactionDto> = response.data;
         return resp;
       }
     } catch (e) {
@@ -110,7 +109,7 @@ export class WalletApiClient {
     }
   }
 
-  public async refund(paymentId: string): Promise<ResponseDTO<TransactionDto>> {
+  public async refund(paymentId: string): Promise<ResponseDTO<CoreTransactionDto>> {
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
       'x-api-key': envConfig.walletApi.kongKey,
@@ -125,7 +124,7 @@ export class WalletApiClient {
     };
     this.logger.debug('URL:' + url);
     try {
-      const response: AxiosResponse<ResponseDTO<TransactionDto>> = await axios(
+      const response: AxiosResponse<ResponseDTO<CoreTransactionDto>> = await axios(
         requestConfig,
       );
       return response.data;
