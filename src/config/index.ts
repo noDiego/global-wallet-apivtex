@@ -9,7 +9,7 @@ export const envConfig = {
   walletApi: {
     core: process.env.WALLET_URL,
     balance: process.env.WALLET_BALANCE_URL,
-    kongKey: process.env.KONG_KEY
+    kongKey: process.env.APIKEY_WALLET,
   },
   db: {
     type: process.env.DB_TYPE,

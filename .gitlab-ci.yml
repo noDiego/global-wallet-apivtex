@@ -1,0 +1,3 @@
+include:
+  - project: 'cencosud-ds/cencommerce/utils/pipe-templates'
+    file: 'deploy-to-k8s.yml'
