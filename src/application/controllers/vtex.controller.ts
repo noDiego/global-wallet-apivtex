@@ -10,7 +10,7 @@ import { CancellationRequestDTO, CancellationResponseDTO } from "../dto/cancella
 import { SettlementsRequestDTO, SettlementsResponseDTO } from "../dto/settlements.dto";
 import { RefundRequestDTO, RefundResponseDTO } from "../dto/refund.dto";
 
-@Controller('vtex')
+@Controller('api/vtex')
 export class VtexController {
     constructor(private vtexService: VtexService,
                 private readonly logger: Logger,) {

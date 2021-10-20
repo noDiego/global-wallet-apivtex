@@ -4,7 +4,7 @@ import { Controller, Get, Logger } from '@nestjs/common';
 export class MainController {
   constructor(private readonly logger: Logger) {}
 
-  @Get('/health')
+  @Get(['/health', ''])
   async health(): Promise<any> {
     return {
       message: 'ok'
