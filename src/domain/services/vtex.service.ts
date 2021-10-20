@@ -195,7 +195,7 @@ export class VtexService {
                 value: refundReq.value,
                 code: String(transactionResult.code),
                 message: "Sucessfully refunded",
-                requestId: "LA4E20D3B4E07B7E871F5B5BC9F91"
+                requestId: refundReq.requestId
             };
 
         } catch (e) {

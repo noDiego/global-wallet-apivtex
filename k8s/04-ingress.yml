@@ -12,7 +12,7 @@ metadata:
     app: ${CI_PROJECT_NAME}
 spec:
   rules:
-    - host: ${HOST_COMMON}.${ENDPOINT}
+    - host: "global-wallet-apivtex".${ENDPOINT}
       http:
         paths:
           - path: /
