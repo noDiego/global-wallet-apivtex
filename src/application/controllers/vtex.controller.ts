@@ -14,6 +14,7 @@ import { RefundRequestDTO, RefundResponseDTO } from "../dto/refund.dto";
 export class VtexController {
     constructor(private vtexService: VtexService,
                 private readonly logger: Logger,) {
+
     }
 
     /**
