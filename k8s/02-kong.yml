@@ -18,6 +18,9 @@ plugin: acl
 config:
   whitelist:
   - ${CI_PROJECT_NAME}-access
+  rename:
+    headers:
+      - apikey:X-VTEX-API-AppToken
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongIngress
