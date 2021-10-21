@@ -10,7 +10,7 @@ import { CancellationRequestDTO, CancellationResponseDTO } from "../dto/cancella
 import { SettlementsRequestDTO, SettlementsResponseDTO } from "../dto/settlements.dto";
 import { RefundRequestDTO, RefundResponseDTO } from "../dto/refund.dto";
 
-@Controller('api/vtex')
+@Controller('')
 export class VtexController {
     constructor(private vtexService: VtexService,
                 private readonly logger: Logger,) {
@@ -24,7 +24,7 @@ export class VtexController {
      * @apiSuccess {Array} paymentMethods Payment methods VTEX.
      */
     @Get('/payment-methods')
-    async paymentMethods(@RequestHeader(HeadersDTO) headers: any): Promise<PaymentMethodsDto> {
+    async paymentMethods(): Promise<PaymentMethodsDto> {
         return {
             paymentMethods: ['Promissories']
         };
