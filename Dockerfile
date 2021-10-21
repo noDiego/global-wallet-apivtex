@@ -1,6 +1,6 @@
 FROM node:14
 WORKDIR /usr/src/app
-COPY package*.json ./
+COPY *.json ./
 RUN npm install \
 && npm run build
 COPY . .
