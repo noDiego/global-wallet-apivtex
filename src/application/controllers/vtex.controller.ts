@@ -31,19 +31,6 @@ export class VtexController {
     }
 
     /**
-     * @api {get} /payment-methods Request information on payment methods
-     * @apiName Payment methods
-     *
-     * @apiSuccess {Array} paymentMethods Payment methods VTEX.
-     */
-    @Get('public/payment-method')
-    async paymentMethodsPublic(): Promise<PaymentMethodsDto> {
-        return {
-            paymentMethods: ['Promissories']
-        };
-    }
-
-    /**
      * @api {post} /payments Receive information about the transaction
      * @apiName Payments
      *
