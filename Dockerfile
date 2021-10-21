@@ -1,8 +1,8 @@
-FROM node:14-alpine
+FROM node:17
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm install
-RUN npm run build
+RUN npm install \
+&& npm run build
 COPY . .
 EXPOSE 3002
 CMD [ "node", "dist/main.js" ]
