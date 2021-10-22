@@ -74,5 +74,5 @@ metadata:
 config:
   rename:
     headers:
-      - X-VTEX-API-AppToken:apikey
+      - apikey:X-VTEX-API-AppToken
 plugin: request-transformer
