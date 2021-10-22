@@ -66,4 +66,13 @@ custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-consumer-key
   - ${CI_PROJECT_NAME}-acl
-
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: request-transformer-test1
+config:
+  rename:
+    headers:
+      - X-VTEX-API-AppToken:apikey
+plugin: request-transformer
