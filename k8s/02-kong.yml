@@ -7,6 +7,11 @@ metadata:
     kubernetes.io/ingress.class: api-gw
 config:
   header_name: X-VTEX-API-AppToken
+  rename:
+    headers:
+      - apikey: X-VTEX-API-AppToken
+  key_names:
+    - X-VTEX-API-AppToken
 plugin: key-auth
 ---
 apiVersion: configuration.konghq.com/v1
