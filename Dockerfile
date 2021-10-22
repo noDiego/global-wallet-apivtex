@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/cencosud-ds/cencommerce/utils/docker-images/node:14-alpine as production
+FROM registry.gitlab.com/cencosud-ds/cencommerce/utils/docker-images/node:14-alpine
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 WORKDIR /usr/src/app
