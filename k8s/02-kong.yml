@@ -5,6 +5,12 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: api-gw
+config:
+  rename:
+    headers:
+      - apikey:X-VTEX-API-AppToken
+  key_names:
+    - X-VTEX-API-AppToken
 plugin: key-auth
 ---
 apiVersion: configuration.konghq.com/v1
@@ -18,9 +24,6 @@ plugin: acl
 config:
   whitelist:
   - ${CI_PROJECT_NAME}-access
-  rename:
-    headers:
-      - apikey:X-VTEX-API-AppToken
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongIngress
