@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
     konghq.com/strip-path: "true"
-    konghq.com/plugins: "${CI_PROJECT_NAME}-apikey,${CI_PROJECT_NAME}-acl"
+    konghq.com/plugins: "${CI_PROJECT_NAME}-apikey"
   labels:
     app: ${CI_PROJECT_NAME}
 spec:
