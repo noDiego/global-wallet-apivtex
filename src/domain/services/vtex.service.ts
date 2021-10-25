@@ -13,7 +13,7 @@ import { ResponseDTO } from "../../application/dto/api-response.dto";
 import { VtexTransactionRepository } from "../../infrastructure/repository/vtex-transaction.repository";
 import { CoreTransactionDto } from "../../infrastructure/dto/core-transaction.dto";
 import { VtexRequestDto } from "../../application/dto/vtex-request.dto";
-
+import { validateCardNumber } from "../../utils/validation";
 const config = require('../../config/index').ENV;
 
 @Injectable()
@@ -42,6 +42,7 @@ export class VtexService {
                     currency: paymentRequest.currency,
                 }
             }
+            const validCard: boolean = validateCardNumber(paymentRequest.card.number);
 
             //const paymentResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.payment(paymentWalletReq,
             // paymentRequest.merchantName);
@@ -80,7 +81,7 @@ export class VtexService {
                 delayToCancel: envConfig.vtex.development.delayToCancel,
                 nsu: String(resultTrx.id),
                 paymentId: paymentRequest.paymentId,
-                status: VtexStatus.APPROVED,
+                status: validCard? VtexStatus.APPROVED: VtexStatus.DENIED,
                 tid: String(resultTrx.id),
                 paymentUrl: paymentRequest.returnUrl,
                 code: String(paymentResult.code),
