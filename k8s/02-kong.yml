@@ -3,6 +3,11 @@ kind: KongPlugin
 metadata:
   name: api-key
   namespace: ${KUBE_NAMESPACE}
+config:
+    key_names:
+      - apikey
+      - X-VTEX-API-AppToken
+      - testkey
 plugin: key-auth
 ---
 apiVersion: configuration.konghq.com/v1
