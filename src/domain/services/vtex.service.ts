@@ -78,10 +78,10 @@ export class VtexService {
                 delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
                 delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
                 delayToCancel: envConfig.vtex.development.delayToCancel,
-                nsu: paymentResult.code==0? String(resultTrx.id): null,
+                nsu: String(resultTrx.id),
                 paymentId: paymentRequest.paymentId,
                 status: paymentResult.code==0 ? VtexStatus.APPROVED : (paymentResult.code==5? VtexStatus.UNDEFINED:VtexStatus.DENIED),
-                tid: paymentResult.code==0? String(resultTrx.id): null,
+                tid: String(resultTrx.id),
                 paymentUrl: paymentRequest.returnUrl,
                 code: String(paymentResult.code),
                 message: paymentResult.message
