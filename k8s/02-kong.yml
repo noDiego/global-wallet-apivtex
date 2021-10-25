@@ -24,11 +24,6 @@ kind: Secret
 metadata:
   name: ${CI_PROJECT_NAME}-key
   namespace: ${KUBE_NAMESPACE}
-data:
-  # kongCredType determina el tipo
-  # de credencial a generar
-  #
-  # valor de kongCredType: key-auth
+stringData:
   kongCredType: key-auth
-  # valor del apikey: test
   key: ${KONG_API_KEY}
