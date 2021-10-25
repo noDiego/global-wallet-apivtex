@@ -66,7 +66,7 @@ export class VtexService {
 
             }
             const paymentResult: ResponseDTO<CoreTransactionDto> = {code: validCard? 0 : 1, data: resultTrx, message: validCard?"OK":"INVALID CARD"}
-            if(paymentRequest.card.number == '4222222222222224'){
+            if(paymentRequest.card.number.includes('422222222222222')){
                 paymentResult.code=5;
                 paymentResult.message ='Pendiente';
             }
@@ -128,7 +128,10 @@ export class VtexService {
                 type: "PCE"
 
             }
-            const paymentResult: ResponseDTO<CoreTransactionDto> = {code: validCard? 0 : 1, data: resultTrx, message: validCard?"OK":"INVALID CARD"}
+            let paymentResult: ResponseDTO<CoreTransactionDto> = {code: validCard? 0 : 1, data: resultTrx, message: validCard?"OK":"INVALID CARD"}
+            if(paymentRequest.card.number == '4222222222222224'){ //Credit Card que envia VTEX y supuestamente es Valida
+                paymentResult = {code: 0, data: resultTrx, message: "OK"};
+            }
             //FIN DUMMY
 
             const response: PaymentResponseDto = {
@@ -137,10 +140,10 @@ export class VtexService {
                 delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
                 delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
                 delayToCancel: envConfig.vtex.development.delayToCancel,
-                nsu: paymentResult.code==0? String(resultTrx.id): null,
+                nsu: String(resultTrx.id),
                 paymentId: paymentRequest.paymentId,
                 status: paymentResult.code==0 ? VtexStatus.APPROVED : VtexStatus.DENIED,
-                tid: paymentResult.code==0? String(resultTrx.id): null,
+                tid: String(resultTrx.id),
                 paymentUrl: paymentRequest.returnUrl,
                 code: String(paymentResult.code),
                 message: paymentResult.message
