@@ -16,6 +16,7 @@ spec:
       http:
         paths:
           - path: /payments/
+            pathType: Prefix
             backend:
               serviceName: ${CI_PROJECT_NAME}
               servicePort: http
