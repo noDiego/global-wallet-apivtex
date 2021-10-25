@@ -9,6 +9,15 @@ config:
 plugin: key-auth
 ---
 apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: ${CI_PROJECT_NAME}-public
+  namespace: ${KUBE_NAMESPACE}
+config:
+  anonymous: a3aba90d-6954-4c72-8038-eee547cbaede
+plugin: key-auth
+---
+apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
 metadata:
   name: ${CI_PROJECT_NAME}
