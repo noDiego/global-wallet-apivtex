@@ -20,7 +20,7 @@ export class WalletApiClient {
     // (como id puede venir el commerceUserId, userDni, emailUser, userId)
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
-      'x-api-key': envConfig.walletApi.kongKey,
+      'x-api-key': envConfig.walletApi.providerKey,
     };
     const url = URLS.walletApi.payment;
 
@@ -51,7 +51,7 @@ export class WalletApiClient {
   public async cancel(paymentId: string, authorizationCode: string): Promise<ResponseDTO<CoreTransactionDto>> {
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
-      'x-api-key': envConfig.walletApi.kongKey,
+      'x-api-key': envConfig.walletApi.providerKey,
     };
     const url = URLS.walletApi.payment;
 
@@ -81,7 +81,7 @@ export class WalletApiClient {
   public async settlement(paymentId: string): Promise<ResponseDTO<CoreTransactionDto>> {
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
-      'x-api-key': envConfig.walletApi.kongKey,
+      'x-api-key': envConfig.walletApi.providerKey,
     };
     const url = URLS.walletApi.payment;
 
@@ -114,7 +114,7 @@ export class WalletApiClient {
   public async refund(paymentId: string): Promise<ResponseDTO<CoreTransactionDto>> {
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
-      'x-api-key': envConfig.walletApi.kongKey,
+      'x-api-key': envConfig.walletApi.providerKey,
     };
     const url = URLS.walletApi.payment;
 

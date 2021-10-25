@@ -12,10 +12,11 @@ export class MainController {
     };
   }
 
-  @Get(['/testData', ''])
+  @Get(['/testData'])
   async test(): Promise<any> {
     return {
-      envConfig
+      envConfig,
+      envTest: process.env.NAMESPACE
     };
   }
 }

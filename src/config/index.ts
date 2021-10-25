@@ -5,12 +5,12 @@ export const envConfig = {
   server: {
     port: parseInt(process.env.APP_PORT || '3002', 10),
     origin: process.env.ORIGIN,
-    kongKey: process.env.KONG_TOKEN,
+    kongKey: process.env.KONG_API_KEY,
   },
   walletApi: {
     core: process.env.WALLET_URL,
     balance: process.env.WALLET_BALANCE_URL,
-    kongKey: process.env.APIKEY_WALLET,
+    providerKey: process.env.PROVIDER_APIKEY,
   },
   db: {
     type: process.env.DB_TYPE,
@@ -24,34 +24,25 @@ export const envConfig = {
   },
   vtex:{
     development: {
-      port: '3000',
-      url_core: 'http://localhost:3100',
-      secret: 'epay-apivtex-qa',
+      port: '3002',
       timeout: 45000,
       delayToAutoSettle: 604800,
       delayToAutoSettleAfterAntifraud: null,
       delayToCancel: 1800,
-      urlApi: 'http://localhost:3000'
     },
     qa: {
-      port: '3000',
-      url_core: 'https://3oqflvojd4-vpce-017d2ba47f7b4fb0e.execute-api.us-east-1.amazonaws.com/prod/core-qa',
-      secret: 'epay-apivtex-qa',
+      port: '3002',
       timeout: 45000,
       delayToAutoSettle: 604800,
       delayToAutoSettleAfterAntifraud: null,
       delayToCancel: 1800,
-      urlApi: 'https://apipaysquad.smdigital.cl/v1/cl/payment/oneclick-qa'
     },
     production: {
-      port: '3000',
-      url_core: 'https://3oqflvojd4-vpce-017d2ba47f7b4fb0e.execute-api.us-east-1.amazonaws.com/prod/core',
-      secret: 'epay-apivtex',
+      port: '3002',
       timeout: 45000,
       delayToAutoSettle: 604800,
       delayToAutoSettleAfterAntifraud: null,
       delayToCancel: 1800,
-      urlApi: 'https://apipaysquad.smdigital.cl/v1/cl/payment/oneclick'
     }
   }
 };
