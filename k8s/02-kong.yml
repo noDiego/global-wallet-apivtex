@@ -1,0 +1,34 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: api-key
+  namespace: ${KUBE_NAMESPACE}
+plugin: key-auth
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: ${CI_PROJECT_NAME}
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    # es necesario declara el ingress class
+    # según corresponda, así kong podrá procesarlo
+    kubernetes.io/ingress.class: api-gw
+username: ${CI_PROJECT_NAME}
+custom_id: ${CI_PROJECT_NAME}
+credentials:
+  - ${CI_PROJECT_NAME}-key
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${CI_PROJECT_NAME}-key
+  namespace: ${KUBE_NAMESPACE}
+data:
+  # kongCredType determina el tipo
+  # de credencial a generar
+  #
+  # valor de kongCredType: key-auth
+  kongCredType: a2V5LWF1dGg=
+  # valor del apikey: test
+  key: ${API_KEY}

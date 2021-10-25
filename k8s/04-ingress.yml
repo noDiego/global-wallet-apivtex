@@ -4,10 +4,9 @@ metadata:
   name: ${CI_PROJECT_NAME}
   namespace: ${KUBE_NAMESPACE}
   annotations:
+    konghq.com/plugins: "api-key"
     kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    konghq.com/strip-path: "true"
-    konghq.com/plugins: "${CI_PROJECT_NAME}-acl"
   labels:
     app: ${CI_PROJECT_NAME}
 spec:
