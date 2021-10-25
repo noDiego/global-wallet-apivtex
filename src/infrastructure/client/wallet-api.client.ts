@@ -6,6 +6,8 @@ import { URLS } from '../../constants/urls';
 import { CreateTransactionReq } from '../dto/createTransactionReq.dto';
 import { MerchantKeys } from "../enums/vtex.enum";
 import { CoreTransactionDto } from "../dto/core-transaction.dto";
+import { PaymentRequestDTO } from "../../application/dto/payment-request.dto";
+import { PaymentResponseDto } from "../../application/dto/payment-response.dto";
 
 @Injectable()
 export class WalletApiClient {
@@ -132,6 +134,37 @@ export class WalletApiClient {
       this.logger.error(
         `Error al conectar con api wallet para payment, Data: ${JSON.stringify(
           paymentId,
+        )}`,
+        e.stack,
+      );
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  public async callback(request: PaymentRequestDTO, response: PaymentResponseDto): Promise<void> {
+    const headers: any = {
+      'X-VTEX-API-AppKey': envConfig.server.kongKey,
+      'X-VTEX-API-AppToken': envConfig.server.kongKey,
+    };
+
+    const url =request.callbackUrl;
+
+    const requestConfig: AxiosRequestConfig = {
+      method: 'POST',
+      headers: headers,
+      url: url,
+      data: response,
+    };
+    this.logger.debug('URL:' + url);
+    try {
+      await axios(
+        requestConfig,
+      );
+      return;
+    } catch (e) {
+      this.logger.error(
+        `Error al conectar con url: ${url}. Para respuesta asincrona, Data: ${JSON.stringify(
+            request,
         )}`,
         e.stack,
       );

@@ -14,6 +14,7 @@ export enum VtexStatus {
 
 export enum PaymentFlow {
     PAYMENT = 'payment',
+    ASYNC_RESPONSE = 'async-response',
     CANCELLATION = 'cancellation',
     SETTLEMENT = 'settlement',
     REFUND = 'refund',

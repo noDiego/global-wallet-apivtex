@@ -9,6 +9,8 @@ import { PaymentResponseDto } from "../dto/payment-response.dto";
 import { CancellationRequestDTO, CancellationResponseDTO } from "../dto/cancellation.dto";
 import { SettlementsRequestDTO, SettlementsResponseDTO } from "../dto/settlements.dto";
 import { RefundRequestDTO, RefundResponseDTO } from "../dto/refund.dto";
+import { sleep } from "../../utils/validation";
+import { VtexStatus } from "../../infrastructure/enums/vtex.enum";
 
 @Controller('')
 export class VtexController {
@@ -40,7 +42,14 @@ export class VtexController {
     async payments(@RequestHeader(HeadersDTO) headers: any, @Body() paymentRequest: PaymentRequestDTO, @Res() response: Response): Promise<PaymentResponseDto> {
         //throw new BadRequestException({message: ['asd','dsa']})
         const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
-        response.status(result.tid ? 200 : 500).send(result).end();
+
+        if(result.status==VtexStatus.UNDEFINED){
+            await sleep(2000);
+            this.vtexService.asyncPaymentResponse(paymentRequest).then(()=>{
+                this.logger.log('Respuesta asincrona enviada');
+            })
+        }
+        response.status(result.status == VtexStatus.APPROVED || result.status == VtexStatus.UNDEFINED  ? 200 : 500).send(result).end();
         return;
     }
 
