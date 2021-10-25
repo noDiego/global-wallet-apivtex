@@ -80,7 +80,7 @@ export class VtexService {
                 delayToCancel: envConfig.vtex.development.delayToCancel,
                 nsu: String(resultTrx.id),
                 paymentId: paymentRequest.paymentId,
-                status: TransactionStatus.APPROVED,
+                status: VtexStatus.APPROVED,
                 tid: String(resultTrx.id),
                 paymentUrl: paymentRequest.returnUrl,
                 code: String(paymentResult.code),
