@@ -4,9 +4,10 @@ metadata:
   name: ${CI_PROJECT_NAME}
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    konghq.com/plugins: "api-key"
     kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
+    konghq.com/strip-path: "true"
+    konghq.com/plugins: "${CI_PROJECT_NAME}-apikey,${CI_PROJECT_NAME}-acl"
   labels:
     app: ${CI_PROJECT_NAME}
 spec:
@@ -14,7 +15,7 @@ spec:
     - host: ${CI_PROJECT_NAME}.${ENDPOINT}
       http:
         paths:
-          - path: /payments
+          - path: /
             backend:
               serviceName: ${CI_PROJECT_NAME}
               servicePort: http
