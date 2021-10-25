@@ -14,7 +14,7 @@ spec:
     - host: ${CI_PROJECT_NAME}.${ENDPOINT}
       http:
         paths:
-          - path: /
+          - path: /payments
             backend:
               serviceName: ${CI_PROJECT_NAME}
               servicePort: http

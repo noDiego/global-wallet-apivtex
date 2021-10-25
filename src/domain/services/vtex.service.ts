@@ -14,6 +14,7 @@ import { VtexTransactionRepository } from "../../infrastructure/repository/vtex-
 import { CoreTransactionDto } from "../../infrastructure/dto/core-transaction.dto";
 import { VtexRequestDto } from "../../application/dto/vtex-request.dto";
 import { validateCardNumber } from "../../utils/validation";
+
 const config = require('../../config/index').ENV;
 
 @Injectable()
@@ -64,31 +65,31 @@ export class VtexService {
                 type: "PCE"
 
             }
-            const paymentResult: ResponseDTO<CoreTransactionDto> = {code: 0, data: resultTrx, message: "OK"}
+            const paymentResult: ResponseDTO<CoreTransactionDto> = {code: validCard? 0 : 1, data: resultTrx, message: validCard?"OK":"INVALID CARD"}
             //FIN DUMMY
-
-            const vtexData: VtexRequestDto = {
-                orderId: resultTrx.orderId, paymentId: paymentRequest.paymentId, value: paymentRequest.value
-            }
-
-            await this.transactionRep.createTransaction(vtexData, resultTrx, PaymentFlow.PAYMENT);
 
             const response: PaymentResponseDto = {
                 acquirer: null,// paymentRequest.card.holder || 'VTEX',
-                authorizationId: resultTrx.authorizationCode,
+                authorizationId: paymentResult.code==0? resultTrx.authorizationCode: null,
                 delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
                 delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
                 delayToCancel: envConfig.vtex.development.delayToCancel,
-                nsu: String(resultTrx.id),
+                nsu: paymentResult.code==0? String(resultTrx.id): null,
                 paymentId: paymentRequest.paymentId,
-                status: validCard? VtexStatus.APPROVED: VtexStatus.DENIED,
-                tid: String(resultTrx.id),
+                status: paymentResult.code==0 ? VtexStatus.APPROVED : VtexStatus.DENIED,
+                tid: paymentResult.code==0? String(resultTrx.id): null,
                 paymentUrl: paymentRequest.returnUrl,
                 code: String(paymentResult.code),
                 message: paymentResult.message
             };
 
+            const vtexData: VtexRequestDto = {
+                orderId: paymentResult.code==0? resultTrx.orderId:null, paymentId: paymentRequest.paymentId, value: paymentRequest.value
+            }
+            await this.transactionRep.createTransaction(vtexData, resultTrx, PaymentFlow.PAYMENT);
+
             await this.recordRep.createRecord(paymentRequest.paymentId, PaymentFlow.PAYMENT, paymentRequest, response);
+
             return response;
 
         } catch (e) {
@@ -163,7 +164,7 @@ export class VtexService {
             //const transactionResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.refund(refundReq.paymentId);
             //DUMMY
             const resultTrx: CoreTransactionDto = {
-                amount: 0,
+                amount: refundReq.value,
                 authorizationCode: "AUTH-003",
                 balance: 0,
                 creditNoteId: "",
