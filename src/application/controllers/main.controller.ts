@@ -7,7 +7,7 @@ export class MainController {
   @Get(['/health', ''])
   async health(): Promise<any> {
     return {
-      message: 'ok v1.0009'
+      message: 'ok v1.0010'
     };
   }
 }

@@ -29,6 +29,6 @@ data:
   # de credencial a generar
   #
   # valor de kongCredType: key-auth
-  kongCredType: a2V5LWF1dGg=
+  kongCredType: key-auth
   # valor del apikey: test
-  key: ${API_KEY}
+  key: ${KONG_API_KEY}
