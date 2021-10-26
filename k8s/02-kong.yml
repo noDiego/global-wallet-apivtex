@@ -60,7 +60,7 @@ name: ${CI_PROJECT_NAME}-consumer-key
 namespace: ${KUBE_NAMESPACE}
 stringData:
 kongCredType: key-auth
-key: ${KONG_API_KEY}
+key: ${KONG_APPKEY}
 ---
 apiVersion: v1
 kind: Secret
@@ -68,8 +68,8 @@ metadata:
 name: ${CI_PROJECT_NAME}-consumer-token
 namespace: ${KUBE_NAMESPACE}
 stringData:
-kongCredType: token-auth
-key: ${KONG_API_TOKEN}
+kongCredType: key-auth
+key: ${KONG_APPTOKEN}
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
