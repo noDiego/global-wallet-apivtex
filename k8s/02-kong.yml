@@ -19,8 +19,8 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: api-gw
     konghq.com/plugins: ${CI_PROJECT_NAME}-vtexapptoken
-username: ${CI_PROJECT_NAME}
-custom_id: ${CI_PROJECT_NAME}
+username: ${CI_PROJECT_NAME}-1
+custom_id: ${CI_PROJECT_NAME}-1
 credentials:
   - ${CI_PROJECT_NAME}-apptoken
 ---
@@ -32,8 +32,8 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: api-gw
     konghq.com/plugins: ${CI_PROJECT_NAME}-vtexappkey
-username: ${CI_PROJECT_NAME}
-custom_id: ${CI_PROJECT_NAME}
+username: ${CI_PROJECT_NAME}-2
+custom_id: ${CI_PROJECT_NAME}-2
 credentials:
   - ${CI_PROJECT_NAME}-appkey
 ---
