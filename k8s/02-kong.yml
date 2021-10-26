@@ -4,7 +4,8 @@ metadata:
   name: ${CI_PROJECT_NAME}-consumer-public
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: api-gw-public
+    kubernetes.io/ingress.class: api-gw
+    konghq.com/plugins: ${CI_PROJECT_NAME}-acl
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
@@ -16,13 +17,12 @@ metadata:
   name: ${CI_PROJECT_NAME}-consumer-apptoken
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: api-gw-vtexapptoken
-    konghq.com/plugins: "$${CI_PROJECT_NAME}-vtexapptoken, ${CI_PROJECT_NAME}-acl"
+    kubernetes.io/ingress.class: api-gw
+    konghq.com/plugins: ${CI_PROJECT_NAME}-vtexapptoken
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-apptoken
-  - ${CI_PROJECT_NAME}-acl
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
@@ -31,7 +31,7 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: api-gw-vtexappkey
-    konghq.com/plugins: "${CI_PROJECT_NAME}-vtexappkey"
+    konghq.com/plugins: ${CI_PROJECT_NAME}-vtexappkey
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
