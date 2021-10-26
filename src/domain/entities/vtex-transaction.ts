@@ -32,4 +32,7 @@ export class VtexTransaction extends BaseEntity {
 
     @Column()
     date: Date;
+
+    @Column()
+    callbackUrl: string;
 }

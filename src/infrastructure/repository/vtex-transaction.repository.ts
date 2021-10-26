@@ -24,6 +24,7 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
         vtexTransaction.requestId = vtexData.requestId;
         vtexTransaction.settleId = vtexData.settleId;
         vtexTransaction.amount = vtexData.value;
+        vtexTransaction.amount = vtexData.value;
 
         vtexTransaction.idCore = String(trx.id);
         vtexTransaction.authorizationId = trx.authorizationCode;
@@ -44,5 +45,9 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
             );
             throw new InternalServerErrorException();
         }
+    }
+
+    async getTransaction(paymentId: string){
+        return await this.findOne({where: { paymentId: paymentId, operationType: PaymentFlow.PAYMENT}});
     }
 }

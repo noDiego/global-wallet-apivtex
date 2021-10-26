@@ -124,4 +124,19 @@ export class VtexController {
 
         return;
     }
+
+
+    /**
+     * @api {post} /payments/:paymentId/confirmation Receive information about the transaction
+     * @apiName Payments
+     *
+     * @apiDescription
+     */
+    @Post('/payments/:paymentId/confirmation')
+    async paymentConfirmation(@RequestHeader(HeadersDTO) headers: any, @Param('paymentId') paymentId): Promise<PaymentResponseDto> {
+
+        const result: PaymentResponseDto = await this.vtexService.paymentConfirmation(paymentId);
+        console.log(paymentId);
+        return;
+    }
 }

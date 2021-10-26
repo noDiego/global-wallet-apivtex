@@ -4,4 +4,5 @@ export class VtexRequestDto {
     settleId?: string;
     orderId?: string;
     value?: number;
+    callbackUrl?: string;
 }

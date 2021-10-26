@@ -7,16 +7,16 @@ config:
     key_names:
       - X-VTEX-API-AppKey
 plugin: key-auth
----
-apiVersion: configuration.konghq.com/v1
-kind: KongPlugin
-metadata:
-  name: ${CI_PROJECT_NAME}-vtexapptoken
-  namespace: ${KUBE_NAMESPACE}
-config:
-  key_names:
-    - X-VTEX-API-AppToken
-plugin: key-auth
+#---
+#apiVersion: configuration.konghq.com/v1
+#kind: KongPlugin
+#metadata:
+#  name: ${CI_PROJECT_NAME}-vtexapptoken
+#  namespace: ${KUBE_NAMESPACE}
+#config:
+#  key_names:
+#    - X-VTEX-API-AppToken
+#plugin: key-auth
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
@@ -29,7 +29,7 @@ username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-appkey
-  - ${CI_PROJECT_NAME}-apptoken
+#  - ${CI_PROJECT_NAME}-apptoken
 ---
 apiVersion: v1
 kind: Secret
@@ -39,12 +39,12 @@ metadata:
 stringData:
   kongCredType: key-auth
   key: ${KONG_APPKEY}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ${CI_PROJECT_NAME}-apptoken
-  namespace: ${KUBE_NAMESPACE}
-stringData:
-  kongCredType: key-auth
-  key: ${KONG_APPTOKEN}
+#---
+#apiVersion: v1
+#kind: Secret
+#metadata:
+#  name: ${CI_PROJECT_NAME}-apptoken
+#  namespace: ${KUBE_NAMESPACE}
+#stringData:
+#  kongCredType: key-auth
+#  key: ${KONG_APPTOKEN}
