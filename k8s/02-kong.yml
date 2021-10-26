@@ -4,7 +4,7 @@ metadata:
   name: ${CI_PROJECT_NAME}-consumer-public
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: api-gw
+    kubernetes.io/ingress.class: api-gw-public
     konghq.com/plugins: ${CI_PROJECT_NAME}-acl
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
@@ -30,7 +30,7 @@ metadata:
   name: ${CI_PROJECT_NAME}-consumer-appkey
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: api-gw-vtexappkey
+    kubernetes.io/ingress.class: api-gw
     konghq.com/plugins: ${CI_PROJECT_NAME}-vtexappkey
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
