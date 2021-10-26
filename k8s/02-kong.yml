@@ -20,7 +20,7 @@ custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-appkey
 ---
-apiVersion: v1
+apiVersion: configuration.konghq.com/v1
 kind: Secret
 metadata:
   name: ${CI_PROJECT_NAME}-appkey
@@ -51,7 +51,7 @@ custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-apptoken
 ---
-apiVersion: v1
+apiVersion: configuration.konghq.com/v1
 kind: Secret
 metadata:
   name: ${CI_PROJECT_NAME}-apptoken
