@@ -39,7 +39,9 @@ export class VtexController {
      * @apiDescription
      */
     @Post('/payments')
-    async payments(@RequestHeader(HeadersDTO) headers: any, @Body() paymentRequest: PaymentRequestDTO, @Res() response: Response): Promise<PaymentResponseDto> {
+    async payments(@RequestHeader(HeadersDTO) headers: any,
+                   @Body() paymentRequest: PaymentRequestDTO,
+                   @Res() response: Response): Promise<PaymentResponseDto> {
         //throw new BadRequestException({message: ['asd','dsa']})
         const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
 
@@ -133,7 +135,8 @@ export class VtexController {
      * @apiDescription
      */
     @Post('/payments/:paymentId/confirmation')
-    async paymentConfirmation(@RequestHeader(HeadersDTO) headers: any, @Param('paymentId') paymentId): Promise<PaymentResponseDto> {
+    async paymentConfirmation(@RequestHeader(HeadersDTO) headers: any,
+                              @Param('paymentId') paymentId): Promise<PaymentResponseDto> {
 
         const result: PaymentResponseDto = await this.vtexService.paymentConfirmation(paymentId);
         console.log(paymentId);

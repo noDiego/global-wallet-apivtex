@@ -24,7 +24,6 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
         vtexTransaction.requestId = vtexData.requestId;
         vtexTransaction.settleId = vtexData.settleId;
         vtexTransaction.amount = vtexData.value;
-        vtexTransaction.amount = vtexData.value;
 
         vtexTransaction.idCore = String(trx.id);
         vtexTransaction.authorizationId = trx.authorizationCode;

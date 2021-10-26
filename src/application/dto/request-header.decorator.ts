@@ -1,4 +1,12 @@
-import { BadRequestException, createParamDecorator, ExecutionContext, ForbiddenException, HttpException, HttpStatus } from "@nestjs/common";
+import {
+    BadRequestException,
+    createParamDecorator,
+    ExecutionContext,
+    ForbiddenException,
+    HttpException,
+    HttpStatus,
+    UnauthorizedException
+} from "@nestjs/common";
 import { plainToClass } from "class-transformer";
 import { validateOrReject } from "class-validator";
 
@@ -7,6 +15,8 @@ export const RequestHeader = createParamDecorator(
 
         // extract headers
         const headers = ctx.switchToHttp().getRequest().headers;
+        console.log('headers');
+        console.log(headers);
 
         // Convert headers to DTO object
         const dto = plainToClass(value, headers, { excludeExtraneousValues: true });
@@ -17,10 +27,8 @@ export const RequestHeader = createParamDecorator(
                 return dto;
             },
             () => {
-                throw new BadRequestException({
-                    message: "Error in Credentials",
-                    status: 'error',
-                    code: 'ERR'
+                throw new UnauthorizedException({
+                    message: "Invalid authentication credentials",
                 });
             }
         );
