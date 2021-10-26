@@ -42,7 +42,6 @@ export class VtexController {
     async payments(@RequestHeader(HeadersDTO) headers: any,
                    @Body() paymentRequest: PaymentRequestDTO,
                    @Res() response: Response): Promise<PaymentResponseDto> {
-        //throw new BadRequestException({message: ['asd','dsa']})
         const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
 
         if(result.status==VtexStatus.UNDEFINED){

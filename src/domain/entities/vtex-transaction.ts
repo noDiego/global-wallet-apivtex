@@ -30,9 +30,16 @@ export class VtexTransaction extends BaseEntity {
     @Column({ nullable: true, unique: false })
     requestId: string;
 
+    @Column({ nullable: true, unique: false })
+    merchantName: string;
+
+    @Column({ nullable: true, unique: false })
+    clientEmail: string;
+
+    @Column({ nullable: true, unique: false })
+    callbackUrl: string;
+
     @Column()
     date: Date;
 
-    @Column()
-    callbackUrl: string;
 }

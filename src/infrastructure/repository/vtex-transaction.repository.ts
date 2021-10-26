@@ -1,8 +1,6 @@
-import { EntityRepository, getRepository, Repository } from "typeorm";
+import { EntityRepository, Repository } from "typeorm";
 import { InternalServerErrorException, Logger } from "@nestjs/common";
-import { VtexRecord } from "../../domain/entities/vtex.record";
 import { plainToClass } from "class-transformer";
-import { VtexRecordDto } from "../dto/vtex-record.dto";
 import { PaymentFlow } from "../enums/vtex.enum";
 import { VtexTransaction } from "../../domain/entities/vtex-transaction";
 import { VtexTransactionDto } from "../dto/vtex-transaction.dto";
@@ -13,7 +11,7 @@ import { VtexRequestDto } from "../../application/dto/vtex-request.dto";
 export class VtexTransactionRepository extends Repository<VtexTransaction> {
     private logger = new Logger('VtexTransactionRepository');
 
-    async createTransaction(
+    async saveTransaction(
         vtexData: VtexRequestDto,
         trx: CoreTransactionDto,
         operation: PaymentFlow
@@ -24,6 +22,9 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
         vtexTransaction.requestId = vtexData.requestId;
         vtexTransaction.settleId = vtexData.settleId;
         vtexTransaction.amount = vtexData.value;
+        vtexTransaction.callbackUrl = vtexData.callbackUrl;
+        vtexTransaction.merchantName = vtexData.merchantName;
+        vtexTransaction.clientEmail = vtexData.clientEmail;
 
         vtexTransaction.idCore = String(trx.id);
         vtexTransaction.authorizationId = trx.authorizationCode;
@@ -46,7 +47,8 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
         }
     }
 
-    async getTransaction(paymentId: string){
-        return await this.findOne({where: { paymentId: paymentId, operationType: PaymentFlow.PAYMENT}});
+    async getPayment(paymentId: string): Promise<VtexTransactionDto> {
+        const transaction: VtexTransaction = await this.findOne({where: {paymentId: paymentId, operationType: PaymentFlow.PAYMENT}});
+        return plainToClass(VtexTransactionDto, transaction);
     }
 }
