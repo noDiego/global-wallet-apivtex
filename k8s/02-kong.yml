@@ -62,3 +62,38 @@ custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-consumer-key
   - ${CI_PROJECT_NAME}-acl
+
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+name: ${CI_PROJECT_NAME}-apitoken
+namespace: ${KUBE_NAMESPACE}
+annotations:
+kubernetes.io/ingress.class: api-gw-2
+config:
+key_names:
+- X-VTEX-API-AppToken
+plugin: key-auth
+---
+apiVersion: v1
+kind: Secret
+metadata:
+name: ${CI_PROJECT_NAME}-consumer-token
+namespace: ${KUBE_NAMESPACE}
+stringData:
+kongCredType: key-auth
+key: ${KONG_API_TOKEN}
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+name: ${CI_PROJECT_NAME}-2
+namespace: ${KUBE_NAMESPACE}
+annotations:
+kubernetes.io/ingress.class: api-gw-2
+username: ${CI_PROJECT_NAME}-2
+custom_id: ${CI_PROJECT_NAME}-2
+credentials:
+- ${CI_PROJECT_NAME}-consumer-token
+- ${CI_PROJECT_NAME}-acl
