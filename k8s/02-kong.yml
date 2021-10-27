@@ -35,7 +35,7 @@ proxy:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ${CI_PROJECT_NAME}-consumer-acl
+  name: ${CI_PROJECT_NAME}-acl
   namespace: ${KUBE_NAMESPACE}
 stringData:
   kongCredType: acl
@@ -61,4 +61,4 @@ username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-consumer-key
-  - ${CI_PROJECT_NAME}-consumer-acl
+  - ${CI_PROJECT_NAME}-acl
