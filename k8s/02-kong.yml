@@ -35,7 +35,7 @@ proxy:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ${CI_PROJECT_NAME}-acl
+  name: ${CI_PROJECT_NAME}-consumer-acl
   namespace: ${KUBE_NAMESPACE}
 stringData:
   kongCredType: acl
@@ -57,9 +57,9 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: api-gw
-    konghq.com/plugins: ${CI_PROJECT_NAME}-apikey
+    konghq.com/plugins: "${CI_PROJECT_NAME}-apikey,${CI_PROJECT_NAME}-acl"
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-consumer-key
-  - ${CI_PROJECT_NAME}-acl
+  - ${CI_PROJECT_NAME}-consumer-acl
