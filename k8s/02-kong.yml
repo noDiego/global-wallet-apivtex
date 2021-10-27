@@ -57,6 +57,7 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: api-gw
+    konghq.com/plugins: ${CI_PROJECT_NAME}-apikey
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
@@ -70,7 +71,7 @@ metadata:
 name: ${CI_PROJECT_NAME}-apitoken
 namespace: ${KUBE_NAMESPACE}
 annotations:
-kubernetes.io/ingress.class: api-gw-2
+kubernetes.io/ingress.class: api-gw
 config:
 key_names:
 - X-VTEX-API-AppToken
@@ -91,9 +92,10 @@ metadata:
 name: ${CI_PROJECT_NAME}-2
 namespace: ${KUBE_NAMESPACE}
 annotations:
-kubernetes.io/ingress.class: api-gw-2
-username: ${CI_PROJECT_NAME}-2
-custom_id: ${CI_PROJECT_NAME}-2
+kubernetes.io/ingress.class: api-gw
+konghq.com/plugins: ${CI_PROJECT_NAME}-apitoken
+username: ${CI_PROJECT_NAME}
+custom_id: ${CI_PROJECT_NAME}
 credentials:
 - ${CI_PROJECT_NAME}-consumer-token
 - ${CI_PROJECT_NAME}-acl
