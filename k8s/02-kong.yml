@@ -5,6 +5,9 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: api-gw
+  config:
+    key_names:
+      - X-VTEX-API-AppKey
 plugin: key-auth
 ---
 apiVersion: configuration.konghq.com/v1
