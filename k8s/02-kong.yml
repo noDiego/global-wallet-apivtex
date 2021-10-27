@@ -48,7 +48,7 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
 stringData:
   kongCredType: key-auth
-  key: ${KONG_API_KEY}
+  key: ${KONG_APPKEY}
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
@@ -84,7 +84,7 @@ name: ${CI_PROJECT_NAME}-consumer-token
 namespace: ${KUBE_NAMESPACE}
 stringData:
 kongCredType: key-auth
-key: ${KONG_API_TOKEN}
+key: ${KONG_APPTOKEN}
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
