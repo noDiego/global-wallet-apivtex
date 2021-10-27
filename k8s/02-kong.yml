@@ -68,34 +68,34 @@ credentials:
 apiVersion: configuration.konghq.com/v1
 kind: KongPlugin
 metadata:
-name: ${CI_PROJECT_NAME}-apitoken
-namespace: ${KUBE_NAMESPACE}
-annotations:
-kubernetes.io/ingress.class: api-gw
-config:
-key_names:
-- X-VTEX-API-AppToken
+  name: ${CI_PROJECT_NAME}-apitoken
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: api-gw
+  config:
+    key_names:
+      - X-VTEX-API-AppToken
 plugin: key-auth
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-name: ${CI_PROJECT_NAME}-consumer-token
-namespace: ${KUBE_NAMESPACE}
+  name: ${CI_PROJECT_NAME}-consumer-token
+  namespace: ${KUBE_NAMESPACE}
 stringData:
-kongCredType: key-auth
-key: ${KONG_APPTOKEN}
+  kongCredType: key-auth
+  key: ${KONG_APPTOKEN}
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
 metadata:
-name: ${CI_PROJECT_NAME}-2
-namespace: ${KUBE_NAMESPACE}
-annotations:
-kubernetes.io/ingress.class: api-gw
-konghq.com/plugins: ${CI_PROJECT_NAME}-apitoken
+  name: ${CI_PROJECT_NAME}-2
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: api-gw
+    konghq.com/plugins: ${CI_PROJECT_NAME}-apitoken
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
-- ${CI_PROJECT_NAME}-consumer-token
-- ${CI_PROJECT_NAME}-acl
+  - ${CI_PROJECT_NAME}-consumer-token
+  - ${CI_PROJECT_NAME}-acl
