@@ -32,6 +32,8 @@ spec:
         app.gitlab.com/app: ${CI_PROJECT_PATH_SLUG}
         app.gitlab.com/env: ${CI_ENVIRONMENT_SLUG}
     spec:
+      serviceAccountName: ${KUBE_NAMESPACE}
+      automountServiceAccountToken: true
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -55,15 +57,15 @@ spec:
                 name: secret-${CI_PROJECT_NAME}
           livenessProbe:
             httpGet:
-              path: /
-              port: 3002 
+              path: /health
+              port: 3002
             initialDelaySeconds: 70
             timeoutSeconds: 10
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
-              port: 3002 
+              path: /health
+              port: 3002
             initialDelaySeconds: 45
             timeoutSeconds: 10
             periodSeconds: 30
