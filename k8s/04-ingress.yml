@@ -25,7 +25,7 @@ metadata:
   name: ${CI_PROJECT_NAME}
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: "api-gw"
+    kubernetes.io/ingress.class: "api-gw-appkey, api-gw-apptoken"
     ingress.kubernetes.io/force-ssl-redirect: "true"
     #konghq.com/plugins: "${CI_PROJECT_NAME}-vtexappkey,${CI_PROJECT_NAME}-vtexapptoken,${CI_PROJECT_NAME}-acl"
   labels:
