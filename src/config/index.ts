@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 export const envConfig = {
   environment: process.env.NODE_ENV,
+  vtexTesting: process.env.VTEX_TESTING=='1',
   server: {
     port: parseInt(process.env.APP_PORT || '3002', 10),
     origin: process.env.ORIGIN,

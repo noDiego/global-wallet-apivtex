@@ -188,29 +188,28 @@ export class VtexService {
         await this.transactionRep.getPayment(cancellationRequest.paymentId);
 
     try {
-      const cancellationResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.cancel(transaction.,
-      cancellationRequest.authorizationId);
+      // const cancellationResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.cancel(transaction.,
+      // cancellationRequest.authorizationId);
 
       //DUMMY
-      // const resultTrx: CoreTransactionDto = {
-      //   amount: 0,
-      //   authorizationCode: 'AUTH-002',
-      //   balance: 0,
-      //   creditNoteId: '',
-      //   date: new Date(),
-      //   dni: '257969045',
-      //   email: 'andjos27@gmail.com',
-      //   id: 'CORE-002',
-      //   orderId: 'ORDER-001',
-      //   origin: '',
-      //   transferId: '',
-      //   type: 'PCE',
-      // };
-      // const cancellationResult: ResponseDTO<CoreTransactionDto> = {
-      //   code: 0,
-      //   data: resultTrx,
-      //   message: 'OK',
-      // };
+      const resultTrx: CoreTransactionDto = {
+        amount: 0,
+        authorizationCode: 'AUTH-002',
+        balance: 0,
+        creditNoteId: '',
+        date: new Date(),
+        dni: '257969045',
+        email: 'andjos27@gmail.com',
+        id: 'CORE-002',
+        orderId: 'ORDER-001',
+        origin: '',
+        type: 'PCE',
+      };
+      const cancellationResult: ResponseDTO<CoreTransactionDto> = {
+        code: 0,
+        data: resultTrx,
+        message: 'OK',
+      };
       //FIN DUMMY
 
       const vtexData: VtexRequestDto = {
@@ -268,7 +267,6 @@ export class VtexService {
         id: 'CORE-003',
         orderId: 'ORDER-001',
         origin: '',
-        transferId: '',
         type: 'PCE',
       };
       const transactionResult: ResponseDTO<CoreTransactionDto> = {
@@ -338,7 +336,6 @@ export class VtexService {
         id: 'CORE-004',
         orderId: 'ORDER-001',
         origin: '',
-        transferId: '',
         type: 'PCE',
       };
       const transactionResult: ResponseDTO<CoreTransactionDto> = {

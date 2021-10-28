@@ -177,73 +177,72 @@ export class VtexDefaultService {
             CancellationRequestDTO,
     ):
         Promise<CancellationResponseDTO> {
-        let response
-            :
-            CancellationResponseDTO;
-        const transaction: VtexTransactionDto =
-            await this.transactionRep.getPayment(cancellationRequest.paymentId);
-
-        try {
-            const cancellationResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.cancel(transaction.,
-                cancellationRequest.authorizationId);
-
-            //DUMMY
-            // const resultTrx: CoreTransactionDto = {
-            //   amount: 0,
-            //   authorizationCode: 'AUTH-002',
-            //   balance: 0,
-            //   creditNoteId: '',
-            //   date: new Date(),
-            //   dni: '257969045',
-            //   email: 'andjos27@gmail.com',
-            //   id: 'CORE-002',
-            //   orderId: 'ORDER-001',
-            //   origin: '',
-            //   transferId: '',
-            //   type: 'PCE',
-            // };
-            // const cancellationResult: ResponseDTO<CoreTransactionDto> = {
-            //   code: 0,
-            //   data: resultTrx,
-            //   message: 'OK',
-            // };
-            //FIN DUMMY
-
-            const vtexData: VtexRequestDto = {
-                orderId: resultTrx.orderId,
-                transactionNumber: transaction.transactionNumber,
-                paymentId: cancellationRequest.paymentId,
-                requestId: cancellationRequest.requestId,
-            };
-
-            await this.transactionRep.saveTransaction(
-                vtexData,
-                resultTrx,
-                PaymentFlow.CANCELLATION,
-            );
-
-            response = {
-                paymentId: cancellationRequest.paymentId,
-                cancellationId: String(cancellationResult.data.id),
-                code: String(cancellationResult.code),
-                message: cancellationResult.message,
-                requestId: cancellationRequest.requestId,
-            };
-        } catch (e) {
-            response = {
-                paymentId: cancellationRequest.paymentId,
-                cancellationId: null,
-                code: 'cancel-manually',
-                message: 'Cancellation should be done manually',
-                requestId: cancellationRequest.requestId,
-            };
-        }
-        await this.recordRep.createRecord(
-            cancellationRequest.paymentId,
-            PaymentFlow.CANCELLATION,
-            cancellationRequest,
-            response,
-        );
+        let response;
+        //     CancellationResponseDTO;
+        // const transaction: VtexTransactionDto =
+        //     await this.transactionRep.getPayment(cancellationRequest.paymentId);
+        //
+        // try {
+        //     const cancellationResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.cancel(transaction.,
+        //         cancellationRequest.authorizationId);
+        //
+        //     //DUMMY
+        //     // const resultTrx: CoreTransactionDto = {
+        //     //   amount: 0,
+        //     //   authorizationCode: 'AUTH-002',
+        //     //   balance: 0,
+        //     //   creditNoteId: '',
+        //     //   date: new Date(),
+        //     //   dni: '257969045',
+        //     //   email: 'andjos27@gmail.com',
+        //     //   id: 'CORE-002',
+        //     //   orderId: 'ORDER-001',
+        //     //   origin: '',
+        //     //   transferId: '',
+        //     //   type: 'PCE',
+        //     // };
+        //     // const cancellationResult: ResponseDTO<CoreTransactionDto> = {
+        //     //   code: 0,
+        //     //   data: resultTrx,
+        //     //   message: 'OK',
+        //     // };
+        //     //FIN DUMMY
+        //
+        //     const vtexData: VtexRequestDto = {
+        //         orderId: resultTrx.orderId,
+        //         transactionNumber: transaction.transactionNumber,
+        //         paymentId: cancellationRequest.paymentId,
+        //         requestId: cancellationRequest.requestId,
+        //     };
+        //
+        //     await this.transactionRep.saveTransaction(
+        //         vtexData,
+        //         resultTrx,
+        //         PaymentFlow.CANCELLATION,
+        //     );
+        //
+        //     response = {
+        //         paymentId: cancellationRequest.paymentId,
+        //         cancellationId: String(cancellationResult.data.id),
+        //         code: String(cancellationResult.code),
+        //         message: cancellationResult.message,
+        //         requestId: cancellationRequest.requestId,
+        //     };
+        // } catch (e) {
+        //     response = {
+        //         paymentId: cancellationRequest.paymentId,
+        //         cancellationId: null,
+        //         code: 'cancel-manually',
+        //         message: 'Cancellation should be done manually',
+        //         requestId: cancellationRequest.requestId,
+        //     };
+        // }
+        // await this.recordRep.createRecord(
+        //     cancellationRequest.paymentId,
+        //     PaymentFlow.CANCELLATION,
+        //     cancellationRequest,
+        //     response,
+        // );
         return response;
     }
 
@@ -270,7 +269,6 @@ export class VtexDefaultService {
                 id: 'CORE-003',
                 orderId: 'ORDER-001',
                 origin: '',
-                transferId: '',
                 type: 'PCE',
             };
             const transactionResult: ResponseDTO<CoreTransactionDto> = {
@@ -345,7 +343,6 @@ export class VtexDefaultService {
                 id: 'CORE-004',
                 orderId: 'ORDER-001',
                 origin: '',
-                transferId: '',
                 type: 'PCE',
             };
             const transactionResult: ResponseDTO<CoreTransactionDto> = {

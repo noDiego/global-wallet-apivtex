@@ -26,8 +26,9 @@ import { RefundRequestDTO, RefundResponseDTO } from '../dto/refund.dto';
 import { sleep } from '../../utils/validation';
 import { VtexStatus } from '../../infrastructure/enums/vtex.enum';
 import { ResponseDTO } from "../dto/api-response.dto";
+import { envConfig } from "../../config";
 
-@Controller('')
+@Controller(envConfig.vtexTesting?'api':'')
 export class VtexController {
   constructor(
     private vtexService: VtexService,

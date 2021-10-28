@@ -1,14 +1,15 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${CI_PROJECT_NAME}-public
+  name: ${CI_PROJECT_NAME}-pub
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: "api-gw-pub"
     ingress.kubernetes.io/force-ssl-redirect: "true"
+    konghq.com/override: "strip"
     #konghq.com/plugins: "${CI_PROJECT_NAME}-acl"
   labels:
-    app: ${CI_PROJECT_NAME}-public
+    app: ${CI_PROJECT_NAME}-pub
 spec:
   rules:
     - host: ${CI_PROJECT_NAME}.${ENDPOINT}

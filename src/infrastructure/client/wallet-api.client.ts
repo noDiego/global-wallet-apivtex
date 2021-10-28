@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { envConfig } from '../../config';
 import { ResponseDTO } from '../dto/wallet-response.dto';
 import { URLS } from '../../constants/urls';
-import { CreateTransactionDetail, CreateTransactionReq } from '../dto/createTransactionReq.dto';
+import { CreateTransactionDetail } from '../dto/createTransactionReq.dto';
 import { MerchantKeys } from "../enums/vtex.enum";
 import { CoreTransactionDto } from "../dto/core-transaction.dto";
 import { PaymentRequestDTO } from "../../application/dto/payment-request.dto";
