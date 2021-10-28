@@ -178,7 +178,7 @@ export class VtexController {
    *
    * @apiDescription
    */
-  @Post('/payments/:paymentId/confirmation')
+  @Post('/confirmation/:paymentId')
   async paymentConfirmation(
     @RequestHeader(HeadersDTO) headers: any,
     @Param('paymentId') paymentId,
