@@ -1,12 +1,12 @@
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
 metadata:
-  name: ${CI_PROJECT_NAME}-consumer-public
+  name: ${CI_PROJECT_NAME}-consumer-pub
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: api-gw-public
-username: ${CI_PROJECT_NAME}-public
-custom_id: ${CI_PROJECT_NAME}-public
+    kubernetes.io/ingress.class: api-gw-pub
+username: ${CI_PROJECT_NAME}-pub
+custom_id: ${CI_PROJECT_NAME}-pub
 credentials:
   - ${CI_PROJECT_NAME}-acl
 ---
