@@ -47,8 +47,6 @@ kind: KongPlugin
 metadata:
   name: ${CI_PROJECT_NAME}-acl
   namespace: ${KUBE_NAMESPACE}
-  annotation:
-    kubernetes.io/ingress.class: api-gw
 plugin: acl
 config:
   whitelist:
