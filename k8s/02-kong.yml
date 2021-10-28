@@ -1,7 +1,7 @@
 apiVersion: configuration.konghq.com/v1
 kind: KongPlugin
 metadata:
-  name: ${CI_PROJECT_NAME}-vtexappkey
+  name: ${CI_PROJECT_NAME}-apikey
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: api-gw
@@ -20,7 +20,7 @@ metadata:
 plugin: acl
 config:
   whitelist:
-    - ${CI_PROJECT_NAME}-access
+  - ${CI_PROJECT_NAME}-access
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongIngress
@@ -44,7 +44,7 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ${CI_PROJECT_NAME}-appkey
+  name: ${CI_PROJECT_NAME}-consumer-key
   namespace: ${KUBE_NAMESPACE}
 stringData:
   kongCredType: key-auth
@@ -60,5 +60,5 @@ metadata:
 username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
-  - ${CI_PROJECT_NAME}-appkey
+  - ${CI_PROJECT_NAME}-consumer-key
   - ${CI_PROJECT_NAME}-acl
