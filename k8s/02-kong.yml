@@ -4,7 +4,8 @@ metadata:
   name: ${CI_PROJECT_NAME}-consumer-pub
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: api-gw-pub
+    kubernetes.io/ingress.class:  api-gw-pub
+    konghq.com/plugins: ${CI_PROJECT_NAME}-acl
 username: ${CI_PROJECT_NAME}-pub
 custom_id: ${CI_PROJECT_NAME}-pub
 credentials:
