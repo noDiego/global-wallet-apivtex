@@ -28,7 +28,7 @@ import { VtexStatus } from '../../infrastructure/enums/vtex.enum';
 import { ResponseDTO } from "../dto/api-response.dto";
 
 @Controller('')
-export class VtexController {
+export class VtexDefaultController {
   constructor(
     private vtexService: VtexService,
     private readonly logger: Logger,
@@ -160,19 +160,5 @@ export class VtexController {
       .end();
 
     return;
-  }
-
-  /**
-   * @api {post} /payments/:paymentId/confirmation Receive information about the transaction
-   * @apiName Payments
-   *
-   * @apiDescription
-   */
-  @Post('/confirmation/:paymentId')
-  async paymentConfirmation(
-    @RequestHeader(HeadersDTO) headers: any,
-    @Param('paymentId') paymentId,
-  ): Promise<ResponseDTO<null>> {
-      return await this.vtexService.paymentConfirmation(paymentId);
   }
 }

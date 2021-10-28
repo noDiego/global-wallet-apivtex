@@ -1,10 +1,13 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
 import { PaymentFlow } from '../../infrastructure/enums/vtex.enum';
 
 @Entity()
 export class VtexTransaction extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ nullable: false, unique: false })
+  transactionNumber: string;
 
   @Column({ nullable: false, unique: false })
   paymentId: string;

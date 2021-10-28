@@ -1,5 +1,6 @@
 export class VtexRequestDto {
   paymentId: string;
+  transactionNumber?: string;
   merchantName?: string;
   clientEmail?: string;
   requestId?: string;

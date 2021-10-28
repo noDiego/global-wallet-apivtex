@@ -1,20 +1,11 @@
 import { WalletApiClient } from '../../infrastructure/client/wallet-api.client';
 import { PaymentRequestDTO } from '../../application/dto/payment-request.dto';
-import { CreateTransactionReq } from '../../infrastructure/dto/createTransactionReq.dto';
+import { CreateTransactionDetail } from '../../infrastructure/dto/createTransactionReq.dto';
 import { PaymentResponseDto } from '../../application/dto/payment-response.dto';
 import { envConfig } from '../../config';
-import {
-  CancellationRequestDTO,
-  CancellationResponseDTO,
-} from 'src/application/dto/cancellation.dto';
-import {
-  SettlementsRequestDTO,
-  SettlementsResponseDTO,
-} from '../../application/dto/settlements.dto';
-import {
-  RefundRequestDTO,
-  RefundResponseDTO,
-} from '../../application/dto/refund.dto';
+import { CancellationRequestDTO, CancellationResponseDTO, } from 'src/application/dto/cancellation.dto';
+import { SettlementsRequestDTO, SettlementsResponseDTO, } from '../../application/dto/settlements.dto';
+import { RefundRequestDTO, RefundResponseDTO, } from '../../application/dto/refund.dto';
 import { VtexRecordRepository } from '../../infrastructure/repository/vtex-record.repository';
 import { Injectable, Logger } from '@nestjs/common';
 import { PaymentFlow, VtexStatus } from '../../infrastructure/enums/vtex.enum';
@@ -23,8 +14,9 @@ import { VtexTransactionRepository } from '../../infrastructure/repository/vtex-
 import { CoreTransactionDto } from '../../infrastructure/dto/core-transaction.dto';
 import { VtexRequestDto } from '../../application/dto/vtex-request.dto';
 import { validateCardNumber } from '../../utils/validation';
-import { VtexTransaction } from '../entities/vtex-transaction';
 import { VtexTransactionDto } from '../../infrastructure/dto/vtex-transaction.dto';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const config = require('../../config/index').ENV;
 
@@ -41,85 +33,39 @@ export class VtexService {
     paymentRequest: PaymentRequestDTO,
   ): Promise<PaymentResponseDto> {
     try {
-      // const paymentWalletReq: CreateTransactionReq = {
-      //     client: {
-      //         email: paymentRequest.miniCart.buyer.email
-      //     },
-      //     commerceUserId: paymentRequest.miniCart.buyer.id,
-      //     transaction: {
-      //         orderId: paymentRequest.orderId,
-      //         amount: paymentRequest.value,
-      //         //paymentId: paymentRequest.paymentId,
-      //         //currency: paymentRequest.currency,
-      //     }
-      // }
-      const validCard: boolean = validateCardNumber(paymentRequest.card.number);
+      //const validCard: boolean = validateCardNumber(paymentRequest.card.number);
 
-      //const paymentResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.payment(paymentWalletReq,
-      // paymentRequest.merchantName);
-      //const resultTrx: CoreTransactionDto = paymentResult.data;
-
-      //DUMMY
-      const resultTrx: CoreTransactionDto = {
-        amount: -1500,
-        authorizationCode: 'AUTH-001',
-        balance: 0,
-        creditNoteId: '',
-        date: new Date(),
-        dni: '257969045',
-        email: 'andjos27@gmail.com',
-        id: 'CORE-001',
-        orderId: 'ORDER-001',
-        origin: '',
-        transferId: '',
-        type: 'PCE',
-      };
-      const paymentResult: ResponseDTO<CoreTransactionDto> = {
-        code: validCard ? 0 : 1,
-        data: resultTrx,
-        message: validCard ? 'OK' : 'INVALID CARD',
-      };
-      if (paymentRequest.card.number.includes('422222222222222')) {
-        paymentResult.code = 5;
-        paymentResult.message = 'Pendiente';
-      }
-      //FIN DUMMY
-
-      const response: PaymentResponseDto = {
-        acquirer: null, // paymentRequest.card.holder || 'VTEX',
-        authorizationId:
-          paymentResult.code == 0 ? resultTrx.authorizationCode : null,
-        delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
-        delayToAutoSettleAfterAntifraud:
-          envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
-        delayToCancel: envConfig.vtex.development.delayToCancel,
-        nsu: String(resultTrx.id),
-        paymentId: paymentRequest.paymentId,
-        status:
-          paymentResult.code == 0
-            ? VtexStatus.APPROVED
-            : paymentResult.code == 5
-            ? VtexStatus.UNDEFINED
-            : VtexStatus.DENIED,
-        tid: String(resultTrx.id),
-        paymentUrl: paymentRequest.returnUrl,
-        code: String(paymentResult.code),
-        message: paymentResult.message,
-      };
 
       const vtexData: VtexRequestDto = {
-        orderId: paymentResult.code == 0 ? resultTrx.orderId : null,
+        orderId: paymentRequest.orderId,
+        transactionNumber: uuidv4(),
         paymentId: paymentRequest.paymentId,
         value: paymentRequest.value,
         clientEmail: paymentRequest.miniCart.buyer.email,
         merchantName: paymentRequest.merchantName,
         callbackUrl: paymentRequest.callbackUrl,
       };
-      await this.transactionRep.saveTransaction(
+      const vtexTransaction: VtexTransactionDto = await this.transactionRep.saveTransaction(
         vtexData,
-        resultTrx,
+        null,
         PaymentFlow.PAYMENT,
       );
+
+      const response: PaymentResponseDto = {
+        acquirer: null,
+        authorizationId: null,
+        delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
+        delayToAutoSettleAfterAntifraud:
+        envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
+        delayToCancel: envConfig.vtex.development.delayToCancel,
+        nsu: vtexTransaction.transactionNumber,
+        paymentId: paymentRequest.paymentId,
+        status: VtexStatus.UNDEFINED,
+        tid: vtexTransaction.transactionNumber,
+        paymentUrl: paymentRequest.returnUrl,
+        code: String(0),
+        message: 'Transaction saved. Waiting for confirmation',
+      };
 
       await this.recordRep.createRecord(
         paymentRequest.paymentId,
@@ -140,7 +86,7 @@ export class VtexService {
     }
   }
 
-  async paymentConfirmation(paymentId: string): Promise<PaymentResponseDto> {
+  async paymentConfirmation(paymentId: string): Promise<ResponseDTO<null>> {
     const transaction: VtexTransactionDto =
       await this.transactionRep.getPayment(paymentId);
 
@@ -148,43 +94,37 @@ export class VtexService {
      console.log('transaction:', transaction);
 
     try {
-      const paymentWalletReq: CreateTransactionReq = {
-        client: {
-          email: transaction.clientEmail,
-        },
-        commerceUserId: null,
-        transaction: {
-          orderId: transaction.orderId,
-          amount: transaction.amount,
-          paymentId: transaction.paymentId,
-          currency: null,
-        },
+      const paymentWalletReq: CreateTransactionDetail = {
+        amount: transaction.amount,
+        currency: "",
+        orderId: transaction.orderId,
+        paymentId: transaction.paymentId
       };
 
-      //const paymentResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.payment(paymentWalletReq,
-      // paymentRequest.merchantName);
-      //const resultTrx: CoreTransactionDto = paymentResult.data;
+      const paymentResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.payment(paymentWalletReq,
+          transaction.merchantName);
+      const resultTrx: CoreTransactionDto = paymentResult.data;
 
       //DUMMY
-      const resultTrx: CoreTransactionDto = {
-        amount: -1500,
-        authorizationCode: 'AUTH-001',
-        balance: 0,
-        creditNoteId: '',
-        date: new Date(),
-        dni: '257969045',
-        email: 'andjos27@gmail.com',
-        id: 'CORE-001',
-        orderId: 'ORDER-001',
-        origin: '',
-        transferId: '',
-        type: 'PCE',
-      };
-      const paymentResult: ResponseDTO<CoreTransactionDto> = {
-        code: 0,
-        data: resultTrx,
-        message: 'OK',
-      };
+      // const resultTrx: CoreTransactionDto = {
+      //   amount: -1500,
+      //   authorizationCode: 'AUTH-001',
+      //   balance: 0,
+      //   creditNoteId: '',
+      //   date: new Date(),
+      //   dni: '257969045',
+      //   email: 'andjos27@gmail.com',
+      //   id: 'CORE-001',
+      //   orderId: 'ORDER-001',
+      //   origin: '',
+      //   transferId: '',
+      //   type: 'PCE',
+      // };
+      // const paymentResult: ResponseDTO<CoreTransactionDto> = {
+      //   code: 0,
+      //   data: resultTrx,
+      //   message: 'OK',
+      // };
       //FIN DUMMY
 
       const response: PaymentResponseDto = {
@@ -195,15 +135,13 @@ export class VtexService {
         delayToAutoSettleAfterAntifraud:
           envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
         delayToCancel: envConfig.vtex.development.delayToCancel,
-        nsu: String(resultTrx.id),
+        nsu: transaction.transactionNumber,
         paymentId: paymentId,
         status:
           paymentResult.code == 0
             ? VtexStatus.APPROVED
-            : paymentResult.code == 5
-            ? VtexStatus.UNDEFINED
             : VtexStatus.DENIED,
-        tid: String(resultTrx.id),
+        tid: transaction.transactionNumber,
         paymentUrl: transaction.callbackUrl,
         code: String(paymentResult.code),
         message: paymentResult.message,
@@ -211,6 +149,7 @@ export class VtexService {
 
       const vtexData: VtexRequestDto = {
         orderId: paymentResult.code == 0 ? resultTrx.orderId : null,
+        transactionNumber: transaction.transactionNumber,
         paymentId: paymentId,
         value: transaction.amount,
         callbackUrl: transaction.callbackUrl,
@@ -225,10 +164,12 @@ export class VtexService {
         paymentId,
         PaymentFlow.CONFIRMATION,
         paymentId,
-        response,
+        null,
       );
 
-      return response;
+      await this.walletApiClient.callback(transaction.callbackUrl, response);
+
+      return {code: 0, message: `paymentId:${paymentId} confirmado OK.`};
     } catch (e) {
       await this.recordRep.createRecord(
         paymentId,
@@ -239,124 +180,42 @@ export class VtexService {
       throw e;
     }
   }
-
-  async asyncPaymentResponse(paymentRequest: PaymentRequestDTO): Promise<void> {
-    try {
-      const validCard: boolean = validateCardNumber(paymentRequest.card.number);
-
-      //const paymentResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.payment(paymentWalletReq,
-      // paymentRequest.merchantName);
-      //const resultTrx: CoreTransactionDto = paymentResult.data;
-
-      //DUMMY
-      const resultTrx: CoreTransactionDto = {
-        amount: -1500,
-        authorizationCode: 'AUTH-001',
-        balance: 0,
-        creditNoteId: '',
-        date: new Date(),
-        dni: '257969045',
-        email: 'andjos27@gmail.com',
-        id: 'CORE-001',
-        orderId: 'ORDER-001',
-        origin: '',
-        transferId: '',
-        type: 'PCE',
-      };
-      let paymentResult: ResponseDTO<CoreTransactionDto> = {
-        code: validCard ? 0 : 1,
-        data: resultTrx,
-        message: validCard ? 'OK' : 'INVALID CARD',
-      };
-      if (paymentRequest.card.number == '4222222222222224') {
-        //Credit Card que envia VTEX y supuestamente es Valida
-        paymentResult = { code: 0, data: resultTrx, message: 'OK' };
-      }
-      //FIN DUMMY
-
-      const response: PaymentResponseDto = {
-        acquirer: null, // paymentRequest.card.holder || 'VTEX',
-        authorizationId:
-          paymentResult.code == 0 ? resultTrx.authorizationCode : null,
-        delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
-        delayToAutoSettleAfterAntifraud:
-          envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
-        delayToCancel: envConfig.vtex.development.delayToCancel,
-        nsu: String(resultTrx.id),
-        paymentId: paymentRequest.paymentId,
-        status:
-          paymentResult.code == 0 ? VtexStatus.APPROVED : VtexStatus.DENIED,
-        tid: String(resultTrx.id),
-        paymentUrl: paymentRequest.returnUrl,
-        code: String(paymentResult.code),
-        message: paymentResult.message,
-      };
-
-      const vtexData: VtexRequestDto = {
-        orderId: paymentResult.code == 0 ? resultTrx.orderId : null,
-        paymentId: paymentRequest.paymentId,
-        value: paymentRequest.value,
-      };
-      await this.transactionRep.saveTransaction(
-        vtexData,
-        resultTrx,
-        PaymentFlow.ASYNC_RESPONSE,
-      );
-
-      await this.walletApiClient.callback(paymentRequest, response);
-
-      await this.recordRep.createRecord(
-        paymentRequest.paymentId,
-        PaymentFlow.ASYNC_RESPONSE,
-        paymentRequest,
-        response,
-      );
-
-      return;
-    } catch (e) {
-      await this.recordRep.createRecord(
-        paymentRequest.paymentId,
-        PaymentFlow.PAYMENT,
-        paymentRequest,
-        e,
-      );
-      throw e;
-    }
-  }
-
   async cancellation(
     cancellationRequest: CancellationRequestDTO,
   ): Promise<CancellationResponseDTO> {
     let response: CancellationResponseDTO;
+    const transaction: VtexTransactionDto =
+        await this.transactionRep.getPayment(cancellationRequest.paymentId);
 
     try {
-      //const cancellationResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.cancel(cancellationRequest.paymentId,
-      // cancellationRequest.authorizationId);
+      const cancellationResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.cancel(transaction.,
+      cancellationRequest.authorizationId);
 
       //DUMMY
-      const resultTrx: CoreTransactionDto = {
-        amount: 0,
-        authorizationCode: 'AUTH-002',
-        balance: 0,
-        creditNoteId: '',
-        date: new Date(),
-        dni: '257969045',
-        email: 'andjos27@gmail.com',
-        id: 'CORE-002',
-        orderId: 'ORDER-001',
-        origin: '',
-        transferId: '',
-        type: 'PCE',
-      };
-      const cancellationResult: ResponseDTO<CoreTransactionDto> = {
-        code: 0,
-        data: resultTrx,
-        message: 'OK',
-      };
+      // const resultTrx: CoreTransactionDto = {
+      //   amount: 0,
+      //   authorizationCode: 'AUTH-002',
+      //   balance: 0,
+      //   creditNoteId: '',
+      //   date: new Date(),
+      //   dni: '257969045',
+      //   email: 'andjos27@gmail.com',
+      //   id: 'CORE-002',
+      //   orderId: 'ORDER-001',
+      //   origin: '',
+      //   transferId: '',
+      //   type: 'PCE',
+      // };
+      // const cancellationResult: ResponseDTO<CoreTransactionDto> = {
+      //   code: 0,
+      //   data: resultTrx,
+      //   message: 'OK',
+      // };
       //FIN DUMMY
 
       const vtexData: VtexRequestDto = {
         orderId: resultTrx.orderId,
+        transactionNumber: transaction.transactionNumber,
         paymentId: cancellationRequest.paymentId,
         requestId: cancellationRequest.requestId,
       };
@@ -530,4 +389,89 @@ export class VtexService {
     );
     return response;
   }
+
+  //
+  // async asyncPaymentResponse(paymentRequest: PaymentRequestDTO): Promise<void> {
+  //   try {
+  //     const validCard: boolean = validateCardNumber(paymentRequest.card.number);
+  //
+  //     //const paymentResult: ResponseDTO<CoreTransactionDto> = await this.walletApiClient.payment(paymentWalletReq,
+  //     // paymentRequest.merchantName);
+  //     //const resultTrx: CoreTransactionDto = paymentResult.data;
+  //
+  //     //DUMMY
+  //     const resultTrx: CoreTransactionDto = {
+  //       amount: -1500,
+  //       authorizationCode: 'AUTH-001',
+  //       balance: 0,
+  //       creditNoteId: '',
+  //       date: new Date(),
+  //       dni: '257969045',
+  //       email: 'andjos27@gmail.com',
+  //       id: 'CORE-001',
+  //       orderId: 'ORDER-001',
+  //       origin: '',
+  //       transferId: '',
+  //       type: 'PCE',
+  //     };
+  //     let paymentResult: ResponseDTO<CoreTransactionDto> = {
+  //       code: validCard ? 0 : 1,
+  //       data: resultTrx,
+  //       message: validCard ? 'OK' : 'INVALID CARD',
+  //     };
+  //     if (paymentRequest.card.number == '4222222222222224') {
+  //       //Credit Card que envia VTEX y supuestamente es Valida
+  //       paymentResult = { code: 0, data: resultTrx, message: 'OK' };
+  //     }
+  //     //FIN DUMMY
+  //
+  //     const response: PaymentResponseDto = {
+  //       acquirer: null, // paymentRequest.card.holder || 'VTEX',
+  //       authorizationId:
+  //         paymentResult.code == 0 ? resultTrx.authorizationCode : null,
+  //       delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
+  //       delayToAutoSettleAfterAntifraud:
+  //         envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
+  //       delayToCancel: envConfig.vtex.development.delayToCancel,
+  //       nsu: String(resultTrx.id),
+  //       paymentId: paymentRequest.paymentId,
+  //       status:
+  //         paymentResult.code == 0 ? VtexStatus.APPROVED : VtexStatus.DENIED,
+  //       tid: String(resultTrx.id),
+  //       paymentUrl: paymentRequest.returnUrl,
+  //       code: String(paymentResult.code),
+  //       message: paymentResult.message,
+  //     };
+  //
+  //     const vtexData: VtexRequestDto = {
+  //       orderId: paymentResult.code == 0 ? resultTrx.orderId : null,
+  //       paymentId: paymentRequest.paymentId,
+  //       value: paymentRequest.value,
+  //     };
+  //     await this.transactionRep.saveTransaction(
+  //       vtexData,
+  //       resultTrx,
+  //       PaymentFlow.ASYNC_RESPONSE,
+  //     );
+  //
+  //     await this.walletApiClient.callback(paymentRequest, response);
+  //
+  //     await this.recordRep.createRecord(
+  //       paymentRequest.paymentId,
+  //       PaymentFlow.ASYNC_RESPONSE,
+  //       paymentRequest,
+  //       response,
+  //     );
+  //
+  //     return;
+  //   } catch (e) {
+  //     await this.recordRep.createRecord(
+  //       paymentRequest.paymentId,
+  //       PaymentFlow.PAYMENT,
+  //       paymentRequest,
+  //       e,
+  //     );
+  //     throw e;
+  //   }
+  // }
 }

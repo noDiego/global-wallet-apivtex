@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { envConfig } from '../../config';
 import { ResponseDTO } from '../dto/wallet-response.dto';
 import { URLS } from '../../constants/urls';
-import { CreateTransactionReq } from '../dto/createTransactionReq.dto';
+import { CreateTransactionDetail, CreateTransactionReq } from '../dto/createTransactionReq.dto';
 import { MerchantKeys } from "../enums/vtex.enum";
 import { CoreTransactionDto } from "../dto/core-transaction.dto";
 import { PaymentRequestDTO } from "../../application/dto/payment-request.dto";
@@ -14,13 +14,14 @@ export class WalletApiClient {
   private logger = new Logger('WalletApiClient');
 
   public async payment(
-    data: CreateTransactionReq,
+    data: CreateTransactionDetail,
     origin: string,
   ): Promise<ResponseDTO<CoreTransactionDto>> {
     // (como id puede venir el commerceUserId, userDni, emailUser, userId)
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
       'x-api-key': envConfig.walletApi.providerKey,
+      'x-api-token': MerchantKeys[origin]
     };
     const url = URLS.walletApi.payment;
 
@@ -53,7 +54,7 @@ export class WalletApiClient {
       'x-consumer-key': MerchantKeys[origin],
       'x-api-key': envConfig.walletApi.providerKey,
     };
-    const url = URLS.walletApi.payment;
+    const url = `${URLS.walletApi.payment}/${paymentId}`;
 
     const requestConfig: AxiosRequestConfig = {
       method: 'DELETE',
@@ -141,21 +142,19 @@ export class WalletApiClient {
     }
   }
 
-  public async callback(request: PaymentRequestDTO, response: PaymentResponseDto): Promise<void> {
+  public async callback(callbackUrl: string, response: PaymentResponseDto): Promise<void> {
     const headers: any = {
       'X-VTEX-API-AppKey': envConfig.server.kongKey,
       'X-VTEX-API-AppToken': envConfig.server.kongKey,
     };
 
-    const url =request.callbackUrl;
-
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
       headers: headers,
-      url: url,
+      url: callbackUrl,
       data: response,
     };
-    this.logger.debug('URL:' + url);
+    this.logger.debug('Realizando Callback a URL:' + callbackUrl);
     try {
       await axios(
         requestConfig,
@@ -163,8 +162,8 @@ export class WalletApiClient {
       return;
     } catch (e) {
       this.logger.error(
-        `Error al conectar con url: ${url}. Para respuesta asincrona, Data: ${JSON.stringify(
-            request,
+        `Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(
+            response,
         )}`,
         e.stack,
       );

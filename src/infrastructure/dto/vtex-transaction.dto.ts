@@ -1,6 +1,7 @@
 export class VtexTransactionDto {
   id?: number;
   paymentId: string;
+  transactionNumber: string; //Identificador unico para Response de VTEX (NSU y TID)
   amount: number;
   clientEmail?: string;
   merchantName?: string;
@@ -9,6 +10,7 @@ export class VtexTransactionDto {
   tld?: string;
   authorizationId?: string;
   settletId?: string;
+  coreId?: string;
   requestId?: string;
   date: Date;
 }
