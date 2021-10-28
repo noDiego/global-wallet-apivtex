@@ -5,8 +5,8 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: api-gw-public
-username: ${CI_PROJECT_NAME}
-custom_id: ${CI_PROJECT_NAME}
+username: ${CI_PROJECT_NAME}-public
+custom_id: ${CI_PROJECT_NAME}-public
 credentials:
   - ${CI_PROJECT_NAME}-acl
 ---

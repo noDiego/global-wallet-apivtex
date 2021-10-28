@@ -8,10 +8,11 @@ export class HeadersDTO {
     // @Expose({ name: 'x-consumer-username' })        // required as headers are case insensitive
     // username: string;
 
-    // @IsString()
-    // @IsDefined()
-    // @Expose({ name: 'x-vtex-api-appkey' })
-    // appKey: string;
+    @IsString()
+    @IsDefined()
+    @Expose({ name: 'x-vtex-api-appkey' })
+    @Contains(envConfig.server.vtexAppKey)
+    appKey: string;
 
     // @IsString()
     // @IsDefined()
