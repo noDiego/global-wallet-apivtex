@@ -3,15 +3,31 @@ kind: Service # Servicio
 metadata:
   name: ${CI_PROJECT_NAME}
   namespace: ${KUBE_NAMESPACE}
-  annotations:
-    konghq.com/override: "${CI_PROJECT_NAME}-endpoint"
   labels:
     app: ${CI_PROJECT_NAME}
 spec:
   ports:
-  - port: 3002
-    targetPort: http
-    protocol: TCP
-    name: http
+    - port: 3002
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: ${CI_PROJECT_NAME}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${CI_PROJECT_NAME}-payments
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    konghq.com/override: "payments"
+  labels:
+    app: ${CI_PROJECT_NAME}
+spec:
+  ports:
+    - port: 3002
+      targetPort: http
+      protocol: TCP
+      name: http
   selector:
     app: ${CI_PROJECT_NAME}

@@ -72,9 +72,9 @@ spec:
           resources:
             requests:
               memory: 125Mi
-              cpu: '64m'
+              cpu: '0.5'
             limits:
               memory: 500Mi
-              cpu: '256m'
+              cpu: '0.8'
       imagePullSecrets:
         - name: gitlab-registry-credentials

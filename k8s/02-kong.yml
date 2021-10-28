@@ -5,7 +5,6 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class:  api-gw-pub
-    konghq.com/plugins: ${CI_PROJECT_NAME}-acl
 username: ${CI_PROJECT_NAME}-pub
 custom_id: ${CI_PROJECT_NAME}-pub
 credentials:
@@ -61,3 +60,23 @@ metadata:
 stringData:
   kongCredType: acl
   group: ${CI_PROJECT_NAME}-access
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongIngress
+metadata:
+  name: strip
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: api-gw-pub
+route:
+  strip_path: true
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongIngress
+metadata:
+  name: payments
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: api-gw
+proxy:
+  path: /payments
