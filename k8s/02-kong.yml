@@ -13,6 +13,19 @@ credentials:
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
 metadata:
+  name: ${CI_PROJECT_NAME}-consumer-appkey
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: api-gw
+    konghq.com/plugins: "${CI_PROJECT_NAME}-vtexappkey"
+username: ${CI_PROJECT_NAME}-2
+custom_id: ${CI_PROJECT_NAME}-2
+credentials:
+  - ${CI_PROJECT_NAME}-appkey
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
   name: ${CI_PROJECT_NAME}-consumer-apptoken
   namespace: ${KUBE_NAMESPACE}
   annotations:
@@ -23,19 +36,6 @@ custom_id: ${CI_PROJECT_NAME}-1
 credentials:
   - ${CI_PROJECT_NAME}-apptoken
   - ${CI_PROJECT_NAME}-acl
----
-apiVersion: configuration.konghq.com/v1
-kind: KongConsumer
-metadata:
-  name: ${CI_PROJECT_NAME}-consumer-appkey
-  namespace: ${KUBE_NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: api-gw
-    konghq.com/plugins: "${CI_PROJECT_NAME}-vtexappkey"
-username: ${CI_PROJECT_NAME}-2
-custom_id: ${CI_PROJECT_NAME}-2
-credentials:
-  - ${CI_PROJECT_NAME}-appkey
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongPlugin
