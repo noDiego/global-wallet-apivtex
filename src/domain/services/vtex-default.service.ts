@@ -79,8 +79,8 @@ export class VtexDefaultService {
         );
 
       const response: PaymentResponseDto = {
-        acquirer: null,
-        authorizationId: null,
+        acquirer: 'PP',
+        authorizationId: trxResult.authorizationCode,
         delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
         delayToAutoSettleAfterAntifraud:
           envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
@@ -150,7 +150,7 @@ export class VtexDefaultService {
 
     const response: PaymentResponseDto = {
       acquirer: null,
-      authorizationId: null,
+      authorizationId: trxResult.authorizationCode,
       delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
       delayToAutoSettleAfterAntifraud:
         envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
