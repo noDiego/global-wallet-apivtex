@@ -28,7 +28,7 @@ export class VtexTransaction extends BaseEntity {
   orderId: string;
 
   @Column({ nullable: true, unique: false })
-  idCore: string;
+  coreId: string;
 
   @Column({ nullable: true, unique: false })
   authorizationId: string;

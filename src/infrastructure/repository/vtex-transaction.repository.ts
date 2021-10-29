@@ -31,7 +31,7 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
         ? TransactionStatus.INIT
         : undefined;
 
-    vtexTransaction.idCore = trx.id ? String(trx.id) : null;
+    vtexTransaction.coreId = trx.id ? String(trx.id) : null;
     vtexTransaction.authorizationId = trx ? trx.authorizationCode : null;
     vtexTransaction.date = new Date();
     vtexTransaction.operationType = operation;
