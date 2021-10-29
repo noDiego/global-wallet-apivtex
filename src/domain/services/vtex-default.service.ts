@@ -17,7 +17,10 @@ import {
 } from '../../application/dto/refund.dto';
 import { VtexRecordRepository } from '../../infrastructure/repository/vtex-record.repository';
 import { Injectable, Logger } from '@nestjs/common';
-import { PaymentFlow, VtexStatus } from '../../infrastructure/enums/vtex.enum';
+import {
+  PaymentOperation,
+  VtexStatus,
+} from '../../infrastructure/enums/vtex.enum';
 import { ResponseDTO } from '../../application/dto/api-response.dto';
 import { VtexTransactionRepository } from '../../infrastructure/repository/vtex-transaction.repository';
 import { CoreTransactionDto } from '../../infrastructure/dto/core-transaction.dto';
@@ -72,7 +75,7 @@ export class VtexDefaultService {
         await this.transactionRep.saveTransaction(
           vtexData,
           trxResult,
-          PaymentFlow.PAYMENT,
+          PaymentOperation.PAYMENT,
         );
 
       const response: PaymentResponseDto = {
@@ -97,7 +100,7 @@ export class VtexDefaultService {
 
       await this.recordRep.createRecord(
         paymentRequest.paymentId,
-        PaymentFlow.PAYMENT,
+        PaymentOperation.PAYMENT,
         paymentRequest,
         response,
       );
@@ -115,7 +118,7 @@ export class VtexDefaultService {
     } catch (e) {
       await this.recordRep.createRecord(
         paymentRequest.paymentId,
-        PaymentFlow.PAYMENT,
+        PaymentOperation.PAYMENT,
         paymentRequest,
         e,
       );
@@ -176,12 +179,12 @@ export class VtexDefaultService {
     await this.transactionRep.saveTransaction(
       vtexData,
       trxResult,
-      PaymentFlow.CONFIRMATION,
+      PaymentOperation.CONFIRMATION,
     );
 
     await this.recordRep.createRecord(
       paymentId,
-      PaymentFlow.CONFIRMATION,
+      PaymentOperation.CONFIRMATION,
       paymentId,
       null,
     );
@@ -217,7 +220,7 @@ export class VtexDefaultService {
       await this.transactionRep.saveTransaction(
         vtexData,
         trxResult,
-        PaymentFlow.CANCELLATION,
+        PaymentOperation.CANCELLATION,
       );
 
       response = {
@@ -238,7 +241,7 @@ export class VtexDefaultService {
     }
     await this.recordRep.createRecord(
       cancellationRequest.paymentId,
-      PaymentFlow.CANCELLATION,
+      PaymentOperation.CANCELLATION,
       cancellationRequest,
       response,
     );
@@ -272,7 +275,7 @@ export class VtexDefaultService {
       await this.transactionRep.saveTransaction(
         vtexData,
         trxResult,
-        PaymentFlow.REFUND,
+        PaymentOperation.REFUND,
       );
 
       response = {
@@ -296,7 +299,7 @@ export class VtexDefaultService {
 
     await this.recordRep.createRecord(
       refundReq.paymentId,
-      PaymentFlow.REFUND,
+      PaymentOperation.REFUND,
       refundReq,
       response,
     );
@@ -330,7 +333,7 @@ export class VtexDefaultService {
       await this.transactionRep.saveTransaction(
         vtexData,
         trxResult,
-        PaymentFlow.SETTLEMENT,
+        PaymentOperation.SETTLEMENT,
       );
 
       response = {
@@ -354,7 +357,7 @@ export class VtexDefaultService {
 
     await this.recordRep.createRecord(
       settlementReq.paymentId,
-      PaymentFlow.SETTLEMENT,
+      PaymentOperation.SETTLEMENT,
       settlementReq,
       response,
     );

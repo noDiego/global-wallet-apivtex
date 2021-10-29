@@ -3,6 +3,7 @@ export enum TransactionStatus {
   REJECTED = 'REJECTED',
   INIT = 'INIT',
   CANCELED = 'CANCELED',
+  CONFIRMED = 'CONFIRMED',
 }
 
 export enum VtexStatus {
@@ -11,7 +12,7 @@ export enum VtexStatus {
   UNDEFINED = 'undefined',
 }
 
-export enum PaymentFlow {
+export enum PaymentOperation {
   PAYMENT = 'payment',
   ASYNC_RESPONSE = 'async-response',
   CONFIRMATION = 'confirmation',

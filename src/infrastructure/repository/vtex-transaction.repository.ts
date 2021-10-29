@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { PaymentFlow } from '../enums/vtex.enum';
+import { PaymentOperation, TransactionStatus } from '../enums/vtex.enum';
 import { VtexTransaction } from '../../domain/entities/vtex-transaction';
 import { VtexTransactionDto } from '../dto/vtex-transaction.dto';
 import { CoreTransactionDto } from '../dto/core-transaction.dto';
@@ -14,7 +14,7 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
   async saveTransaction(
     vtexData: VtexRequestDto,
     trx: CoreTransactionDto,
-    operation: PaymentFlow,
+    operation: PaymentOperation,
   ): Promise<VtexTransactionDto> {
     const vtexTransaction: VtexTransaction = new VtexTransaction();
     vtexTransaction.paymentId = vtexData.paymentId;
@@ -26,9 +26,13 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
     vtexTransaction.merchantName = vtexData.merchantName;
     vtexTransaction.clientEmail = vtexData.clientEmail;
     vtexTransaction.transactionNumber = vtexData.transactionNumber;
+    vtexTransaction.status =
+      operation == PaymentOperation.PAYMENT
+        ? TransactionStatus.INIT
+        : undefined;
 
     vtexTransaction.idCore = trx.id ? String(trx.id) : null;
-    vtexTransaction.authorizationId = trx.authorizationCode;
+    vtexTransaction.authorizationId = trx ? trx.authorizationCode : null;
     vtexTransaction.date = new Date();
     vtexTransaction.operationType = operation;
     try {
@@ -48,10 +52,35 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
     }
   }
 
-  async getPayment(paymentId: string): Promise<VtexTransactionDto> {
+  async getPayment(
+    paymentId: string,
+    operationType?: PaymentOperation,
+  ): Promise<VtexTransactionDto> {
     const transaction: VtexTransaction = await this.findOne({
-      where: { paymentId: paymentId, operationType: PaymentFlow.PAYMENT },
+      where: {
+        paymentId: paymentId,
+        operationType: operationType ? operationType : PaymentOperation.PAYMENT,
+      },
     });
     return plainToClass(VtexTransactionDto, transaction);
+  }
+
+  async updatePaymentStatus(
+    paymentId: string,
+    status: TransactionStatus,
+  ): Promise<boolean> {
+    try {
+      await this.update(
+        {
+          paymentId: paymentId,
+          operationType: PaymentOperation.PAYMENT,
+        },
+        { status: status },
+      );
+      return true;
+    } catch (e) {
+      this.logger.error('Error al actualizar status: ' + e.message);
+      return false;
+    }
   }
 }

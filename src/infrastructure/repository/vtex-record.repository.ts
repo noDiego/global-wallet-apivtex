@@ -3,7 +3,7 @@ import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { VtexRecord } from '../../domain/entities/vtex.record';
 import { plainToClass } from 'class-transformer';
 import { VtexRecordDto } from '../dto/vtex-record.dto';
-import { PaymentFlow } from '../enums/vtex.enum';
+import { PaymentOperation } from '../enums/vtex.enum';
 
 @EntityRepository(VtexRecord)
 export class VtexRecordRepository extends Repository<VtexRecord> {
@@ -11,7 +11,7 @@ export class VtexRecordRepository extends Repository<VtexRecord> {
 
   async createRecord(
     paymentId: string,
-    operationType: PaymentFlow,
+    operationType: PaymentOperation,
     vtexRequest: any,
     vtexResponse: any,
   ): Promise<VtexRecordDto> {

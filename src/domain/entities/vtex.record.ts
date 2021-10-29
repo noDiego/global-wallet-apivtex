@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { PaymentFlow } from '../../infrastructure/enums/vtex.enum';
+import { PaymentOperation } from '../../infrastructure/enums/vtex.enum';
 
 @Entity()
 export class VtexRecord extends BaseEntity {
@@ -8,7 +8,7 @@ export class VtexRecord extends BaseEntity {
   @Column({ nullable: false, unique: false })
   paymentId: string;
   @Column({ nullable: false })
-  operationType: PaymentFlow;
+  operationType: PaymentOperation;
   @Column({ nullable: false, type: 'json' })
   requestData: any;
   @Column({ nullable: false, type: 'json' })

@@ -1,3 +1,5 @@
+import { TransactionStatus } from '../enums/vtex.enum';
+
 export class VtexTransactionDto {
   id?: number;
   paymentId: string;
@@ -13,4 +15,5 @@ export class VtexTransactionDto {
   coreId?: string;
   requestId?: string;
   date: Date;
+  status: TransactionStatus;
 }

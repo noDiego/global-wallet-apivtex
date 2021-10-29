@@ -5,7 +5,7 @@ import {
   Generated,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PaymentFlow } from '../../infrastructure/enums/vtex.enum';
+import { PaymentOperation } from '../../infrastructure/enums/vtex.enum';
 
 @Entity()
 export class VtexTransaction extends BaseEntity {
@@ -19,7 +19,7 @@ export class VtexTransaction extends BaseEntity {
   paymentId: string;
 
   @Column({ nullable: false })
-  operationType: PaymentFlow;
+  operationType: PaymentOperation;
 
   @Column()
   amount: number;
@@ -50,4 +50,7 @@ export class VtexTransaction extends BaseEntity {
 
   @Column()
   date: Date;
+
+  @Column()
+  status: string;
 }

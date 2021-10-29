@@ -121,6 +121,7 @@ export class WalletApiClient {
 
   public async refund(
     paymentId: string,
+    amount: number,
   ): Promise<ResponseDTO<CoreTransactionDto>> {
     const headers: any = {
       'x-consumer-key': MerchantKeys[origin],
