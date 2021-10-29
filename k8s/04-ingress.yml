@@ -4,9 +4,8 @@ metadata:
   name: ${CI_PROJECT_NAME}-public
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: "api-gw"
+    kubernetes.io/ingress.class: "api-gw-public"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    #konghq.com/plugins: "${CI_PROJECT_NAME}-acl"
   labels:
     app: ${CI_PROJECT_NAME}-public
 spec:

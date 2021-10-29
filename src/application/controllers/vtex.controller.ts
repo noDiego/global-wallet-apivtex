@@ -176,4 +176,11 @@ export class VtexController {
   ): Promise<ResponseDTO<null>> {
       return await this.vtexService.paymentConfirmation(paymentId);
   }
+
+  @Post('/payments/test')
+  async paymentTest(
+    @RequestHeader(HeadersDTO) headers: any,
+  ): Promise<string> {
+      return 'hola mundo'
+  }
 }
