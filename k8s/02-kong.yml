@@ -1,15 +1,15 @@
-apiVersion: configuration.konghq.com/v1
-kind: KongConsumer
-metadata:
-  name: ${CI_PROJECT_NAME}-consumer-pub
-  namespace: ${KUBE_NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class:  api-gw-pub
-username: ${CI_PROJECT_NAME}-pub
-custom_id: ${CI_PROJECT_NAME}-pub
-credentials:
-  - ${CI_PROJECT_NAME}-acl
----
+#apiVersion: configuration.konghq.com/v1
+#kind: KongConsumer
+#metadata:
+#  name: ${CI_PROJECT_NAME}-consumer-pub
+#  namespace: ${KUBE_NAMESPACE}
+#  annotations:
+#    kubernetes.io/ingress.class:  api-gw
+#username: ${CI_PROJECT_NAME}-pub
+#custom_id: ${CI_PROJECT_NAME}-pub
+#credentials:
+#  - ${CI_PROJECT_NAME}-acl
+#---
 apiVersion: configuration.konghq.com/v1
 kind: KongConsumer
 metadata:
@@ -60,23 +60,3 @@ metadata:
 stringData:
   kongCredType: acl
   group: ${CI_PROJECT_NAME}-access
----
-apiVersion: configuration.konghq.com/v1
-kind: KongIngress
-metadata:
-  name: strip
-  namespace: ${KUBE_NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: api-gw-pub
-route:
-  strip_path: true
----
-apiVersion: configuration.konghq.com/v1
-kind: KongIngress
-metadata:
-  name: payments
-  namespace: ${KUBE_NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: api-gw
-proxy:
-  path: /payments

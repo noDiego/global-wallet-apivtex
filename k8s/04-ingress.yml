@@ -1,34 +1,33 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${CI_PROJECT_NAME}
+  name: ${CI_PROJECT_NAME}-public
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: "api-gw-pub"
+    kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    konghq.com/override: "strip"
+    #konghq.com/plugins: "${CI_PROJECT_NAME}-acl"
   labels:
-    app: ${CI_PROJECT_NAME}
+    app: ${CI_PROJECT_NAME}-public
 spec:
   rules:
     - host: ${CI_PROJECT_NAME}.${ENDPOINT}
       http:
         paths:
-          - path: /api
+          - path: /
             backend:
               serviceName: ${CI_PROJECT_NAME}
               servicePort: http
 ---
 apiVersion: extensions/v1beta1
-kind: Ingress # Ruta
+kind: Ingress
 metadata:
-  name: ${CI_PROJECT_NAME}-payments
+  name: ${CI_PROJECT_NAME}
   namespace: ${KUBE_NAMESPACE}
   annotations:
     kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    konghq.com/override: "strip"
-    konghq.com/plugins: "${CI_PROJECT_NAME}-acl,${CI_PROJECT_NAME}-vtexapptoken"
+    konghq.com/plugins: "${CI_PROJECT_NAME}-vtexapptoken"
   labels:
     app: ${CI_PROJECT_NAME}
 spec:
@@ -36,7 +35,8 @@ spec:
     - host: ${CI_PROJECT_NAME}.${ENDPOINT}
       http:
         paths:
-          - path: /api/payments
+          - path: /payments
+            pathType: Prefix
             backend:
-              serviceName: ${CI_PROJECT_NAME}-payments
+              serviceName: ${CI_PROJECT_NAME}
               servicePort: http

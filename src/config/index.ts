@@ -26,21 +26,21 @@ export const envConfig = {
   },
   vtex:{
     development: {
-      port: '3002',
+      port: process.env.APP_PORT,
       timeout: 45000,
       delayToAutoSettle: 604800,
       delayToAutoSettleAfterAntifraud: null,
       delayToCancel: 1800,
     },
     qa: {
-      port: '3002',
+      port: process.env.APP_PORT,
       timeout: 45000,
       delayToAutoSettle: 604800,
       delayToAutoSettleAfterAntifraud: null,
       delayToCancel: 1800,
     },
     production: {
-      port: '3002',
+      port: process.env.APP_PORT,
       timeout: 45000,
       delayToAutoSettle: 604800,
       delayToAutoSettleAfterAntifraud: null,
