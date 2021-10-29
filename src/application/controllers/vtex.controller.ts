@@ -25,10 +25,10 @@ import {
 import { RefundRequestDTO, RefundResponseDTO } from '../dto/refund.dto';
 import { sleep } from '../../utils/validation';
 import { VtexStatus } from '../../infrastructure/enums/vtex.enum';
-import { ResponseDTO } from "../dto/api-response.dto";
-import { envConfig } from "../../config";
+import { ResponseDTO } from '../dto/api-response.dto';
+import { envConfig } from '../../config';
 
-@Controller(envConfig.vtexTesting?'api':'')
+@Controller(envConfig.vtexTesting ? 'api' : '')
 export class VtexController {
   constructor(
     private vtexService: VtexService,
@@ -64,10 +64,7 @@ export class VtexController {
       paymentRequest,
     );
 
-    response
-      .status(200)
-      .send(result)
-      .end();
+    response.status(200).send(result).end();
     return;
   }
 
@@ -174,13 +171,11 @@ export class VtexController {
     @RequestHeader(HeadersDTO) headers: any,
     @Param('paymentId') paymentId,
   ): Promise<ResponseDTO<null>> {
-      return await this.vtexService.paymentConfirmation(paymentId);
+    return await this.vtexService.paymentConfirmation(paymentId);
   }
 
   @Post('/payments/test')
-  async paymentTest(
-    @RequestHeader(HeadersDTO) headers: any,
-  ): Promise<string> {
-      return 'hola mundo'
+  async paymentTest(@RequestHeader(HeadersDTO) headers: any): Promise<string> {
+    return 'hola mundo';
   }
 }

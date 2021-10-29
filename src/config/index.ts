@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 export const envConfig = {
   environment: process.env.NODE_ENV,
-  vtexTesting: process.env.VTEX_TESTING=='1',
+  vtexTesting: process.env.VTEX_TESTING == '1',
   server: {
     port: parseInt(process.env.APP_PORT || '3002', 10),
     origin: process.env.ORIGIN,
@@ -24,7 +24,7 @@ export const envConfig = {
     schema: process.env.DB_SCHEMA,
     synchronize: process.env.NODE_ENV == 'development',
   },
-  vtex:{
+  vtex: {
     development: {
       port: process.env.APP_PORT,
       timeout: 45000,
@@ -45,6 +45,6 @@ export const envConfig = {
       delayToAutoSettle: 604800,
       delayToAutoSettleAfterAntifraud: null,
       delayToCancel: 1800,
-    }
-  }
+    },
+  },
 };

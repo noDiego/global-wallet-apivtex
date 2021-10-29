@@ -1,4 +1,10 @@
-import { BaseEntity, Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  Generated,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { PaymentFlow } from '../../infrastructure/enums/vtex.enum';
 
 @Entity()

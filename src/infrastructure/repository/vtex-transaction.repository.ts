@@ -27,7 +27,7 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
     vtexTransaction.clientEmail = vtexData.clientEmail;
     vtexTransaction.transactionNumber = vtexData.transactionNumber;
 
-    vtexTransaction.idCore = trx.id?String(trx.id):null;
+    vtexTransaction.idCore = trx.id ? String(trx.id) : null;
     vtexTransaction.authorizationId = trx.authorizationCode;
     vtexTransaction.date = new Date();
     vtexTransaction.operationType = operation;

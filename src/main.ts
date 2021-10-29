@@ -4,8 +4,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import winstonConfig from './config/winston.config';
 import { envConfig } from './config';
-import { HttpExceptionFilter } from "./application/pipes/http-exception.filter";
-import { CustomValidationPipe } from "./application/pipes/custom-validation-pipe.service";
+import { HttpExceptionFilter } from './application/pipes/http-exception.filter';
+import { CustomValidationPipe } from './application/pipes/custom-validation-pipe.service';
 global.ENV = require('./config/index').ENV;
 
 async function bootstrap() {

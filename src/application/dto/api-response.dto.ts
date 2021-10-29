@@ -5,7 +5,6 @@ export class ResponseDTO<T> {
 }
 
 export class PaginatedResponseDTO<T> {
-
   code: number; //0 ok; 1 error
   message: string;
   data?: T;

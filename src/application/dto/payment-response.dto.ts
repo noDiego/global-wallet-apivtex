@@ -8,8 +8,8 @@ export class PaymentResponseDto {
   delayToAutoSettle: number;
   delayToAutoSettleAfterAntifraud: number;
   delayToCancel: number;
-  paymentUrl?:string;
-  paymentAppData?:PaymentAppData;
+  paymentUrl?: string;
+  paymentAppData?: PaymentAppData;
   identificationNumber?: string;
   identificationNumberFormatted?: string;
   barCodeImageType?: string;
@@ -17,11 +17,9 @@ export class PaymentResponseDto {
   code?: string;
   message?: string;
   maxValue?: number;
-
-
 }
 
-export class PaymentAppData{
+export class PaymentAppData {
   appName: string;
   payload: string;
 }

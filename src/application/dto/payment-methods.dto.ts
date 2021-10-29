@@ -1,4 +1,3 @@
-export class PaymentMethodsDto{
-    paymentMethods: string[];
+export class PaymentMethodsDto {
+  paymentMethods: string[];
 }
-

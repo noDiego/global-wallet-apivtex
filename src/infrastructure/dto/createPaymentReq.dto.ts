@@ -1,4 +1,4 @@
-import { CoreTransactionDto } from "./core-transaction.dto";
+import { CoreTransactionDto } from './core-transaction.dto';
 
 export class CreatePaymentDetail {
   orderId: string;

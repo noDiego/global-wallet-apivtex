@@ -1,7 +1,7 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 import { envConfig } from '../../config';
-import { RequestHeader } from "../dto/request-header.decorator";
-import { HeadersDTO } from "../dto/headers.dto";
+import { RequestHeader } from '../dto/request-header.decorator';
+import { HeadersDTO } from '../dto/headers.dto';
 
 @Controller('')
 export class MainController {
@@ -10,7 +10,7 @@ export class MainController {
   @Get(['/health', ''])
   async health(): Promise<any> {
     return {
-      message: 'ok v1.0011'
+      message: 'ok v1.0011',
     };
   }
 
@@ -18,7 +18,7 @@ export class MainController {
   async test(@RequestHeader(HeadersDTO) headers): Promise<any> {
     return {
       envConfig,
-      envTest: process.env.NAMESPACE
+      envTest: process.env.NAMESPACE,
     };
   }
 }

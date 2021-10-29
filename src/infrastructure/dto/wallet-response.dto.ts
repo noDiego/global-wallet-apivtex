@@ -12,5 +12,4 @@ export class PaginatedResponseDTO<T> {
   limit?: number;
   totalPage?: number;
   recordTotal?: number;
-
 }

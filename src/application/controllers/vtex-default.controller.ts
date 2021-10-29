@@ -1,17 +1,31 @@
-import { Body, Controller, Get, Logger, Param, Post, Res, } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { PaymentMethodsDto } from '../dto/payment-methods.dto';
 import { HeadersDTO } from '../dto/headers.dto';
 import { RequestHeader } from '../dto/request-header.decorator';
 import { PaymentRequestDTO } from '../dto/payment-request.dto';
 import { PaymentResponseDto } from '../dto/payment-response.dto';
-import { CancellationRequestDTO, CancellationResponseDTO, } from '../dto/cancellation.dto';
-import { SettlementsRequestDTO, SettlementsResponseDTO, } from '../dto/settlements.dto';
+import {
+  CancellationRequestDTO,
+  CancellationResponseDTO,
+} from '../dto/cancellation.dto';
+import {
+  SettlementsRequestDTO,
+  SettlementsResponseDTO,
+} from '../dto/settlements.dto';
 import { RefundRequestDTO, RefundResponseDTO } from '../dto/refund.dto';
-import { VtexDefaultService } from "../../domain/services/vtex-default.service";
-import { envConfig } from "../../config";
+import { VtexDefaultService } from '../../domain/services/vtex-default.service';
+import { envConfig } from '../../config';
 
-@Controller(envConfig.vtexTesting?'':'vtex')
+@Controller(envConfig.vtexTesting ? '' : 'vtex')
 export class VtexDefaultController {
   constructor(
     private vtexService: VtexDefaultService,
@@ -47,10 +61,7 @@ export class VtexDefaultController {
       paymentRequest,
     );
 
-    response
-      .status(200)
-      .send(result)
-      .end();
+    response.status(200).send(result).end();
     return;
   }
 
@@ -144,5 +155,10 @@ export class VtexDefaultController {
       .end();
 
     return;
+  }
+
+  @Post('/payments/test')
+  async paymentTest(@RequestHeader(HeadersDTO) headers: any): Promise<string> {
+    return 'hola mundo default';
   }
 }
