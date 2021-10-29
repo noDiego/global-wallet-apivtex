@@ -4,7 +4,7 @@ metadata:
   name: ${CI_PROJECT_NAME}-public
   namespace: ${KUBE_NAMESPACE}
   annotations:
-    kubernetes.io/ingress.class: "api-gw-public"
+    kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
   labels:
     app: ${CI_PROJECT_NAME}-public
@@ -26,7 +26,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    konghq.com/plugins: "${CI_PROJECT_NAME}-vtexapptoken"
+    konghq.com/plugins: "${CI_PROJECT_NAME}-apitoken"
   labels:
     app: ${CI_PROJECT_NAME}
 spec:
