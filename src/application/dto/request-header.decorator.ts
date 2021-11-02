@@ -14,8 +14,6 @@ export const RequestHeader = createParamDecorator(
   async (value: any, ctx: ExecutionContext) => {
     // extract headers
     const headers = ctx.switchToHttp().getRequest().headers;
-    console.log('headers');
-    console.log(headers);
 
     // Convert headers to DTO object
     const dto = plainToClass(value, headers, { excludeExtraneousValues: true });

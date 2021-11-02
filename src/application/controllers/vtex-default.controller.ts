@@ -158,7 +158,7 @@ export class VtexDefaultController {
   }
 
   @Post('/payments/test')
-  async paymentTest(@RequestHeader(HeadersDTO) headers: any): Promise<string> {
-    return 'hola mundo default';
+  async paymentTest(@Body() holamundo: any): Promise<string> {
+    return holamundo;
   }
 }
