@@ -29,8 +29,6 @@ import { VtexTransactionDto } from '../../infrastructure/dto/vtex-transaction.dt
 import { v4 as uuidv4 } from 'uuid';
 import { sleep, validateCardNumber } from '../../utils/validation';
 
-const config = require('../../config/index').ENV;
-
 @Injectable()
 export class VtexDefaultService {
   constructor(
@@ -45,7 +43,11 @@ export class VtexDefaultService {
   ): Promise<PaymentResponseDto> {
     try {
       let validCard: boolean = validateCardNumber(paymentRequest.card.number);
-      validCard = paymentRequest.card.number == '4222222222222224'; //Caso de prueba Approved de vtex
+      if (paymentRequest.card.number == '4222222222222224') {
+        //Caso de prueba Approved de vtex
+        validCard = true;
+      }
+
       let pagoPendiente = false; //Para simulacion de pago asincrono
 
       //Simular Pago
