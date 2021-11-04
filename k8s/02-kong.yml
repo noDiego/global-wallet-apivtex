@@ -9,7 +9,6 @@ username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-key
-  - ${CI_PROJECT_NAME}-acl
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongPlugin

@@ -6,7 +6,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    konghq.com/plugins: "${CI_PROJECT_NAME}-acl"
   labels:
     app: ${CI_PROJECT_NAME}-public
 spec:
@@ -27,7 +26,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "api-gw"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    konghq.com/plugins: "${CI_PROJECT_NAME}-apitoken,${CI_PROJECT_NAME}-acl"
+    konghq.com/plugins: "${CI_PROJECT_NAME}-apitoken"
   labels:
     app: ${CI_PROJECT_NAME}
 spec:

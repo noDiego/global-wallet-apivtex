@@ -1,6 +1,6 @@
 import { WalletApiClient } from '../../infrastructure/client/wallet-api.client';
 import { PaymentRequestDTO } from '../../application/dto/payment-request.dto';
-import { CreateTransactionDetail } from '../../infrastructure/dto/createTransactionReq.dto';
+import { CreateTransactionDetail } from '../../infrastructure/dto/create-transaction-req.dto';
 import { PaymentResponseDto } from '../../application/dto/payment-response.dto';
 import { envConfig } from '../../config';
 import {
@@ -28,8 +28,6 @@ import { CoreTransactionDto } from '../../infrastructure/dto/core-transaction.dt
 import { VtexRequestDto } from '../../application/dto/vtex-request.dto';
 import { VtexTransactionDto } from '../../infrastructure/dto/vtex-transaction.dto';
 import { v4 as uuidv4 } from 'uuid';
-
-const config = require('../../config/index').ENV;
 
 @Injectable()
 export class VtexService {

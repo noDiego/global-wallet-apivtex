@@ -1,6 +1,6 @@
 import { WalletApiClient } from '../../infrastructure/client/wallet-api.client';
 import { PaymentRequestDTO } from '../../application/dto/payment-request.dto';
-import { CreateTransactionDetail } from '../../infrastructure/dto/createTransactionReq.dto';
+import { CreateTransactionDetail } from '../../infrastructure/dto/create-transaction-req.dto';
 import { PaymentResponseDto } from '../../application/dto/payment-response.dto';
 import { envConfig } from '../../config';
 import {
