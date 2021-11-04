@@ -6,6 +6,7 @@ import winstonConfig from './config/winston.config';
 import { envConfig } from './config';
 import { HttpExceptionFilter } from './application/pipes/http-exception.filter';
 import { CustomValidationPipe } from './application/pipes/custom-validation-pipe.service';
+//import newrelic = require('newrelic');
 global.ENV = require('./config/index').ENV;
 
 async function bootstrap() {
@@ -14,6 +15,7 @@ async function bootstrap() {
     logger: WinstonModule.createLogger(winstonConfig), //Iniciar app con Winston como Logger
     cors: true,
   };
+  require('newrelic');
 
   const app = await NestFactory.create(AppModule, options);
   app.useGlobalFilters(new HttpExceptionFilter());
