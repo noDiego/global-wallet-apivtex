@@ -24,6 +24,7 @@ import {
 import { RefundRequestDTO, RefundResponseDTO } from '../dto/refund.dto';
 import { VtexDefaultService } from '../../domain/services/vtex-default.service';
 import { envConfig } from '../../config';
+import { ResponseDTO } from 'src/application/dto/api-response.dto';
 
 @Controller(envConfig.vtexTesting ? '' : 'vtex')
 export class VtexDefaultController {
@@ -160,5 +161,26 @@ export class VtexDefaultController {
   @Post('/payments/test')
   async paymentTest(@Body() holamundo: any): Promise<string> {
     return holamundo;
+  }
+
+  @Post('/confirmation/:paymentId')
+  async confirmationTest(
+    @RequestHeader(HeadersDTO) headers: any,
+    @Param('paymentId') paymentId,
+  ): Promise<ResponseDTO<any>> {
+    return {
+      code: 0,
+      message: 'OK',
+      data: {
+        paymentId: paymentId,
+      },
+    };
+  }
+
+  @Get('/confirmation')
+  async confirmationHealth(
+    @RequestHeader(HeadersDTO) headers: any,
+  ): Promise<string> {
+    return 'hola mundo';
   }
 }

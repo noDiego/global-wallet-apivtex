@@ -10,10 +10,10 @@ FROM registry.gitlab.com/cencosud-ds/cencommerce/utils/docker-images/node:14-alp
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
-# Install NewRelic
-ENV NEWRELIC_APP_NAME global-wallet-apivtex
-ENV NEWRELIC_ENABLED true
-ENV NEWRELIC_KEY NRAK-BB94A1FEDIGVQ6B0IWY9YKWM976
+## Install NewRelic
+#ENV NEWRELIC_APP_NAME global-wallet-apivtex
+#ENV NEWRELIC_ENABLED true
+#ENV NEWRELIC_KEY NRAK-1VYUU991MN1LC988GR9KNHIR85H
 
 WORKDIR /usr/src/app
 COPY package*.json ./
