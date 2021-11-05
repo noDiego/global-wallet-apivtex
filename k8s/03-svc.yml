@@ -9,8 +9,8 @@ metadata:
     app: ${CI_PROJECT_NAME}
 spec:
   ports:
-  - port: 80
-    targetPort: 3002
+  - port: 3002
+    targetPort: http
     protocol: TCP
     name: http
   selector:
