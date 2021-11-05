@@ -1,23 +1,23 @@
-#apiVersion: extensions/v1beta1
-#kind: Ingress
-#metadata:
-#  name: ${CI_PROJECT_NAME}-public
-#  namespace: ${KUBE_NAMESPACE}
-#  annotations:
-#    kubernetes.io/ingress.class: "api-gw"
-#    ingress.kubernetes.io/force-ssl-redirect: "true"
-#  labels:
-#    app: ${CI_PROJECT_NAME}-public
-#spec:
-#  rules:
-#    - host: ${CI_PROJECT_NAME}.${ENDPOINT}
-#      http:
-#        paths:
-#          - path: /
-#            backend:
-#              serviceName: ${CI_PROJECT_NAME}
-#              servicePort: http
-#---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${CI_PROJECT_NAME}-public
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: "api-gw"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: ${CI_PROJECT_NAME}-public
+spec:
+  rules:
+    - host: ${CI_PROJECT_NAME}.${ENDPOINT}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ${CI_PROJECT_NAME}
+              servicePort: http
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -39,25 +39,25 @@ spec:
             backend:
               serviceName: ${CI_PROJECT_NAME}
               servicePort: http
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: ${CI_PROJECT_NAME}-internal-key
-  namespace: ${KUBE_NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: "api-gw-internal"
-    ingress.kubernetes.io/force-ssl-redirect: "true"
-    konghq.com/plugins: "${CI_PROJECT_NAME}-apitoken"
-  labels:
-    app: ${CI_PROJECT_NAME}
-spec:
-  rules:
-    - host: ${CI_PROJECT_NAME}.${ENDPOINT}
-      http:
-        paths:
-          - path: /confirmation
-            pathType: Prefix
-            backend:
-              serviceName: ${CI_PROJECT_NAME}
-              servicePort: http
+#---
+#apiVersion: extensions/v1beta1
+#kind: Ingress
+#metadata:
+#  name: ${CI_PROJECT_NAME}-internal-key
+#  namespace: ${KUBE_NAMESPACE}
+#  annotations:
+#    kubernetes.io/ingress.class: "api-gw-internal"
+#    ingress.kubernetes.io/force-ssl-redirect: "true"
+#    konghq.com/plugins: "${CI_PROJECT_NAME}-apitoken"
+#  labels:
+#    app: ${CI_PROJECT_NAME}
+#spec:
+#  rules:
+#    - host: ${CI_PROJECT_NAME}.${ENDPOINT}
+#      http:
+#        paths:
+#          - path: /confirmation
+#            pathType: Prefix
+#            backend:
+#              serviceName: ${CI_PROJECT_NAME}
+#              servicePort: http

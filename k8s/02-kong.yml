@@ -9,18 +9,18 @@ username: ${CI_PROJECT_NAME}
 custom_id: ${CI_PROJECT_NAME}
 credentials:
   - ${CI_PROJECT_NAME}-key
----
-apiVersion: configuration.konghq.com/v1
-kind: KongConsumer
-metadata:
-  name: ${CI_PROJECT_NAME}-internal
-  namespace: ${KUBE_NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: api-gw-internal
-username: ${CI_PROJECT_NAME}-internal
-custom_id: ${CI_PROJECT_NAME}-internal
-credentials:
-  - ${CI_PROJECT_NAME}-key
+#---
+#apiVersion: configuration.konghq.com/v1
+#kind: KongConsumer
+#metadata:
+#  name: ${CI_PROJECT_NAME}-internal
+#  namespace: ${KUBE_NAMESPACE}
+#  annotations:
+#    kubernetes.io/ingress.class: api-gw-internal
+#username: ${CI_PROJECT_NAME}-internal
+#custom_id: ${CI_PROJECT_NAME}-internal
+#credentials:
+#  - ${CI_PROJECT_NAME}-key
 ---
 apiVersion: configuration.konghq.com/v1
 kind: KongPlugin
