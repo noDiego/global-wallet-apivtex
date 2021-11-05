@@ -1,23 +1,25 @@
-#apiVersion: extensions/v1beta1
-#kind: Ingress
-#metadata:
-#  name: ${CI_PROJECT_NAME}-public
-#  namespace: ${KUBE_NAMESPACE}
-#  annotations:
-#    kubernetes.io/ingress.class: "api-gw"
-#    ingress.kubernetes.io/force-ssl-redirect: "true"
-#  labels:
-#    app: ${CI_PROJECT_NAME}-public
-#spec:
-#  rules:
-#    - host: ${CI_PROJECT_NAME}.${ENDPOINT}
-#      http:
-#        paths:
-#          - path: /
-#            backend:
-#              serviceName: ${CI_PROJECT_NAME}
-#              servicePort: http
-#---
+#Ingress Publico y sin uso de Tokens
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${CI_PROJECT_NAME}-public
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: "api-gw"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: ${CI_PROJECT_NAME}-public
+spec:
+  rules:
+    - host: ${CI_PROJECT_NAME}.${ENDPOINT}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ${CI_PROJECT_NAME}
+              servicePort: http
+---
+#Ingress Publico con Token
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -40,6 +42,7 @@ spec:
               serviceName: ${CI_PROJECT_NAME}
               servicePort: http
 ---
+#Ingress con Token pero solo de acceso interno
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
