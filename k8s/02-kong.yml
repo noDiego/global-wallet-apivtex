@@ -27,6 +27,20 @@ kind: KongPlugin
 metadata:
   name: ${CI_PROJECT_NAME}-apitoken
   namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: api-gw
+config:
+  key_names:
+    - X-VTEX-API-AppToken
+plugin: key-auth
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: ${CI_PROJECT_NAME}-apitoken-internal
+  namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: api-gw-internal
 config:
   key_names:
     - X-VTEX-API-AppToken
@@ -46,6 +60,8 @@ kind: KongPlugin
 metadata:
   name: ${CI_PROJECT_NAME}-acl
   namespace: ${KUBE_NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: api-gw
 plugin: acl
 config:
   whitelist:
