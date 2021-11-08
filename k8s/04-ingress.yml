@@ -21,6 +21,10 @@ spec:
             backend:
               serviceName: ${CI_PROJECT_NAME}
               servicePort: http
+          - path: /health
+            backend:
+              serviceName: ${CI_PROJECT_NAME}
+              servicePort: http
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
