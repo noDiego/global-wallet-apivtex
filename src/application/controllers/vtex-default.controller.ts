@@ -47,7 +47,7 @@ export class VtexDefaultController {
       paymentMethods: [
         {
           name: 'Promissories',
-          allowsSplit: 'disabled',
+          allowsSplit: 'onAuthorize',
         },
       ],
     };
