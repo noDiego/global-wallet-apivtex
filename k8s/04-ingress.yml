@@ -13,7 +13,11 @@ spec:
     - host: ${CI_PROJECT_NAME}.${ENDPOINT}
       http:
         paths:
-          - path: /
+          - path: /payment-methods
+            backend:
+              serviceName: ${CI_PROJECT_NAME}
+              servicePort: http
+          - path: /manifest
             backend:
               serviceName: ${CI_PROJECT_NAME}
               servicePort: http
