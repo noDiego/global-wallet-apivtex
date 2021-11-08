@@ -14,6 +14,7 @@ async function bootstrap() {
     logger: WinstonModule.createLogger(winstonConfig), //Iniciar app con Winston como Logger
     cors: true,
   };
+  require('newrelic');
 
   const app = await NestFactory.create(AppModule, options);
   app.useGlobalFilters(new HttpExceptionFilter());
