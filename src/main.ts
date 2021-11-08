@@ -1,3 +1,6 @@
+/* eslint-disable */
+require('newrelic');
+/* eslint-enable */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
@@ -14,7 +17,6 @@ async function bootstrap() {
     logger: WinstonModule.createLogger(winstonConfig), //Iniciar app con Winston como Logger
     cors: true,
   };
-  require('newrelic');
 
   const app = await NestFactory.create(AppModule, options);
   app.useGlobalFilters(new HttpExceptionFilter());
