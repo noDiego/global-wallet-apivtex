@@ -46,8 +46,8 @@ export class VtexDefaultService {
       this.logger.log(
         `Payment - Iniciando... | paymentId:${paymentRequest.paymentId}`,
       );
-      let validCard: boolean = validateCardNumber(paymentRequest.card.number);
-      if (paymentRequest.card.number == '4222222222222224') {
+      let validCard: boolean = validateCardNumber(paymentRequest.card?.number);
+      if (paymentRequest.card?.number == '4222222222222224') {
         //Caso de prueba Approved de vtex
         validCard = true;
       }
@@ -56,7 +56,7 @@ export class VtexDefaultService {
 
       //Simular Pago
 
-      if (paymentRequest.card.number.includes('422222222222222')) {
+      if (paymentRequest.card?.number.includes('422222222222222')) {
         pagoPendiente = true;
       }
 
