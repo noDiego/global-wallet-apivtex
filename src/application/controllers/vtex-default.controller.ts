@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Logger, Param, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { PaymentMethodsDto } from '../dto/payment-methods.dto';
+import { ManifestDTO, PaymentMethodsDto } from '../dto/payment-methods.dto';
 import { HeadersDTO } from '../dto/headers.dto';
 import { RequestHeader } from '../dto/request-header.decorator';
 import { PaymentRequestDTO } from '../dto/payment-request.dto';
@@ -15,6 +15,26 @@ import { ResponseDTO } from 'src/application/dto/api-response.dto';
 @Controller(envConfig.vtexTesting ? '' : 'vtex')
 export class VtexDefaultController {
   constructor(private vtexService: VtexDefaultService, private readonly logger: Logger) {}
+
+  /**
+   * @api {get} /manifest Exposes provider manifest, a range of metadata settings, like payment methods, split configuration and custom fields.
+   * @apiName List Payment Provider Manifest
+   *
+   * @apiSuccess {Array} customFields Describes the customized fields supported by the connector.
+   * @apiSuccess {Array} paymentMethods Describes each payment method supported by payment provider and exposed its respective metadata.
+   */
+  @Get('/manifest')
+  async manifest(): Promise<ManifestDTO> {
+    return {
+      customFields: [],
+      paymentMethods: [
+        {
+          name: 'Promissories',
+          allowsSplit: 'onAuthorize',
+        },
+      ],
+    };
+  }
 
   /**
    * @api {get} /payment-methods Request information on payment methods

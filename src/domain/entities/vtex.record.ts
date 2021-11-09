@@ -11,7 +11,7 @@ export class VtexRecord extends BaseEntity {
   operationType: PaymentOperation;
   @Column({ nullable: false, type: 'json' })
   requestData: any;
-  @Column({ nullable: false, type: 'json' })
+  @Column({ nullable: true, type: 'json' })
   responseData: any;
   @Column({ nullable: false })
   date: Date;

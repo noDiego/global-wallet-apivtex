@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext, UnauthorizedException, } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 
