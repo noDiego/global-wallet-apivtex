@@ -26,10 +26,7 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
     vtexTransaction.merchantName = vtexData.merchantName;
     vtexTransaction.clientEmail = vtexData.clientEmail;
     vtexTransaction.transactionNumber = vtexData.transactionNumber;
-    vtexTransaction.status =
-      operation == PaymentOperation.PAYMENT
-        ? TransactionStatus.INIT
-        : undefined;
+    vtexTransaction.status = operation == PaymentOperation.PAYMENT ? TransactionStatus.INIT : undefined;
 
     vtexTransaction.coreId = trx && trx.id ? String(trx.id) : null;
     vtexTransaction.authorizationId = trx ? trx.authorizationCode : null;
@@ -52,10 +49,7 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
     }
   }
 
-  async getPayment(
-    paymentId: string,
-    operationType?: PaymentOperation,
-  ): Promise<VtexTransactionDto> {
+  async getPayment(paymentId: string, operationType?: PaymentOperation): Promise<VtexTransactionDto> {
     const transaction: VtexTransaction = await this.findOne({
       where: {
         paymentId: paymentId,
@@ -65,10 +59,7 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
     return plainToClass(VtexTransactionDto, transaction);
   }
 
-  async updatePaymentStatus(
-    paymentId: string,
-    status: TransactionStatus,
-  ): Promise<boolean> {
+  async updatePaymentStatus(paymentId: string, status: TransactionStatus): Promise<boolean> {
     try {
       await this.update(
         {

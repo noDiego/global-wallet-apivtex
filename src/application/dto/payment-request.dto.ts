@@ -1,4 +1,4 @@
-import { IsNumber, IsPositive, Max, Min } from 'class-validator';
+import { IsNumber, IsPositive } from 'class-validator';
 
 export class PaymentRequestDTO {
   reference: string;

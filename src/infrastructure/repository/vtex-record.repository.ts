@@ -1,4 +1,4 @@
-import { EntityRepository, getRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { VtexRecord } from '../../domain/entities/vtex.record';
 import { plainToClass } from 'class-transformer';
@@ -25,10 +25,7 @@ export class VtexRecordRepository extends Repository<VtexRecord> {
       const recordSaved = await record.save();
       return plainToClass(VtexRecordDto, recordSaved);
     } catch (e) {
-      this.logger.error(
-        `Error al crear VtexRecord, Data: ${JSON.stringify(vtexRequest)}`,
-        e.stack,
-      );
+      this.logger.error(`Error al crear VtexRecord, Data: ${JSON.stringify(vtexRequest)}`, e.stack);
       throw new InternalServerErrorException();
     }
   }

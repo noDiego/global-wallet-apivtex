@@ -1,10 +1,4 @@
-import {
-  ArgumentMetadata,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  PipeTransform,
-} from '@nestjs/common';
+import { ArgumentMetadata, HttpException, HttpStatus, Injectable, PipeTransform } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
@@ -15,10 +9,7 @@ export class CustomValidationPipe implements PipeTransform {
     const object = plainToClass(metadata.metatype, value);
     const errors = await validate(object);
     if (errors.length > 0) {
-      throw new HttpException(
-        `Validation Failed: [${this.formatErrors(errors)}]`,
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException(`Validation Failed: [${this.formatErrors(errors)}]`, HttpStatus.BAD_REQUEST);
     }
     return value;
   }

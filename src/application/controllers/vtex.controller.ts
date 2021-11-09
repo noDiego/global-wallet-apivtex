@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Logger,
-  Param,
-  Post,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { PaymentMethodsDto } from '../dto/payment-methods.dto';
 import { HeadersDTO } from '../dto/headers.dto';
@@ -14,26 +6,15 @@ import { RequestHeader } from '../dto/request-header.decorator';
 import { PaymentRequestDTO } from '../dto/payment-request.dto';
 import { VtexService } from '../../domain/services/vtex.service';
 import { PaymentResponseDto } from '../dto/payment-response.dto';
-import {
-  CancellationRequestDTO,
-  CancellationResponseDTO,
-} from '../dto/cancellation.dto';
-import {
-  SettlementsRequestDTO,
-  SettlementsResponseDTO,
-} from '../dto/settlements.dto';
+import { CancellationRequestDTO, CancellationResponseDTO } from '../dto/cancellation.dto';
+import { SettlementsRequestDTO, SettlementsResponseDTO } from '../dto/settlements.dto';
 import { RefundRequestDTO, RefundResponseDTO } from '../dto/refund.dto';
-import { sleep } from '../../utils/validation';
-import { VtexStatus } from '../../infrastructure/enums/vtex.enum';
 import { ResponseDTO } from '../dto/api-response.dto';
 import { envConfig } from '../../config';
 
 @Controller(envConfig.vtexTesting ? 'api' : '')
 export class VtexController {
-  constructor(
-    private vtexService: VtexService,
-    private readonly logger: Logger,
-  ) {}
+  constructor(private vtexService: VtexService, private readonly logger: Logger) {}
 
   /**
    * @api {get} /payment-methods Request information on payment methods
@@ -60,9 +41,7 @@ export class VtexController {
     @Body() paymentRequest: PaymentRequestDTO,
     @Res() response: Response,
   ): Promise<PaymentResponseDto> {
-    const result: PaymentResponseDto = await this.vtexService.payment(
-      paymentRequest,
-    );
+    const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
 
     response.status(200).send(result).end();
     return;
@@ -87,9 +66,7 @@ export class VtexController {
     @Body() cancellationRequest: CancellationRequestDTO,
     @Res() response: Response,
   ): Promise<CancellationResponseDTO> {
-    const result: CancellationResponseDTO = await this.vtexService.cancellation(
-      cancellationRequest,
-    );
+    const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest);
     response
       .status(result.cancellationId ? 200 : 500)
       .send(result)
@@ -117,9 +94,7 @@ export class VtexController {
     @Body() settlementsRequest: SettlementsRequestDTO,
     @Res() response: Response,
   ): Promise<SettlementsResponseDTO> {
-    const result: SettlementsResponseDTO = await this.vtexService.settlements(
-      settlementsRequest,
-    );
+    const result: SettlementsResponseDTO = await this.vtexService.settlements(settlementsRequest);
 
     response
       .status(result.settleId ? 200 : 500)
@@ -148,9 +123,7 @@ export class VtexController {
     @Body() refundRequest: RefundRequestDTO,
     @Res() response: Response,
   ): Promise<SettlementsResponseDTO> {
-    const result: RefundResponseDTO = await this.vtexService.refund(
-      refundRequest,
-    );
+    const result: RefundResponseDTO = await this.vtexService.refund(refundRequest);
 
     response
       .status(result.refundId ? 200 : 500)

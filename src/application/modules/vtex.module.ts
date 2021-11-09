@@ -9,9 +9,7 @@ import { VtexDefaultService } from '../../domain/services/vtex-default.service';
 import { VtexDefaultController } from '../controllers/vtex-default.controller';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([VtexRecordRepository, VtexTransactionRepository]),
-  ],
+  imports: [TypeOrmModule.forFeature([VtexRecordRepository, VtexTransactionRepository])],
   controllers: [VtexController, VtexDefaultController],
   providers: [VtexService, VtexDefaultService, WalletApiClient],
 })

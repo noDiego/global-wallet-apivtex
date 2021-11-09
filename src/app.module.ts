@@ -1,10 +1,4 @@
-import {
-  Logger,
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { GlobalModule } from './application/modules/global.module';
 import { LoggerMiddleware } from './application/middleware/logger.middleware';
 import { VtexModule } from './application/modules/vtex.module';
