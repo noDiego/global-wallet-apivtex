@@ -1,5 +1,6 @@
 /* eslint-disable */
 require('newrelic');
+global.ENV = require('./config/index').ENV;
 /* eslint-enable */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -9,7 +10,6 @@ import winstonConfig from './config/winston.config';
 import { envConfig } from './config';
 import { HttpExceptionFilter } from './application/pipes/http-exception.filter';
 import { CustomValidationPipe } from './application/pipes/custom-validation-pipe.service';
-global.ENV = require('./config/index').ENV;
 
 async function bootstrap() {
   const logger = new Logger('bootstrap');

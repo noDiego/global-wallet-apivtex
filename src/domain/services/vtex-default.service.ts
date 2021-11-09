@@ -151,7 +151,7 @@ export class VtexDefaultService {
     this.logger.log(`Async Payment - Iniciando... | paymentId:${paymentId}`);
 
     try {
-      sleep(2000);
+      await sleep(2000);
       const transaction: VtexTransactionDto =
         await this.transactionRep.getPayment(paymentId);
 
