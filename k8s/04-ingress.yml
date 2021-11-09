@@ -61,7 +61,7 @@ metadata:
     app: ${CI_PROJECT_NAME}
 spec:
   rules:
-    - host: ${CI_PROJECT_NAME}.${ENDPOINT}
+    - host: ${CI_PROJECT_NAME}-priv.${ENDPOINT}
       http:
         paths:
           - path: /confirmation
