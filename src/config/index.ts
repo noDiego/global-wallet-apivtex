@@ -8,11 +8,12 @@ export const envConfig = {
     port: parseInt(process.env.APP_PORT || '3002', 10),
     origin: process.env.ORIGIN,
     vtexAppKey: process.env.X_VTEX_API_APPKEY,
+    vtexAppToken: process.env.X_VTEX_API_APPTOKEN,
   },
   walletApi: {
     core: process.env.WALLET_URL,
     balance: process.env.WALLET_BALANCE_URL,
-    providerKey: process.env.PROVIDER_APIKEY,
+    apiKey: process.env.WALLET_CORE_API_KEY,
   },
   db: {
     type: process.env.DB_TYPE,
@@ -22,7 +23,7 @@ export const envConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     schema: process.env.DB_SCHEMA,
-    synchronize: process.env.NODE_ENV == 'development',
+    synchronize: process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'local',
   },
   vtex: {
     development: {

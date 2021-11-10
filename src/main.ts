@@ -1,5 +1,4 @@
 /* eslint-disable */
-require('newrelic');
 global.ENV = require('./config/index').ENV;
 /* eslint-enable */
 import { NestFactory } from '@nestjs/core';
@@ -12,6 +11,7 @@ import { HttpExceptionFilter } from './application/pipes/http-exception.filter';
 import { CustomValidationPipe } from './application/pipes/custom-validation-pipe.service';
 
 async function bootstrap() {
+  if (envConfig.environment != 'local') require('newrelic');
   const logger = new Logger('bootstrap');
   const options = {
     logger: WinstonModule.createLogger(winstonConfig), //Iniciar app con Winston como Logger
