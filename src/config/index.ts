@@ -7,7 +7,6 @@ export const envConfig = {
   server: {
     port: parseInt(process.env.APP_PORT || '3002', 10),
     origin: process.env.ORIGIN,
-    kongKey: process.env.KONG_API_KEY,
     vtexAppKey: process.env.X_VTEX_API_APPKEY,
   },
   walletApi: {
