@@ -9,6 +9,7 @@ export class MainController {
   async health(): Promise<any> {
     return {
       message: 'ok',
+      ver: '0.001',
     };
   }
 
