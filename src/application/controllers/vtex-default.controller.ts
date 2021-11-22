@@ -10,7 +10,7 @@ import { SettlementsRequestDTO, SettlementsResponseDTO } from '../dto/settlement
 import { RefundRequestDTO, RefundResponseDTO } from '../dto/refund.dto';
 import { VtexDefaultService } from '../../domain/services/vtex-default.service';
 import { envConfig } from '../../config';
-import { ResponseDTO } from 'src/application/dto/api-response.dto';
+import { ResponseDTO } from '../dto/api-response.dto';
 
 @Controller(envConfig.vtexTesting ? '' : 'vtex')
 export class VtexDefaultController {

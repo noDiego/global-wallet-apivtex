@@ -1,22 +1,26 @@
-import { Contains, IsDefined, IsString } from 'class-validator';
+import { Contains, IsDefined, IsString, Length } from 'class-validator';
 import { Expose } from 'class-transformer';
 import { envConfig } from '../../config';
 
-export class HeadersDTO {
-  // @IsString()
-  // @IsDefined()
-  // @Expose({ name: 'x-consumer-username' })        // required as headers are case insensitive
-  // username: string;
+const appkeyLenght = envConfig.server.vtexAppKey.length;
 
+export class HeadersDTO {
   @IsString()
-  @IsDefined()
+  @Length(appkeyLenght, appkeyLenght)
   @Expose({ name: 'x-vtex-api-appkey' })
   @Contains(envConfig.server.vtexAppKey)
-  appKey: string;
+  appkey: string;
 
   // @IsString()
   // @IsDefined()
   // @Expose({ name: 'x-vtex-api-apptoken' })
   // @Contains(envConfig.server.vtexApiToken)
   // apptoken: string;
+}
+
+export class HeadersSessionDTO extends HeadersDTO {
+  @IsString()
+  @IsDefined()
+  @Expose({ name: 'x-api-session' })
+  appSession: string;
 }
