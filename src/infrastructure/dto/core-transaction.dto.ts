@@ -1,14 +1,25 @@
-export class CoreTransactionDto {
-  id?: number|string;
-  type?: string;
-  orderId: string;
-  creditNoteId?: string;
-  date?: Date;
-  transferId?: string;
+export class CoreTransactionReq {
+  orderId?: string;
+  amount?: number;
+  currency?: string;
+  paymentId?: string;
+}
+
+export class CoreTransactionRes {
+  id: string;
+  date: Date;
   amount: number;
-  origin?: string;
-  dni?: string;
-  email?: string;
-  authorizationCode?: string;
-  balance?: number;
+  authorizationCode: string;
+  status: string;
+}
+
+export enum TransactionStatus {
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export class CoreResponse {
+  code: number; //0 ok; 1 error
+  message: string;
+  data?: CoreTransactionRes;
 }

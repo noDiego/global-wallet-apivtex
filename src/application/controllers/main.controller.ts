@@ -1,4 +1,5 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
+import { envConfig } from '../../config';
 
 @Controller('')
 export class MainController {
@@ -7,7 +8,16 @@ export class MainController {
   @Get(['/health', ''])
   async health(): Promise<any> {
     return {
-      message: 'ok'
+      message: 'ok',
+      ver: '0.001',
+    };
+  }
+
+  @Post(['/health'])
+  async healthEnv(@Body() { test: string }): Promise<any> {
+    return {
+      message: 'ok',
+      envConfig,
     };
   }
 }

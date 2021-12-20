@@ -1,5 +1,5 @@
 import { Global, Logger, Module } from '@nestjs/common';
-import { MainController } from "../controllers/main.controller";
+import { MainController } from '../controllers/main.controller';
 
 @Global()
 @Module({

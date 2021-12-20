@@ -1,20 +1,40 @@
 import { Body, Controller, Get, Logger, Param, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { PaymentMethodsDto } from '../dto/payment-methods.dto';
-import { HeadersSessionDTO, HeadersDTO } from '../dto/headers.dto';
+import { ManifestDTO, PaymentMethodsDto } from '../dto/payment-methods.dto';
+import { HeadersDTO } from '../dto/headers.dto';
 import { RequestHeader } from '../dto/request-header.decorator';
 import { PaymentRequestDTO } from '../dto/payment-request.dto';
-import { VtexService } from '../../domain/services/vtex.service';
 import { PaymentResponseDto } from '../dto/payment-response.dto';
 import { CancellationRequestDTO, CancellationResponseDTO } from '../dto/cancellation.dto';
 import { SettlementsRequestDTO, SettlementsResponseDTO } from '../dto/settlements.dto';
 import { RefundRequestDTO, RefundResponseDTO } from '../dto/refund.dto';
-import { ResponseDTO } from '../dto/api-response.dto';
+import { VtexDefaultService } from '../../domain/services/vtex-default.service';
 import { envConfig } from '../../config';
+import { ResponseDTO } from '../dto/api-response.dto';
 
-@Controller(envConfig.vtexTesting ? 'api' : '')
-export class VtexController {
-  constructor(private vtexService: VtexService, private readonly logger: Logger) {}
+@Controller(envConfig.vtexTesting ? '' : 'vtex')
+export class VtexDefaultController {
+  constructor(private vtexService: VtexDefaultService, private readonly logger: Logger) {}
+
+  /**
+   * @api {get} /manifest Exposes provider manifest, a range of metadata settings, like payment methods, split configuration and custom fields.
+   * @apiName List Payment Provider Manifest
+   *
+   * @apiSuccess {Array} customFields Describes the customized fields supported by the connector.
+   * @apiSuccess {Array} paymentMethods Describes each payment method supported by payment provider and exposed its respective metadata.
+   */
+  @Get('/manifest')
+  async manifest(): Promise<ManifestDTO> {
+    return {
+      customFields: [],
+      paymentMethods: [
+        {
+          name: 'Promissories',
+          allowsSplit: 'disabled',
+        },
+      ],
+    };
+  }
 
   /**
    * @api {get} /payment-methods Request information on payment methods
@@ -37,7 +57,7 @@ export class VtexController {
    */
   @Post('/payments')
   async payments(
-    @RequestHeader(HeadersDTO) headers,
+    @RequestHeader(HeadersDTO) headers: any,
     @Body() paymentRequest: PaymentRequestDTO,
     @Res() response: Response,
   ): Promise<PaymentResponseDto> {
@@ -45,25 +65,6 @@ export class VtexController {
 
     response.status(200).send(result).end();
     return;
-  }
-
-  /**
-   * @api {post} /payments/:paymentId/confirmation Receive information about the transaction
-   * @apiName Payments
-   *
-   * @apiDescription
-   */
-  @Post('/confirmation/:paymentId')
-  async paymentConfirmation(
-    @RequestHeader(HeadersSessionDTO) headers: any,
-    @Param('paymentId') paymentId,
-  ): Promise<ResponseDTO<null>> {
-    return await this.vtexService.paymentConfirmation(paymentId, headers.appSession);
-  }
-
-  @Post('/payments/test')
-  async paymentTest(@RequestHeader(HeadersDTO) headers: any): Promise<string> {
-    return 'hola mundo';
   }
 
   /**
@@ -85,10 +86,7 @@ export class VtexController {
     @Body() cancellationRequest: CancellationRequestDTO,
     @Res() response: Response,
   ): Promise<CancellationResponseDTO> {
-    const result: CancellationResponseDTO = await this.vtexService.cancellation(
-      cancellationRequest,
-      headers.appSession,
-    );
+    const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest);
     response
       .status(result.cancellationId ? 200 : 500)
       .send(result)
@@ -140,12 +138,12 @@ export class VtexController {
    */
   @Post('/payments/:paymentId/refunds')
   async refund(
-    @RequestHeader(HeadersSessionDTO) headers: any,
+    @RequestHeader(HeadersDTO) headers: any,
     @Param('paymentId') paymentId: string,
     @Body() refundRequest: RefundRequestDTO,
     @Res() response: Response,
   ): Promise<SettlementsResponseDTO> {
-    const result: RefundResponseDTO = await this.vtexService.refund(refundRequest, headers.appSession);
+    const result: RefundResponseDTO = await this.vtexService.refund(refundRequest);
 
     response
       .status(result.refundId ? 200 : 500)
@@ -153,5 +151,29 @@ export class VtexController {
       .end();
 
     return;
+  }
+
+  @Post('/payments/test')
+  async paymentTest(@Body() holamundo: any): Promise<string> {
+    return holamundo;
+  }
+
+  @Post('/confirmation/:paymentId')
+  async confirmationTest(
+    @RequestHeader(HeadersDTO) headers: any,
+    @Param('paymentId') paymentId,
+  ): Promise<ResponseDTO<any>> {
+    return {
+      code: 0,
+      message: 'OK',
+      data: {
+        paymentId: paymentId,
+      },
+    };
+  }
+
+  @Get('/confirmation')
+  async confirmationHealth(@RequestHeader(HeadersDTO) headers: any): Promise<string> {
+    return 'hola mundo';
   }
 }

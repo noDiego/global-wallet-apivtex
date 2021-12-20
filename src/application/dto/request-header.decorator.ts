@@ -1,28 +1,23 @@
-import { BadRequestException, createParamDecorator, ExecutionContext, ForbiddenException, HttpException, HttpStatus } from "@nestjs/common";
-import { plainToClass } from "class-transformer";
-import { validateOrReject } from "class-validator";
+import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 
-export const RequestHeader = createParamDecorator(
-    async (value:  any, ctx: ExecutionContext) => {
+export const RequestHeader = createParamDecorator(async (value: any, ctx: ExecutionContext) => {
+  // extract headers
+  const headers = ctx.switchToHttp().getRequest().headers;
 
-        // extract headers
-        const headers = ctx.switchToHttp().getRequest().headers;
+  // Convert headers to DTO object
+  const dto = plainToClass(value, headers, { excludeExtraneousValues: true });
 
-        // Convert headers to DTO object
-        const dto = plainToClass(value, headers, { excludeExtraneousValues: true });
-
-        // Validate
-        return validateOrReject(dto).then(
-            () => {
-                return dto;
-            },
-            () => {
-                throw new BadRequestException({
-                    message: "Error in Credentials",
-                    status: 'error',
-                    code: 'ERR'
-                });
-            }
-        );
+  // Validate
+  return validateOrReject(dto).then(
+    () => {
+      return dto;
     },
-);
+    () => {
+      throw new UnauthorizedException({
+        message: 'Invalid authentication credentials',
+      });
+    },
+  );
+});
