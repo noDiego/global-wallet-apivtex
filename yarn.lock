@@ -1567,7 +1567,7 @@
   "resolved" "https://registry.npmjs.org/at-least-node/-/at-least-node-1.0.0.tgz"
   "version" "1.0.0"
 
-"aws-sdk@^2.1046.0":
+"aws-sdk@^2.1022.0":
   "integrity" "sha512-ocwHclMXdIA+NWocUyvp9Ild3/zy2vr5mHp3mTyodf0WU5lzBE8PocCVLSWhMAXLxyia83xv2y5f5AzAcetbqA=="
   "resolved" "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1046.0.tgz"
   "version" "2.1046.0"
