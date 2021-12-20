@@ -20,8 +20,6 @@ export class AwsClient {
       Logger.debug('AWS secret data: ' + JSON.stringify(data));
       resultSecrets = JSON.parse(data.SecretString).rds;
       Logger.debug('ResultSecrets rds: ' + JSON.stringify(resultSecrets));
-      Logger.log('RDS: ');
-      Logger.log(JSON.stringify(resultSecrets));
       return resultSecrets;
     } catch (err) {
       Logger.error('Error al obtener aws secrets: ' + err);

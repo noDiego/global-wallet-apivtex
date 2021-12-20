@@ -16,11 +16,6 @@ import { CustomValidationPipe } from './application/pipes/custom-validation-pipe
 async function bootstrap() {
   if (envConfig.environment != 'local') require('newrelic');
 
-  Logger.log('--PRUEBA');
-  await AwsClient.getSecret();
-
-  Logger.log('--FIN PRUEBA');
-
   const logger = new Logger('bootstrap');
   const options = {
     logger: WinstonModule.createLogger(winstonConfig), //Iniciar app con Winston como Logger
