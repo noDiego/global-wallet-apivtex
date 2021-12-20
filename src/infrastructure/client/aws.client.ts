@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { envConfig } from '../../config';
-import { AwsResult } from 'src/infrastructure/dto/aws-result';
+import { AwsResult } from '../dto/aws-result';
 
 export class AwsClient {
   static async getSecret(): Promise<AwsResult> {

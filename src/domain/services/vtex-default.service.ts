@@ -2,7 +2,7 @@ import { WalletApiClient } from '../../infrastructure/client/wallet-api.client';
 import { PaymentRequestDTO } from '../../application/dto/payment-request.dto';
 import { PaymentResponseDto } from '../../application/dto/payment-response.dto';
 import { envConfig } from '../../config';
-import { CancellationRequestDTO, CancellationResponseDTO } from 'src/application/dto/cancellation.dto';
+import { CancellationRequestDTO, CancellationResponseDTO } from '../../application/dto/cancellation.dto';
 import { SettlementsRequestDTO, SettlementsResponseDTO } from '../../application/dto/settlements.dto';
 import { RefundRequestDTO, RefundResponseDTO } from '../../application/dto/refund.dto';
 import { VtexRecordRepository } from '../../infrastructure/repository/vtex-record.repository';
