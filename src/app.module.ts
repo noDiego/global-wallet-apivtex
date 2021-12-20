@@ -3,10 +3,10 @@ import { GlobalModule } from './application/modules/global.module';
 import { LoggerMiddleware } from './application/middleware/logger.middleware';
 import { VtexModule } from './application/modules/vtex.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './config/typeorm.config';
+import { typeOrmModuleAsyncOptions } from './config/typeorm.config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig), GlobalModule, VtexModule],
+  imports: [TypeOrmModule.forRoot(typeOrmModuleAsyncOptions), GlobalModule, VtexModule],
   providers: [Logger],
 })
 export class AppModule implements NestModule {
