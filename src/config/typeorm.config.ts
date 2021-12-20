@@ -19,7 +19,6 @@ export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
         autoLoadEntities: true,
         logging: false,
         useUTC: true,
-        migrations: ['dist/migrations/*.js'],
         cli: {
           migrationsDir: 'migrations',
         },
