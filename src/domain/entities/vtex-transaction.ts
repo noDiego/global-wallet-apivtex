@@ -45,6 +45,6 @@ export class VtexTransaction extends BaseEntity {
   @Column()
   date: Date;
 
-  @Column()
+  @Column({ nullable: true })
   status: string;
 }
