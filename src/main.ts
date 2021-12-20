@@ -18,6 +18,7 @@ async function bootstrap() {
 
   Logger.log('--PRUEBA');
   await AwsClient.getSecret();
+
   Logger.log('--FIN PRUEBA');
 
   const logger = new Logger('bootstrap');
