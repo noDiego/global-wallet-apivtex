@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+import { AwsClient } from './infrastructure/client/aws.client';
+
 global.ENV = require('./config/index').ENV;
 /* eslint-enable */
 import { NestFactory } from '@nestjs/core';
@@ -13,6 +15,10 @@ import { CustomValidationPipe } from './application/pipes/custom-validation-pipe
 
 async function bootstrap() {
   if (envConfig.environment != 'local') require('newrelic');
+
+  Logger.log('--PRUEBA');
+  await AwsClient.getSecret();
+  Logger.log('--FIN PRUEBA');
 
   const logger = new Logger('bootstrap');
   const options = {
