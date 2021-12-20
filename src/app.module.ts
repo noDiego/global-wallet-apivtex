@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmModuleAsyncOptions } from './config/typeorm.config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmModuleAsyncOptions), GlobalModule, VtexModule],
+  imports: [TypeOrmModule.forRootAsync(typeOrmModuleAsyncOptions), GlobalModule, VtexModule],
   providers: [Logger],
 })
 export class AppModule implements NestModule {
