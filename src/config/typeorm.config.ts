@@ -19,9 +19,6 @@ export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
         autoLoadEntities: true,
         logging: false,
         useUTC: true,
-        cli: {
-          migrationsDir: 'migrations',
-        },
         extra: {
           connectionLimit: 5,
         },
