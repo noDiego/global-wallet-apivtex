@@ -2,12 +2,13 @@ import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { envConfig } from './index';
 import { AwsResult } from '../infrastructure/dto/aws-result';
 import { AwsClient } from '../infrastructure/client/aws.client';
+import { Logger } from '@nestjs/common';
 
 export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
   useFactory: async () => {
     if (!envConfig.isLocal) {
       const secret: AwsResult = await AwsClient.getSecret();
-      return {
+      const config = {
         type: envConfig.db.type as any,
         host: secret.db_hostname,
         port: secret.db_port,
@@ -19,13 +20,13 @@ export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
         autoLoadEntities: true,
         logging: false,
         useUTC: true,
-        cli: {
-          migrationsDir: 'migrations',
-        },
         extra: {
           connectionLimit: 5,
         },
       };
+      Logger.log('Config BD');
+      Logger.log(JSON.stringify(config));
+      return config;
     } else {
       return {
         type: envConfig.db.type as any,
