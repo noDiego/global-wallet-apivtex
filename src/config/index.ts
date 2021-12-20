@@ -1,15 +1,9 @@
 import * as dotenv from 'dotenv';
 
 dotenv.config();
-
 export const envConfig = {
   environment: process.env.NODE_ENV,
-  isLocal: process.env.NODE_ENV == 'local',
   vtexTesting: process.env.VTEX_TESTING == '1',
-  aws: {
-    region: process.env.AWS_SECRET_REGION,
-    secretName: process.env.AWS_SECRET_NAME,
-  },
   server: {
     port: parseInt(process.env.APP_PORT || '3002', 10),
     origin: process.env.ORIGIN,
@@ -29,7 +23,7 @@ export const envConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     schema: process.env.DB_SCHEMA,
-    synchronize: true,
+    synchronize: process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'local',
   },
   vtex: {
     development: {

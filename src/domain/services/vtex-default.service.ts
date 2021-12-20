@@ -2,7 +2,7 @@ import { WalletApiClient } from '../../infrastructure/client/wallet-api.client';
 import { PaymentRequestDTO } from '../../application/dto/payment-request.dto';
 import { PaymentResponseDto } from '../../application/dto/payment-response.dto';
 import { envConfig } from '../../config';
-import { CancellationRequestDTO, CancellationResponseDTO } from '../../application/dto/cancellation.dto';
+import { CancellationRequestDTO, CancellationResponseDTO } from 'src/application/dto/cancellation.dto';
 import { SettlementsRequestDTO, SettlementsResponseDTO } from '../../application/dto/settlements.dto';
 import { RefundRequestDTO, RefundResponseDTO } from '../../application/dto/refund.dto';
 import { VtexRecordRepository } from '../../infrastructure/repository/vtex-record.repository';
@@ -10,11 +10,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PaymentOperation, VtexStatus } from '../../infrastructure/enums/vtex.enum';
 import { ResponseDTO } from '../../application/dto/api-response.dto';
 import { VtexTransactionRepository } from '../../infrastructure/repository/vtex-transaction.repository';
+import { CoreTransactionDto } from '../../infrastructure/dto/core-transaction.dto';
 import { VtexRequestDto } from '../../application/dto/vtex-request.dto';
 import { VtexTransactionDto } from '../../infrastructure/dto/vtex-transaction.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { sleep, validateCardNumber } from '../../utils/validation';
-import { CoreTransactionRes, TransactionStatus } from '../../infrastructure/dto/core-transaction.dto';
 
 @Injectable()
 export class VtexDefaultService {
@@ -42,11 +42,10 @@ export class VtexDefaultService {
         pagoPendiente = true;
       }
 
-      const trxResult: CoreTransactionRes = {
-        date: new Date(),
+      const trxResult: CoreTransactionDto = {
         amount: paymentRequest.value,
+        orderId: paymentRequest.orderId,
         authorizationCode: pagoPendiente ? null : validCard ? uuidv4() : null,
-        status: TransactionStatus.APPROVED,
         id: validCard ? uuidv4() : null,
       };
       //
@@ -63,8 +62,8 @@ export class VtexDefaultService {
 
       const vtexTransaction: VtexTransactionDto = await this.transactionRep.saveTransaction(
         vtexData,
-        PaymentOperation.PAYMENT,
         trxResult,
+        PaymentOperation.PAYMENT,
       );
 
       const response: PaymentResponseDto = {
@@ -115,10 +114,9 @@ export class VtexDefaultService {
       validCard = ccnumber == '4222222222222224'; //Caso de prueba Approved de vtex
 
       //Simular Pago
-      const trxResult: CoreTransactionRes = {
-        date: new Date(),
-        status: TransactionStatus.APPROVED,
+      const trxResult: CoreTransactionDto = {
         amount: transaction.amount,
+        orderId: transaction.orderId,
         authorizationCode: validCard ? uuidv4() : null,
         id: transaction.coreId,
       };
@@ -153,7 +151,7 @@ export class VtexDefaultService {
         callbackUrl: transaction.callbackUrl,
       };
 
-      await this.transactionRep.saveTransaction(vtexData, PaymentOperation.CONFIRMATION, trxResult);
+      await this.transactionRep.saveTransaction(vtexData, trxResult, PaymentOperation.CONFIRMATION);
 
       await this.recordRep.createRecord(paymentId, PaymentOperation.CONFIRMATION, paymentId, null);
 
@@ -178,10 +176,9 @@ export class VtexDefaultService {
     const transaction: VtexTransactionDto = await this.transactionRep.getPayment(cancellationRequest.paymentId);
 
     //Simular Respuesta
-    const trxResult: CoreTransactionRes = {
+    const trxResult: CoreTransactionDto = {
       amount: transaction.amount,
-      date: new Date(),
-      status: TransactionStatus.APPROVED,
+      orderId: transaction.orderId,
       authorizationCode: uuidv4(),
       id: uuidv4(),
     };
@@ -195,7 +192,7 @@ export class VtexDefaultService {
         requestId: cancellationRequest.requestId,
       };
 
-      await this.transactionRep.saveTransaction(vtexData, PaymentOperation.CANCELLATION, trxResult);
+      await this.transactionRep.saveTransaction(vtexData, trxResult, PaymentOperation.CANCELLATION);
 
       response = {
         paymentId: cancellationRequest.paymentId,
@@ -235,10 +232,9 @@ export class VtexDefaultService {
       const transaction: VtexTransactionDto = await this.transactionRep.getPayment(refundReq.paymentId);
 
       //Simular Respuesta
-      const trxResult: CoreTransactionRes = {
+      const trxResult: CoreTransactionDto = {
         amount: transaction.amount,
-        date: new Date(),
-        status: TransactionStatus.APPROVED,
+        orderId: transaction.orderId,
         authorizationCode: uuidv4(),
         id: uuidv4(),
       };
@@ -252,7 +248,7 @@ export class VtexDefaultService {
         value: refundReq.value,
       };
 
-      await this.transactionRep.saveTransaction(vtexData, PaymentOperation.REFUND, trxResult);
+      await this.transactionRep.saveTransaction(vtexData, trxResult, PaymentOperation.REFUND);
 
       response = {
         paymentId: refundReq.paymentId,
@@ -289,23 +285,22 @@ export class VtexDefaultService {
       const transaction: VtexTransactionDto = await this.transactionRep.getPayment(settlementReq.paymentId);
 
       //Simular Respuesta
-      const trxResult: CoreTransactionRes = {
+      const trxResult: CoreTransactionDto = {
         amount: transaction.amount,
-        date: new Date(),
-        status: TransactionStatus.APPROVED,
+        orderId: transaction.orderId,
         authorizationCode: uuidv4(),
         id: uuidv4(),
       };
 
       const vtexData: VtexRequestDto = {
-        orderId: trxResult.id,
+        orderId: trxResult.orderId,
         paymentId: settlementReq.paymentId,
         requestId: settlementReq.requestId,
         settleId: settlementReq.settleId,
         value: settlementReq.value,
       };
 
-      await this.transactionRep.saveTransaction(vtexData, PaymentOperation.SETTLEMENT, trxResult);
+      await this.transactionRep.saveTransaction(vtexData, trxResult, PaymentOperation.SETTLEMENT);
 
       response = {
         paymentId: settlementReq.paymentId,
