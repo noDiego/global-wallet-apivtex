@@ -18,6 +18,10 @@ export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
         schema: envConfig.db.schema,
         autoLoadEntities: true,
         logging: false,
+        useUTC: true,
+        extra: {
+          connectionLimit: 5,
+        },
       };
     } else {
       return {

@@ -7,7 +7,7 @@ export const envConfig = {
   isLocal: process.env.NODE_ENV == 'local',
   vtexTesting: process.env.VTEX_TESTING == '1',
   aws: {
-    region: process.env.AWS_REGION,
+    region: process.env.AWS_SECRET_REGION,
     secretName: process.env.AWS_SECRET_NAME,
   },
   server: {
