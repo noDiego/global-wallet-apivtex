@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+import { AwsClient } from './infrastructure/client/aws.client';
+
 global.ENV = require('./config/index').ENV;
 /* eslint-enable */
 import { NestFactory } from '@nestjs/core';
