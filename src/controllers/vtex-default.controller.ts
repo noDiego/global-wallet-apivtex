@@ -1,16 +1,16 @@
 import { Body, Controller, Get, Logger, Param, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { ManifestDTO, PaymentMethodsDto } from '../dto/payment-methods.dto';
-import { HeadersDTO } from '../dto/headers.dto';
-import { RequestHeader } from '../dto/request-header.decorator';
-import { PaymentRequestDTO } from '../dto/payment-request.dto';
-import { PaymentResponseDto } from '../dto/payment-response.dto';
-import { CancellationRequestDTO, CancellationResponseDTO } from '../dto/cancellation.dto';
-import { SettlementsRequestDTO, SettlementsResponseDTO } from '../dto/settlements.dto';
-import { RefundRequestDTO, RefundResponseDTO } from '../dto/refund.dto';
-import { VtexDefaultService } from '../../domain/services/vtex-default.service';
-import { envConfig } from '../../config';
-import { ResponseDTO } from '../dto/api-response.dto';
+import { ManifestDTO, PaymentMethodsDto } from '../interfaces/wallet/payment-methods.dto';
+import { HeadersDTO } from '../interfaces/wallet/headers.dto';
+import { RequestHeader } from '../interfaces/wallet/request-header.decorator';
+import { PaymentRequestDTO } from '../interfaces/wallet/payment-request.dto';
+import { PaymentResponseDto } from '../interfaces/wallet/payment-response.dto';
+import { CancellationRequestDTO, CancellationResponseDTO } from '../interfaces/wallet/cancellation.dto';
+import { SettlementsRequestDTO, SettlementsResponseDTO } from '../interfaces/wallet/settlements.dto';
+import { RefundRequestDTO, RefundResponseDTO } from '../interfaces/wallet/refund.dto';
+import { VtexDefaultService } from '../services/vtex-default.service';
+import { envConfig } from '../config';
+import { ResponseDTO } from '../interfaces/wallet/api-response.dto';
 
 @Controller(envConfig.vtexTesting ? '' : 'vtex')
 export class VtexDefaultController {

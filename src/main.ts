@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { AwsClient } from './infrastructure/client/aws.client';
+import { AwsClient } from './client/aws.client';
 
 global.ENV = require('./config/index').ENV;
 /* eslint-enable */
@@ -10,9 +10,9 @@ import { Logger } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import winstonConfig from './config/winston.config';
 import { envConfig } from './config';
-import { CustomValidationPipe } from './application/pipes/custom-validation-pipe.service';
-import { ErrorExceptionFilter } from './application/middleware/http-exception.filter';
-import { LoggingInterceptor } from './application/middleware/logging.interceptor';
+import { CustomValidationPipe } from './common/pipes/custom-validation-pipe.service';
+import { ErrorExceptionFilter } from './common/middleware/http-exception.filter';
+import { LoggingInterceptor } from './common/middleware/logging.interceptor';
 
 async function bootstrap() {
   if (envConfig.environment != 'local') require('newrelic');

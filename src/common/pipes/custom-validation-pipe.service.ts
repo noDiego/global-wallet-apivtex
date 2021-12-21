@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
-import { HeadersDTO } from '../dto/headers.dto';
+import { HeadersDTO } from '../../interfaces/wallet/headers.dto';
 
 @Injectable()
 export class CustomValidationPipe implements PipeTransform {

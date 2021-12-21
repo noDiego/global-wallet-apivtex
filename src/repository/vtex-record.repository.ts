@@ -1,9 +1,9 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
-import { VtexRecord } from '../../domain/entities/vtex.record';
+import { VtexRecord } from './entities/vtex.record';
 import { plainToClass } from 'class-transformer';
-import { VtexRecordDto } from '../dto/vtex-record.dto';
-import { PaymentOperation } from '../enums/vtex.enum';
+import { VtexRecordDto } from '../interfaces/dto/vtex-record.dto';
+import { PaymentOperation } from '../interfaces/enums/vtex.enum';
 
 @EntityRepository(VtexRecord)
 export class VtexRecordRepository extends Repository<VtexRecord> {

@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { PaymentOperation } from '../../infrastructure/enums/vtex.enum';
+import { PaymentOperation } from '../../interfaces/enums/vtex.enum';
 
 @Entity()
 export class VtexTransaction extends BaseEntity {

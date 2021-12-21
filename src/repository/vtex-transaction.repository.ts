@@ -1,11 +1,11 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { PaymentOperation, VtexTransactionStatus } from '../enums/vtex.enum';
-import { VtexTransaction } from '../../domain/entities/vtex-transaction';
-import { VtexTransactionDto } from '../dto/vtex-transaction.dto';
-import { VtexRequestDto } from '../../application/dto/vtex-request.dto';
-import { CoreTransactionRes } from '../dto/core-transaction.dto';
+import { PaymentOperation, VtexTransactionStatus } from '../interfaces/enums/vtex.enum';
+import { VtexTransaction } from './entities/vtex-transaction';
+import { VtexTransactionDto } from '../interfaces/dto/vtex-transaction.dto';
+import { VtexRequestDto } from '../interfaces/wallet/vtex-request.dto';
+import { CoreTransactionRes } from '../interfaces/dto/core-transaction.dto';
 
 @EntityRepository(VtexTransaction)
 export class VtexTransactionRepository extends Repository<VtexTransaction> {

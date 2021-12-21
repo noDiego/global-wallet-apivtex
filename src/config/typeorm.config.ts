@@ -1,7 +1,7 @@
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { envConfig } from './index';
-import { AwsResult } from '../infrastructure/dto/aws-result';
-import { AwsClient } from '../infrastructure/client/aws.client';
+import { AwsResult } from '../interfaces/dto/aws-result';
+import { AwsClient } from '../client/aws.client';
 
 export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
   useFactory: async () => {

@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import winLogger from '../../config/winston.config';
-import { ResponseDTO } from '../dto/api-response.dto';
+import { ResponseDTO } from '../../interfaces/wallet/api-response.dto';
 
 @Catch(Error)
 export class ErrorExceptionFilter implements ExceptionFilter {

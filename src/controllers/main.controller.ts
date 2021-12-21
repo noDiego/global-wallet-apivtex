@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
-import { envConfig } from '../../config';
+import { envConfig } from '../config';
 
 @Controller('')
 export class MainController {

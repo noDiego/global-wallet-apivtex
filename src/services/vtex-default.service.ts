@@ -1,20 +1,20 @@
-import { WalletApiClient } from '../../infrastructure/client/wallet-api.client';
-import { PaymentRequestDTO } from '../../application/dto/payment-request.dto';
-import { PaymentResponseDto } from '../../application/dto/payment-response.dto';
-import { envConfig } from '../../config';
-import { CancellationRequestDTO, CancellationResponseDTO } from '../../application/dto/cancellation.dto';
-import { SettlementsRequestDTO, SettlementsResponseDTO } from '../../application/dto/settlements.dto';
-import { RefundRequestDTO, RefundResponseDTO } from '../../application/dto/refund.dto';
-import { VtexRecordRepository } from '../../infrastructure/repository/vtex-record.repository';
+import { WalletApiClient } from '../client/wallet-api.client';
+import { PaymentRequestDTO } from '../interfaces/wallet/payment-request.dto';
+import { PaymentResponseDto } from '../interfaces/wallet/payment-response.dto';
+import { envConfig } from '../config';
+import { CancellationRequestDTO, CancellationResponseDTO } from '../interfaces/wallet/cancellation.dto';
+import { SettlementsRequestDTO, SettlementsResponseDTO } from '../interfaces/wallet/settlements.dto';
+import { RefundRequestDTO, RefundResponseDTO } from '../interfaces/wallet/refund.dto';
+import { VtexRecordRepository } from '../repository/vtex-record.repository';
 import { Injectable, Logger } from '@nestjs/common';
-import { PaymentOperation, VtexStatus } from '../../infrastructure/enums/vtex.enum';
-import { ResponseDTO } from '../../application/dto/api-response.dto';
-import { VtexTransactionRepository } from '../../infrastructure/repository/vtex-transaction.repository';
-import { VtexRequestDto } from '../../application/dto/vtex-request.dto';
-import { VtexTransactionDto } from '../../infrastructure/dto/vtex-transaction.dto';
+import { PaymentOperation, VtexStatus } from '../interfaces/enums/vtex.enum';
+import { ResponseDTO } from '../interfaces/wallet/api-response.dto';
+import { VtexTransactionRepository } from '../repository/vtex-transaction.repository';
+import { VtexRequestDto } from '../interfaces/wallet/vtex-request.dto';
+import { VtexTransactionDto } from '../interfaces/dto/vtex-transaction.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { sleep, validateCardNumber } from '../../utils/validation';
-import { CoreTransactionRes, TransactionStatus } from '../../infrastructure/dto/core-transaction.dto';
+import { sleep, validateCardNumber } from '../utils/validation';
+import { CoreTransactionRes, TransactionStatus } from '../interfaces/dto/core-transaction.dto';
 
 @Injectable()
 export class VtexDefaultService {
