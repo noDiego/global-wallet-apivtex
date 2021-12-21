@@ -251,6 +251,7 @@ export class VtexDefaultService {
         requestId: refundReq.requestId,
         settleId: refundReq.settleId,
         value: refundReq.value,
+        transactionNumber: transaction.transactionNumber,
       };
 
       await this.transactionRep.saveTransaction(vtexData, PaymentOperation.REFUND, trxResult);
