@@ -1,21 +1,28 @@
 import * as winston from 'winston';
 import { envConfig } from './index';
-import { utilities as nestUtilites } from 'nest-winston';
+import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
 
+const level = envConfig.isDev ? 'debug' : 'info';
 const custFormat = winston.format.printf(({ level, message, timestamp, ...metadata }) => {
   const haveContext = metadata && metadata.context;
   return `${timestamp} ${haveContext ? '(' + metadata.context + ') ' : ''}[${level}] : ${message} `;
 });
-export default {
-  level: envConfig.environment == 'development' || envConfig.environment == 'local' ? 'debug' : 'info',
+
+const format = envConfig.isDev
+  ? winston.format.combine(winston.format.timestamp(), nestWinstonModuleUtilities.format.nestLike())
+  : winston.format.combine(winston.format.timestamp(), winston.format.json());
+
+const loggerConfig = {
+  level: level,
   transports: [
     new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        envConfig.isLocal ? nestUtilites.format.nestLike() : custFormat,
-      ),
+      format: format,
+      level: level,
     }),
-    // other transports...
   ],
   // other options
 };
+
+const winLogger: winston.Logger = winston.createLogger(loggerConfig);
+
+export default winLogger;

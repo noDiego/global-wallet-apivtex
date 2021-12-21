@@ -15,18 +15,24 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
     vtexRequest: VtexRequestDto,
     operation: PaymentOperation,
     trx?: CoreTransactionRes | any,
+    rejected = false,
   ): Promise<VtexTransactionDto> {
     const vtexTransaction: VtexTransaction = new VtexTransaction();
     vtexTransaction.paymentId = vtexRequest.paymentId;
     vtexTransaction.orderId = vtexRequest.orderId;
     vtexTransaction.requestId = vtexRequest.requestId;
     vtexTransaction.settleId = vtexRequest.settleId;
-    vtexTransaction.amount = vtexRequest.value;
+    vtexTransaction.amount = vtexRequest.value | trx.amount;
     vtexTransaction.callbackUrl = vtexRequest.callbackUrl;
     vtexTransaction.merchantName = vtexRequest.merchantName;
     vtexTransaction.clientEmail = vtexRequest.clientEmail;
     vtexTransaction.transactionNumber = vtexRequest.transactionNumber;
-    vtexTransaction.status = operation == PaymentOperation.PAYMENT ? VtexTransactionStatus.INIT : undefined;
+    vtexTransaction.status =
+      operation == PaymentOperation.PAYMENT
+        ? rejected
+          ? VtexTransactionStatus.REJECTED
+          : VtexTransactionStatus.INIT
+        : undefined;
 
     vtexTransaction.coreId = trx && trx.id ? String(trx.id) : null;
     vtexTransaction.authorizationId = trx ? trx.authorizationCode : null;

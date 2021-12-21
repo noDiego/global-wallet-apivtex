@@ -65,6 +65,7 @@ export class VtexDefaultService {
         vtexData,
         PaymentOperation.PAYMENT,
         trxResult,
+        trxResult.id == null,
       );
 
       const response: PaymentResponseDto = {
@@ -303,6 +304,7 @@ export class VtexDefaultService {
         requestId: settlementReq.requestId,
         settleId: settlementReq.settleId,
         value: settlementReq.value,
+        transactionNumber: transaction.transactionNumber,
       };
 
       await this.transactionRep.saveTransaction(vtexData, PaymentOperation.SETTLEMENT, trxResult);

@@ -5,7 +5,7 @@ import { AwsClient } from '../infrastructure/client/aws.client';
 
 export const typeOrmModuleAsyncOptions: TypeOrmModuleAsyncOptions = {
   useFactory: async () => {
-    if (!envConfig.isLocal) {
+    if (!envConfig.isDev) {
       const secret: AwsResult = await AwsClient.getSecret();
       return {
         type: envConfig.db.type as any,

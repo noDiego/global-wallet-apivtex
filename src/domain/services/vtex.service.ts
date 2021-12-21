@@ -128,7 +128,7 @@ export class VtexService {
 
       await this.recordRep.createRecord(paymentId, PaymentOperation.CONFIRMATION, paymentId, null);
       this.logger.log(`Confirmation - Enviando respuesta a VTEX | paymentId:${paymentId} - status: ${response.status}`);
-      if (!envConfig.isLocal) await this.walletApiClient.callback(vtexTransaction.callbackUrl, response);
+      if (!envConfig.isDev) await this.walletApiClient.callback(vtexTransaction.callbackUrl, response);
 
       return { code: 0, message: `paymentId:${paymentId} confirmado OK.` };
     } catch (e) {

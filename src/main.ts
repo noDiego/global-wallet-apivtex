@@ -10,8 +10,9 @@ import { Logger } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import winstonConfig from './config/winston.config';
 import { envConfig } from './config';
-import { HttpExceptionFilter } from './application/middleware/http-exception.filter';
 import { CustomValidationPipe } from './application/pipes/custom-validation-pipe.service';
+import { ErrorExceptionFilter } from './application/middleware/http-exception.filter';
+import { LoggingInterceptor } from './application/middleware/logging.interceptor';
 
 async function bootstrap() {
   if (envConfig.environment != 'local') require('newrelic');
@@ -23,7 +24,8 @@ async function bootstrap() {
   };
 
   const app = await NestFactory.create(AppModule, options);
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalFilters(new ErrorExceptionFilter());
   app.useGlobalPipes(new CustomValidationPipe());
 
   if (envConfig.environment == 'development') app.enableCors();

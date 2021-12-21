@@ -4,7 +4,7 @@ dotenv.config();
 
 export const envConfig = {
   environment: process.env.NODE_ENV,
-  isLocal: process.env.NODE_ENV == 'local',
+  isDev: process.env.NODE_ENV == 'local' || process.env.NODE_ENV == 'development',
   vtexTesting: process.env.VTEX_TESTING == '1',
   aws: {
     region: process.env.AWS_SECRET_REGION,
