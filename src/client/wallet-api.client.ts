@@ -32,7 +32,7 @@ export class WalletApiClient {
       return response.data;
     } catch (e) {
       this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(data)}`, e.stack);
-      throw new InternalServerErrorException(e);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -56,7 +56,7 @@ export class WalletApiClient {
       return resp;
     } catch (e) {
       this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(paymentId)}`, e.stack);
-      throw new InternalServerErrorException(e);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -80,7 +80,7 @@ export class WalletApiClient {
       return response.data;
     } catch (e) {
       this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(paymentId)}`, e.stack);
-      throw new InternalServerErrorException(e);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -110,7 +110,7 @@ export class WalletApiClient {
           errorMsg,
         e.stack,
       );
-      throw new InternalServerErrorException(e, errorMsg);
+      throw new InternalServerErrorException(errorMsg);
     }
   }
 }
