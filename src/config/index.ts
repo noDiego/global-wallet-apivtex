@@ -33,8 +33,8 @@ export const envConfig = {
   },
   vtex: {
     jumbo: {
-      apptoken: process.env.VTEX_JUMBO_APPKEY,
-      appkey: process.env.VTEX_JUMBO_APPTOKEN,
+      apptoken: process.env.VTEX_JUMBO_APPTOKEN,
+      appkey: process.env.VTEX_JUMBO_APPKEY,
     },
     development: {
       port: process.env.APP_PORT,
