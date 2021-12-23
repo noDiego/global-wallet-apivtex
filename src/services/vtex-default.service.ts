@@ -69,7 +69,7 @@ export class VtexDefaultService {
       );
 
       const response: PaymentResponseDto = {
-        acquirer: 'PP',
+        acquirer: null,
         authorizationId: trxResult.authorizationCode,
         delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
         delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
@@ -120,7 +120,7 @@ export class VtexDefaultService {
         date: new Date(),
         status: TransactionStatus.APPROVED,
         amount: transaction.amount,
-        authorizationCode: validCard ? uuidv4() : null,
+        authorizationCode: uuidv4(),
         id: transaction.coreId,
       };
       //
@@ -313,7 +313,7 @@ export class VtexDefaultService {
       response = {
         paymentId: settlementReq.paymentId,
         settleId: String(trxResult.id),
-        value: trxResult.amount,
+        value: settlementReq.value,
         code: '0',
         message: 'Sucessfully settled',
         requestId: settlementReq.requestId,
