@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { envConfig } from '../config';
 import { URLS } from '../constants/urls';
 import { MerchantKeys } from '../interfaces/enums/vtex.enum';
-import { CoreResponse, CoreTransactionReq, CoreTransactionRes } from '../interfaces/dto/core-transaction.dto';
+import { CoreResponse, CoreTransactionReq } from '../interfaces/dto/core-transaction.dto';
 import { PaymentResponseDto } from '../interfaces/wallet/payment-response.dto';
 
 @Injectable()
@@ -98,18 +98,19 @@ export class WalletApiClient {
     };
     this.logger.debug('Realizando Callback a URL:' + callbackUrl);
     try {
-      await axios(requestConfig);
+      const resp: AxiosResponse = await axios(requestConfig);
+      this.logger.log(`Response de CallBack - status:${resp.status} - response:${JSON.stringify(resp.data)}`);
       return;
     } catch (e) {
-      const errorMsg =
-        `Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(response)}` +
-        e.response
-          ? ` Response: ${e.response}`
-          : ``;
-      this.logger.error(
-          errorMsg,
-        e.stack,
-      );
+      let errorMsg = `Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(
+        response,
+      )}`;
+      if (e.isAxiosError) {
+        const a = e as AxiosError;
+        errorMsg =
+          errorMsg + ' Response - Status:' + a.response.status + ' ResponseBody:' + JSON.stringify(e.response.data);
+      }
+      this.logger.error(errorMsg, e.stack);
       throw new InternalServerErrorException(errorMsg);
     }
   }
