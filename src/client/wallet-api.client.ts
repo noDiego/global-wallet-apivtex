@@ -32,7 +32,7 @@ export class WalletApiClient {
       return response.data;
     } catch (e) {
       this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(data)}`, e.stack);
-      throw new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e);
     }
   }
 
@@ -56,7 +56,7 @@ export class WalletApiClient {
       return resp;
     } catch (e) {
       this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(paymentId)}`, e.stack);
-      throw new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e);
     }
   }
 
@@ -80,14 +80,14 @@ export class WalletApiClient {
       return response.data;
     } catch (e) {
       this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(paymentId)}`, e.stack);
-      throw new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e);
     }
   }
 
   public async callback(callbackUrl: string, response: PaymentResponseDto): Promise<void> {
     const headers: any = {
-      'X-VTEX-API-AppKey': envConfig.server.vtexAppKey,
-      'X-VTEX-API-AppToken': envConfig.server.vtexAppToken,
+      'X-VTEX-API-AppKey': envConfig.vtex.jumbo.appkey,
+      'X-VTEX-API-AppToken': envConfig.vtex.jumbo.apptoken,
     };
 
     const requestConfig: AxiosRequestConfig = {
@@ -101,11 +101,16 @@ export class WalletApiClient {
       await axios(requestConfig);
       return;
     } catch (e) {
+      const errorMsg =
+        `Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(response)}` +
+        e.response
+          ? ` Response: ${e.response}`
+          : ``;
       this.logger.error(
-        `Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(response)}`,
+          errorMsg,
         e.stack,
       );
-      throw new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e, errorMsg);
     }
   }
 }

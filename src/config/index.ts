@@ -32,6 +32,10 @@ export const envConfig = {
     synchronize: true,
   },
   vtex: {
+    jumbo: {
+      apptoken: process.env.VTEX_JUMBO_APPKEY,
+      appkey: process.env.VTEX_JUMBO_APPTOKEN,
+    },
     development: {
       port: process.env.APP_PORT,
       timeout: 45000,
