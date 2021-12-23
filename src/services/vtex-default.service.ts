@@ -38,7 +38,7 @@ export class VtexDefaultService {
 
       //Simular Pago
 
-      if (paymentRequest.card?.number.includes('422222222222222')) {
+      if (paymentRequest.card?.number?.includes('422222222222222')) {
         pagoPendiente = true;
       }
 
