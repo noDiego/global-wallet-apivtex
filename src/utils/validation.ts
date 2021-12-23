@@ -1,6 +1,6 @@
 export function validateCardNumber(number: string) {
   const cardValidator = require('card-validator');
-  if (!number) return false;
+  if (!number) return true;
   const numberValidation = cardValidator.number(number);
   return numberValidation.isValid;
 }
