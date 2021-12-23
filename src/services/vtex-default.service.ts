@@ -34,7 +34,7 @@ export class VtexDefaultService {
         validCard = true;
       }
 
-      let pagoPendiente = false; //Para simulacion de pago asincrono
+      let pagoPendiente = true; //Para simulacion de pago asincrono
 
       //Simular Pago
 
