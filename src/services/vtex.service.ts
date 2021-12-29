@@ -6,7 +6,7 @@ import { CancellationRequestDTO, CancellationResponseDTO } from '../interfaces/w
 import { SettlementsRequestDTO, SettlementsResponseDTO } from '../interfaces/wallet/settlements.dto';
 import { RefundRequestDTO, RefundResponseDTO } from '../interfaces/wallet/refund.dto';
 import { VtexRecordRepository } from '../repository/vtex-record.repository';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { PaymentOperation, VtexTransactionStatus, VtexStatus } from '../interfaces/enums/vtex.enum';
 import { ResponseDTO } from '../interfaces/wallet/api-response.dto';
 import { VtexTransactionRepository } from '../repository/vtex-transaction.repository';
@@ -90,10 +90,9 @@ export class VtexService {
         orderId: vtexTransaction.orderId,
       };
 
-      if (vtexTransaction.status == VtexTransactionStatus.CANCELED) {
-      }
+      this.validateCancelled(vtexTransaction);
 
-      const paymentResult: ResponseDTO<CoreTransactionRes> = await this.walletApiClient.payment(
+      const paymentResult: CoreResponse = await this.walletApiClient.payment(
         paymentWalletReq,
         'JUMBO', //vtexTransaction.merchantName, //TODO: Ver esto
         commerceSession,
@@ -102,7 +101,7 @@ export class VtexService {
 
       const response: PaymentResponseDto = {
         acquirer: null, // paymentRequest.card.holder || 'VTEX',
-        authorizationId: paymentResult.code == 0 ? transactionRes.authorizationCode : null,
+        authorizationId: TransactionStatus.APPROVED ? transactionRes.authorizationCode : null,
         delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
         delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
         delayToCancel: envConfig.vtex.development.delayToCancel,
@@ -160,7 +159,8 @@ export class VtexService {
         requestId: cancellationRequest.requestId,
       };
     } else if (transaction.status == VtexTransactionStatus.CONFIRMED) {
-      cancelResp = await this.walletApiClient.refund(transaction.paymentId, transaction.amount, commerceSession);
+      const cancelAmount = await this.transactionRep.getPaymentTotalAmount(cancellationRequest.paymentId);
+      cancelResp = await this.walletApiClient.refund(transaction.paymentId, cancelAmount, commerceSession);
     }
 
     try {
@@ -225,6 +225,8 @@ export class VtexService {
 
       const transaction: VtexTransactionDto = await this.transactionRep.getPayment(refundReq.paymentId);
 
+      this.validateCancelled(transaction);
+
       if (transaction.status == VtexTransactionStatus.CONFIRMED) {
         refundResp = await this.walletApiClient.refund(transaction.paymentId, transaction.amount, commerceSession);
       }
@@ -274,7 +276,7 @@ export class VtexService {
     try {
       const transaction: VtexTransactionDto = await this.transactionRep.getPayment(settlementReq.paymentId);
 
-      // if(settlementReq.value == )
+      this.validateCancelled(transaction);
 
       const transactionResult: CoreResponse = await this.walletApiClient.settlement(settlementReq.paymentId);
 
@@ -314,5 +316,11 @@ export class VtexService {
     await this.recordRep.createRecord(settlementReq.paymentId, PaymentOperation.SETTLEMENT, settlementReq, response);
     this.logger.log(`Settlements - Terminado OK| paymentId:${settlementReq.paymentId}`);
     return response;
+  }
+
+  private validateCancelled(tx: VtexTransactionDto): void {
+    if (tx.status == VtexTransactionStatus.CANCELED) {
+      throw new InternalServerErrorException('Transaction currently canceled');
+    }
   }
 }

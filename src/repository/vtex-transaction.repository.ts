@@ -80,4 +80,24 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
       return false;
     }
   }
+  /*
+  Se obtiene valor final luego de upselling/downselling
+   */
+  async getPaymentTotalAmount(paymentId: string): Promise<number> {
+    try {
+      let sum = 0;
+      const transactionList = await this.find({ where: { paymentId: paymentId } });
+      transactionList.forEach((tx) => {
+        if (tx.operationType == PaymentOperation.REFUND) {
+          sum = sum - tx.amount;
+        } else if (tx.operationType == PaymentOperation.PAYMENT) {
+          sum = sum + tx.amount;
+        }
+      });
+      return sum;
+    } catch (e) {
+      this.logger.error('Error al actualizar status: ' + e.message);
+      throw e;
+    }
+  }
 }

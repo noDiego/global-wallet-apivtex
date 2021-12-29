@@ -7,7 +7,7 @@ import { SettlementsRequestDTO, SettlementsResponseDTO } from '../interfaces/wal
 import { RefundRequestDTO, RefundResponseDTO } from '../interfaces/wallet/refund.dto';
 import { VtexRecordRepository } from '../repository/vtex-record.repository';
 import { Injectable, Logger } from '@nestjs/common';
-import { PaymentOperation, VtexStatus } from '../interfaces/enums/vtex.enum';
+import { PaymentOperation, VtexStatus, VtexTransactionStatus } from '../interfaces/enums/vtex.enum';
 import { ResponseDTO } from '../interfaces/wallet/api-response.dto';
 import { VtexTransactionRepository } from '../repository/vtex-transaction.repository';
 import { VtexRequestDto } from '../interfaces/wallet/vtex-request.dto';
@@ -58,7 +58,7 @@ export class VtexDefaultService {
         value: paymentRequest.value,
         clientEmail: paymentRequest.miniCart.buyer.email,
         merchantName: paymentRequest.merchantName,
-        callbackUrl: paymentRequest.callbackUrl,
+        callbackUrl: paymentRequest.callbackUrl.replace('jumbo.vtexpayments.com.br', 'jumboprepro.vtexpayments.com.br'), //FIX TEMPORAL PARA BUG DE VTEX
       };
 
       const vtexTransaction: VtexTransactionDto = await this.transactionRep.saveTransaction(
@@ -155,6 +155,8 @@ export class VtexDefaultService {
       };
 
       await this.transactionRep.saveTransaction(vtexData, PaymentOperation.CONFIRMATION, trxResult);
+
+      await this.transactionRep.updatePaymentStatus(paymentId, VtexTransactionStatus.CONFIRMED);
 
       await this.recordRep.createRecord(paymentId, PaymentOperation.CONFIRMATION, paymentId, null);
 
@@ -325,9 +327,9 @@ export class VtexDefaultService {
       response = {
         paymentId: settlementReq.paymentId,
         settleId: null,
-        code: 'cancel-manually',
+        code: 'settlements-failed',
         value: settlementReq.value,
-        message: 'Cancellation should be done manually',
+        message: 'Settlements Failed',
         requestId: settlementReq.requestId,
       };
     }

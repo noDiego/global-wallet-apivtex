@@ -14,7 +14,6 @@ export class WalletApiClient {
     // (como id puede venir el commerceUserId, userDni, emailUser, userId)
     const headers: any = {
       'x-api-session': commerceSession,
-      'x-api-key': envConfig.walletApi.apiKey,
       'x-api-token': MerchantKeys[origin],
     };
     this.logger.debug(headers);
@@ -63,7 +62,6 @@ export class WalletApiClient {
   public async refund(paymentId: string, amount: number, commerceSession: string): Promise<CoreResponse> {
     const headers: any = {
       'x-api-session': commerceSession,
-      'x-api-key': envConfig.walletApi.apiKey,
       'x-api-token': MerchantKeys[origin],
     };
     const url = `${URLS.walletApi.payment}/${paymentId}/vtexrefunds`;
