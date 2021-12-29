@@ -22,7 +22,7 @@ export class VtexTransactionRepository extends Repository<VtexTransaction> {
     vtexTransaction.orderId = vtexRequest.orderId;
     vtexTransaction.requestId = vtexRequest.requestId;
     vtexTransaction.settleId = vtexRequest.settleId;
-    vtexTransaction.amount = vtexRequest.value | trx.amount;
+    vtexTransaction.amount = vtexRequest.value | trx?.amount;
     vtexTransaction.callbackUrl = vtexRequest.callbackUrl;
     vtexTransaction.merchantName = vtexRequest.merchantName;
     vtexTransaction.clientEmail = vtexRequest.clientEmail;
