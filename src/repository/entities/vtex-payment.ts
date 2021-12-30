@@ -1,22 +1,26 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PaymentOperation } from '../../interfaces/enums/vtex.enum';
+import { VtexTransactionFlow } from './vtex-transaction-flow';
 
 @Entity()
-export class VtexTransaction extends BaseEntity {
+export class VtexPayment extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false, unique: false })
-  transactionNumber: string;
+  @Column()
+  date: Date;
 
   @Column({ nullable: false, unique: false })
   paymentId: string;
 
-  @Column({ nullable: false })
-  operationType: PaymentOperation;
+  @Column({ nullable: true })
+  status: string;
 
   @Column()
   amount: number;
+
+  @Column()
+  originalAmount: number;
 
   @Column({ nullable: true, unique: false })
   orderId: string;
@@ -28,12 +32,6 @@ export class VtexTransaction extends BaseEntity {
   authorizationId: string;
 
   @Column({ nullable: true, unique: false })
-  settleId: string;
-
-  @Column({ nullable: true, unique: false })
-  requestId: string;
-
-  @Column({ nullable: true, unique: false })
   merchantName: string;
 
   @Column({ nullable: true, unique: false })
@@ -42,9 +40,6 @@ export class VtexTransaction extends BaseEntity {
   @Column({ nullable: true, unique: false })
   callbackUrl: string;
 
-  @Column()
-  date: Date;
-
-  @Column({ nullable: true })
-  status: string;
+  @OneToMany(() => VtexTransactionFlow, (transfer: VtexTransactionFlow) => transfer.paymentId)
+  transactions: VtexTransactionFlow[];
 }

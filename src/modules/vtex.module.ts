@@ -4,13 +4,12 @@ import { Module } from '@nestjs/common';
 import { WalletApiClient } from '../client/wallet-api.client';
 import { VtexRecordRepository } from '../repository/vtex-record.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { VtexTransactionRepository } from '../repository/vtex-transaction.repository';
-import { VtexDefaultService } from '../services/vtex-default.service';
-import { VtexDefaultController } from '../controllers/vtex-default.controller';
+import { VtexPaymentRepository } from '../repository/vtex-payment.repository';
+import { VtexTransactionFlowRepository } from '../repository/vtex-transaction-flow.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([VtexRecordRepository, VtexTransactionRepository])],
-  controllers: [VtexController, VtexDefaultController],
-  providers: [VtexService, VtexDefaultService, WalletApiClient],
+  imports: [TypeOrmModule.forFeature([VtexRecordRepository, VtexPaymentRepository, VtexTransactionFlowRepository])],
+  controllers: [VtexController],
+  providers: [VtexService, WalletApiClient],
 })
 export class VtexModule {}

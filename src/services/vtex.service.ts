@@ -7,70 +7,85 @@ import { SettlementsRequestDTO, SettlementsResponseDTO } from '../interfaces/wal
 import { RefundRequestDTO, RefundResponseDTO } from '../interfaces/wallet/refund.dto';
 import { VtexRecordRepository } from '../repository/vtex-record.repository';
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { PaymentOperation, VtexTransactionStatus, VtexStatus } from '../interfaces/enums/vtex.enum';
+import { getVtexStatus, PaymentOperation, PaymentStatus, VtexStatus } from '../interfaces/enums/vtex.enum';
 import { ResponseDTO } from '../interfaces/wallet/api-response.dto';
-import { VtexTransactionRepository } from '../repository/vtex-transaction.repository';
-import { VtexRequestDto } from '../interfaces/wallet/vtex-request.dto';
-import { VtexTransactionDto } from '../interfaces/dto/vtex-transaction.dto';
-import { v4 as uuidv4 } from 'uuid';
+import { VtexPaymentRepository } from '../repository/vtex-payment.repository';
+import { PaymentTransactionDto } from '../interfaces/dto/payment-transaction.dto';
+import { PaymentDto } from '../interfaces/dto/payment.dto';
 import {
   CoreResponse,
   CoreTransactionReq,
   CoreTransactionRes,
   TransactionStatus,
 } from '../interfaces/dto/core-transaction.dto';
+import { VtexTransactionFlowRepository } from '../repository/vtex-transaction-flow.repository';
 
 @Injectable()
 export class VtexService {
   constructor(
     private walletApiClient: WalletApiClient,
-    private recordRep: VtexRecordRepository,
-    private transactionRep: VtexTransactionRepository,
+    private recordRepository: VtexRecordRepository,
+    private paymentRepository: VtexPaymentRepository,
+    private transactionFlowRepository: VtexTransactionFlowRepository,
     private readonly logger: Logger,
   ) {}
 
   async payment(paymentRequest: PaymentRequestDTO): Promise<PaymentResponseDto> {
-    let vtexTransaction: VtexTransactionDto;
-    let exist = true;
+    let payment: PaymentDto;
+    let response: PaymentResponseDto;
     try {
-      //const validCard: boolean = validateCardNumber(paymentRequest.card.number);
       this.logger.log(`Payment - Iniciando... | paymentId:${paymentRequest.paymentId}`);
 
-      vtexTransaction = await this.transactionRep.getPayment(paymentRequest.paymentId);
-      if (!vtexTransaction) {
-        exist = false;
-        const vtexData: VtexRequestDto = {
+      payment = await this.paymentRepository.getPayment(paymentRequest.paymentId);
+      if (!payment) {
+        const paymentData: PaymentDto = {
           orderId: paymentRequest.orderId,
-          transactionNumber: uuidv4(),
           paymentId: paymentRequest.paymentId,
-          value: paymentRequest.value,
+          amount: paymentRequest.value,
           clientEmail: paymentRequest.miniCart.buyer.email,
           merchantName: paymentRequest.merchantName,
           callbackUrl: paymentRequest.callbackUrl,
+          status: PaymentStatus.INIT,
         };
-        vtexTransaction = await this.transactionRep.saveTransaction(vtexData, PaymentOperation.PAYMENT, null);
+        payment = await this.paymentRepository.createInitPayment(paymentData);
       }
 
-      const response: PaymentResponseDto = {
+      const vtexStatus: VtexStatus = getVtexStatus(payment.status);
+
+      response = {
         acquirer: null,
-        authorizationId: null,
+        authorizationId: payment.status == PaymentStatus.APPROVED ? payment.authorizationId : null,
         delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
         delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
         delayToCancel: envConfig.vtex.development.delayToCancel,
-        nsu: vtexTransaction.transactionNumber,
-        paymentId: paymentRequest.paymentId,
-        status: VtexStatus.UNDEFINED,
-        tid: vtexTransaction.transactionNumber,
-        paymentUrl: paymentRequest.returnUrl,
+        nsu: String(payment.id),
+        paymentId: payment.paymentId,
+        status: vtexStatus,
+        tid: String(payment.id),
         code: String(0),
-        message: !exist ? '' : 'Transaction saved. ' + 'Waiting for confirmation',
+        message:
+          vtexStatus == VtexStatus.UNDEFINED
+            ? 'Waiting for Confirmation'
+            : vtexStatus == VtexStatus.APPROVED
+            ? 'Transaction Approved'
+            : 'Transaction Denied',
       };
 
-      await this.recordRep.createRecord(paymentRequest.paymentId, PaymentOperation.PAYMENT, paymentRequest, response);
+      await this.recordRepository.createRecord(
+        paymentRequest.paymentId,
+        PaymentOperation.PAYMENT,
+        paymentRequest,
+        response,
+      );
       this.logger.log(`Payment - Terminado | paymentId:${paymentRequest.paymentId} - status: ${response.status}`);
       return response;
     } catch (e) {
-      await this.recordRep.createRecord(paymentRequest.paymentId, PaymentOperation.PAYMENT, paymentRequest, e.stack);
+      await this.recordRepository.createRecord(
+        paymentRequest.paymentId,
+        PaymentOperation.PAYMENT,
+        paymentRequest,
+        e.stack,
+      );
       this.logger.error(
         `Payment - Error al ejecutar Payment | paymentId:${paymentRequest.paymentId} - Error:${e.message}`,
         e.stack,
@@ -80,65 +95,79 @@ export class VtexService {
   }
 
   async paymentConfirmation(paymentId: string, commerceSession: string): Promise<ResponseDTO<null>> {
-    const vtexTransaction: VtexTransactionDto = await this.transactionRep.getPayment(paymentId);
+    const payment: PaymentDto = await this.paymentRepository.getPayment(paymentId);
+    this.validateCancelled(payment);
 
     this.logger.log(`Confirmation - Iniciando... | paymentId:${paymentId}`);
 
     try {
       const paymentWalletReq: CoreTransactionReq = {
-        amount: vtexTransaction.amount,
-        orderId: vtexTransaction.orderId,
+        amount: payment.amount,
+        orderId: payment.orderId,
       };
 
-      this.validateCancelled(vtexTransaction);
-
-      const paymentResult: CoreResponse = await this.walletApiClient.payment(
+      //Ejecutando pago en Core Wallet
+      const paymentWalletRes: CoreResponse = await this.walletApiClient.payment(
         paymentWalletReq,
         'JUMBO', //vtexTransaction.merchantName, //TODO: Ver esto
         commerceSession,
       );
-      const transactionRes: CoreTransactionRes = paymentResult.data;
+      if (paymentWalletRes.code != 0) throw new InternalServerErrorException(paymentWalletRes.message);
 
-      const response: PaymentResponseDto = {
+      const responseData: CoreTransactionRes = paymentWalletRes.data;
+
+      //Guardando Informacion de Transaccion
+      const transactionInfo: PaymentTransactionDto = {
+        amount: payment.amount,
+        authorizationId: responseData.authorizationCode,
+        operationType: PaymentOperation.CONFIRMATION,
+        paymentId: payment.paymentId,
+      };
+
+      await this.transactionFlowRepository.saveTransaction(transactionInfo);
+
+      //Actualizando estado de Pago
+      await this.paymentRepository.updatePaymentStatus({
+        paymentId: paymentId,
+        status: responseData.status == TransactionStatus.APPROVED ? PaymentStatus.APPROVED : PaymentStatus.DENIED,
+        coreId: responseData.id,
+      });
+
+      //Creando registro de evento
+      await this.recordRepository.createRecord(paymentId, PaymentOperation.CONFIRMATION, paymentId, {
+        code: paymentWalletRes.code,
+        message: paymentWalletRes.message,
+      });
+
+      //Enviando callback a Vtex
+      const callbackBody: PaymentResponseDto = {
         acquirer: null, // paymentRequest.card.holder || 'VTEX',
-        authorizationId: TransactionStatus.APPROVED ? transactionRes.authorizationCode : null,
+        authorizationId: responseData.status == TransactionStatus.APPROVED ? responseData.authorizationCode : null,
         delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
         delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
         delayToCancel: envConfig.vtex.development.delayToCancel,
-        nsu: vtexTransaction.transactionNumber,
+        nsu: String(payment.id),
         paymentId: paymentId,
-        status: transactionRes.status == TransactionStatus.APPROVED ? VtexStatus.APPROVED : VtexStatus.DENIED,
-        tid: vtexTransaction.transactionNumber,
-        paymentUrl: vtexTransaction.callbackUrl,
-        code: String(paymentResult.code),
-        message: paymentResult.message,
+        status: responseData.status == TransactionStatus.APPROVED ? VtexStatus.APPROVED : VtexStatus.DENIED,
+        tid: String(payment.id),
+        paymentUrl: payment.callbackUrl,
+        code: String(paymentWalletRes.code),
+        message: paymentWalletRes.message,
       };
+      this.logger.log(`Confirmation - Enviando respuesta a VTEX | paymentId:${paymentId}`);
+      await this.walletApiClient.callback(payment.callbackUrl, callbackBody);
 
-      const vtexRequest: VtexRequestDto = {
-        orderId: paymentResult.code == 0 ? transactionRes.id : null,
-        transactionNumber: vtexTransaction.transactionNumber,
-        paymentId: paymentId,
-        value: vtexTransaction.amount,
-        callbackUrl: vtexTransaction.callbackUrl,
-      };
-      await this.transactionRep.saveTransaction(vtexRequest, PaymentOperation.CONFIRMATION, transactionRes);
-
-      await this.transactionRep.updatePaymentStatus(paymentId, VtexTransactionStatus.CONFIRMED);
-
-      await this.recordRep.createRecord(paymentId, PaymentOperation.CONFIRMATION, paymentId, null);
-      this.logger.log(`Confirmation - Enviando respuesta a VTEX | paymentId:${paymentId} - status: ${response.status}`);
-      if (!envConfig.isDev) await this.walletApiClient.callback(vtexTransaction.callbackUrl, response);
-
-      return { code: 0, message: `paymentId:${paymentId} confirmado OK.` };
+      return { code: paymentWalletRes.code, message: paymentWalletRes.message };
     } catch (e) {
       this.logger.error(
         `Confirmation - Error al ejecutar Async Payment | paymentId:${paymentId}. Error: ${e.message}`,
         e,
       );
-      await this.recordRep.createRecord(paymentId, PaymentOperation.CONFIRMATION, paymentId, e.stack);
+      await this.recordRepository.createRecord(paymentId, PaymentOperation.CONFIRMATION, paymentId, e.stack);
       throw e;
     }
   }
+
   async cancellation(
     cancellationRequest: CancellationRequestDTO,
     commerceSession: string,
@@ -148,9 +177,9 @@ export class VtexService {
 
     this.logger.log(`Cancellation - Iniciada | paymentId:${cancellationRequest.paymentId}`);
 
-    const transaction: VtexTransactionDto = await this.transactionRep.getPayment(cancellationRequest.paymentId);
+    const payment: PaymentDto = await this.paymentRepository.getPayment(cancellationRequest.paymentId);
 
-    if (transaction.status == VtexTransactionStatus.CANCELED) {
+    if (payment.status == PaymentStatus.CANCELED) {
       return {
         paymentId: cancellationRequest.paymentId,
         cancellationId: null,
@@ -158,26 +187,24 @@ export class VtexService {
         message: 'Payment ya se encuentra cancelado',
         requestId: cancellationRequest.requestId,
       };
-    } else if (transaction.status == VtexTransactionStatus.CONFIRMED) {
-      const cancelAmount = await this.transactionRep.getPaymentTotalAmount(cancellationRequest.paymentId);
-      cancelResp = await this.walletApiClient.refund(transaction.paymentId, cancelAmount, commerceSession);
+    } else if (payment.status == PaymentStatus.APPROVED || payment.status == PaymentStatus.DENIED) {
+      cancelResp = await this.walletApiClient.refund(payment.coreId, payment.amount, commerceSession);
+      if (cancelResp.code != 0) throw new InternalServerErrorException(cancelResp.message);
     }
 
     try {
-      const vtexData: VtexRequestDto = {
-        orderId: cancelResp.data.id,
-        transactionNumber: transaction.transactionNumber,
+      const transactionData: PaymentTransactionDto = {
+        amount: payment.amount,
+        authorizationId: cancelResp.data.authorizationCode || undefined,
+        operationType: PaymentOperation.CANCELLATION,
         paymentId: cancellationRequest.paymentId,
-        requestId: cancellationRequest.requestId,
       };
+      const savedTransaction = await this.transactionFlowRepository.saveTransaction(transactionData);
 
-      await this.transactionRep.updatePaymentStatus(cancellationRequest.paymentId, VtexTransactionStatus.CANCELED);
-
-      const savedTransaction: VtexTransactionDto = await this.transactionRep.saveTransaction(
-        vtexData,
-        PaymentOperation.CANCELLATION,
-        cancelResp ? cancelResp.data : null,
-      );
+      await this.paymentRepository.updatePaymentStatus({
+        paymentId: cancellationRequest.paymentId,
+        status: PaymentStatus.CANCELED,
+      });
 
       response = {
         paymentId: cancellationRequest.paymentId,
@@ -187,7 +214,7 @@ export class VtexService {
         requestId: cancellationRequest.requestId,
       };
 
-      await this.recordRep.createRecord(
+      await this.recordRepository.createRecord(
         cancellationRequest.paymentId,
         PaymentOperation.CANCELLATION,
         cancellationRequest,
@@ -205,7 +232,7 @@ export class VtexService {
         message: 'Cancellation should be done manually',
         requestId: cancellationRequest.requestId,
       };
-      await this.recordRep.createRecord(
+      await this.recordRepository.createRecord(
         cancellationRequest.paymentId,
         PaymentOperation.CANCELLATION,
         cancellationRequest,
@@ -221,29 +248,34 @@ export class VtexService {
     let refundResp: CoreResponse;
     this.logger.log(`Refund - Iniciando... | paymentId:${refundReq.paymentId} - Value: ${refundReq.value}`);
     try {
-      //const transactionResult: CoreResponse = await this.walletApiClient.refund(refundReq.paymentId);
+      const payment: PaymentDto = await this.paymentRepository.getPayment(refundReq.paymentId);
 
-      const transaction: VtexTransactionDto = await this.transactionRep.getPayment(refundReq.paymentId);
+      this.validateCancelled(payment);
 
-      this.validateCancelled(transaction);
-
-      if (transaction.status == VtexTransactionStatus.CONFIRMED) {
-        refundResp = await this.walletApiClient.refund(transaction.paymentId, transaction.amount, commerceSession);
+      if (payment.status != PaymentStatus.INIT) {
+        refundResp = await this.walletApiClient.refund(payment.coreId, refundReq.value, commerceSession);
+        if (refundResp.code != 0) throw new InternalServerErrorException(refundResp.message);
       }
 
-      const vtexData: VtexRequestDto = {
-        orderId: refundResp.data.id,
+      const transactionData: PaymentTransactionDto = {
+        operationType: PaymentOperation.REFUND,
         paymentId: refundReq.paymentId,
         requestId: refundReq.requestId,
         settleId: refundReq.settleId,
-        value: refundReq.value,
+        amount: refundReq.value,
+        authorizationId: refundResp?.data.authorizationCode,
       };
 
-      const savedTransaction: VtexTransactionDto = await this.transactionRep.saveTransaction(
-        vtexData,
-        PaymentOperation.REFUND,
-        refundResp.data,
-      );
+      const savedTransaction: PaymentDto = await this.transactionFlowRepository.saveTransaction(transactionData);
+
+      //Se calcula el nuevo monto
+      const newAmount = payment.amount - refundReq.value;
+
+      //Se actualiza monto
+      await this.paymentRepository.updatePaymentStatus({
+        paymentId: refundReq.paymentId,
+        amount: newAmount,
+      });
 
       response = {
         paymentId: refundReq.paymentId,
@@ -265,36 +297,44 @@ export class VtexService {
       };
     }
 
-    await this.recordRep.createRecord(refundReq.paymentId, PaymentOperation.REFUND, refundReq, response);
+    await this.recordRepository.createRecord(refundReq.paymentId, PaymentOperation.REFUND, refundReq, response);
     this.logger.log(`Refund - Terminado OK| paymentId:${refundReq.paymentId}`);
     return response;
   }
 
   async settlements(settlementReq: SettlementsRequestDTO): Promise<SettlementsResponseDTO> {
     let response: SettlementsResponseDTO;
-    this.logger.log(`Settlements - Iniciada | paymentId:${settlementReq.paymentId}`);
+    this.logger.log(`Settlements - Iniciada | paymentId:${settlementReq.paymentId} - Amount:${settlementReq.value}`);
     try {
-      const transaction: VtexTransactionDto = await this.transactionRep.getPayment(settlementReq.paymentId);
+      const payment: PaymentDto = await this.paymentRepository.getPayment(settlementReq.paymentId);
+      this.logger.log(`Settlements - Payment valor actual :${payment.amount}`);
 
-      this.validateCancelled(transaction);
+      if (payment.amount != settlementReq.value) {
+        //TODO: Here
+      }
 
-      const transactionResult: CoreResponse = await this.walletApiClient.settlement(settlementReq.paymentId);
+      this.validateCancelled(payment);
 
-      const vtexData: VtexRequestDto = {
-        orderId: transactionResult.data.id,
+      const transactionData: PaymentTransactionDto = {
+        operationType: PaymentOperation.SETTLEMENT,
         paymentId: settlementReq.paymentId,
         requestId: settlementReq.requestId,
         settleId: settlementReq.settleId,
-        value: settlementReq.value,
+        amount: settlementReq.value,
+        authorizationId: settlementReq.authorizationId,
       };
 
-      await this.transactionRep.saveTransaction(vtexData, PaymentOperation.SETTLEMENT, transactionResult);
+      await this.transactionFlowRepository.saveTransaction(transactionData);
+      // await this.paymentRepository.updatePaymentStatus({
+      //   paymentId: settlementReq.paymentId,
+      //   status:
+      // })
 
       response = {
         paymentId: settlementReq.paymentId,
-        settleId: String(transactionResult.data.id),
-        value: transactionResult.data.amount,
-        code: String(transactionResult.code),
+        settleId: settlementReq.settleId,
+        value: settlementReq.value,
+        code: '0',
         message: 'Sucessfully settled',
         requestId: settlementReq.requestId,
       };
@@ -313,13 +353,18 @@ export class VtexService {
       };
     }
 
-    await this.recordRep.createRecord(settlementReq.paymentId, PaymentOperation.SETTLEMENT, settlementReq, response);
+    await this.recordRepository.createRecord(
+      settlementReq.paymentId,
+      PaymentOperation.SETTLEMENT,
+      settlementReq,
+      response,
+    );
     this.logger.log(`Settlements - Terminado OK| paymentId:${settlementReq.paymentId}`);
     return response;
   }
 
-  private validateCancelled(tx: VtexTransactionDto): void {
-    if (tx.status == VtexTransactionStatus.CANCELED) {
+  private validateCancelled(tx: PaymentDto): void {
+    if (tx.status == PaymentStatus.CANCELED) {
       throw new InternalServerErrorException('Transaction currently canceled');
     }
   }

@@ -35,30 +35,6 @@ export class WalletApiClient {
     }
   }
 
-  public async settlement(paymentId: string): Promise<CoreResponse> {
-    const headers: any = {
-      'x-consumer-key': MerchantKeys[origin],
-      'x-api-key': envConfig.walletApi.apiKey,
-    };
-    const url = URLS.walletApi.payment;
-
-    const requestConfig: AxiosRequestConfig = {
-      method: 'DELETE',
-      headers: headers,
-      url: url,
-      params: { id: paymentId },
-    };
-    this.logger.debug('URL:' + url);
-    try {
-      const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
-      const resp: CoreResponse = response.data;
-      return resp;
-    } catch (e) {
-      this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(paymentId)}`, e.stack);
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
   public async refund(paymentId: string, amount: number, commerceSession: string): Promise<CoreResponse> {
     const headers: any = {
       'x-api-session': commerceSession,
@@ -82,17 +58,21 @@ export class WalletApiClient {
     }
   }
 
-  public async callback(callbackUrl: string, response: PaymentResponseDto): Promise<void> {
+  public async callback(callbackUrl: string, body: PaymentResponseDto): Promise<void> {
     const headers: any = {
       'X-VTEX-API-AppKey': envConfig.vtex.jumbo.appkey,
       'X-VTEX-API-AppToken': envConfig.vtex.jumbo.apptoken,
     };
 
+    //TODO: FIX PARA BUG DE VTEX EN PREPROD
+    if (envConfig.environment == 'staging')
+      callbackUrl = callbackUrl.replace('jumbo.vtexpayments.com.br', 'jumboprepro.vtexpayments.com.br'); //FIX TEMPORAL PARA BUG DE VTEX;
+
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
       headers: headers,
       url: callbackUrl,
-      data: response,
+      data: body,
     };
     this.logger.debug('Realizando Callback a URL:' + callbackUrl);
     try {
@@ -101,7 +81,7 @@ export class WalletApiClient {
       return;
     } catch (e) {
       let errorMsg = `Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(
-        response,
+        body,
       )}`;
       if (e.isAxiosError) {
         const a = e as AxiosError;
