@@ -111,7 +111,7 @@ export class VtexController {
    */
   @Post('/payments/:paymentId/settlements')
   async settlements(
-    @RequestHeader(HeadersSessionDTO) headers: any,
+    @RequestHeader(HeadersDTO) headers: any,
     @Param('paymentId') paymentId: string,
     @Body() settlementsRequest: SettlementsRequestDTO,
     @Res() response: Response,
