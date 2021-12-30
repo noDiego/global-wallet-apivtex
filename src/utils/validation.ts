@@ -8,3 +8,12 @@ export function validateCardNumber(number: string) {
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export function cleanObject<T>(obj: T): T {
+  for (const key in obj) {
+    if (obj[key] === undefined) {
+      delete obj[key];
+    }
+  }
+  return obj;
+}

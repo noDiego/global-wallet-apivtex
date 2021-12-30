@@ -111,12 +111,12 @@ export class VtexController {
    */
   @Post('/payments/:paymentId/settlements')
   async settlements(
-    @RequestHeader(HeadersDTO) headers: any,
+    @RequestHeader(HeadersSessionDTO) headers: any,
     @Param('paymentId') paymentId: string,
     @Body() settlementsRequest: SettlementsRequestDTO,
     @Res() response: Response,
   ): Promise<SettlementsResponseDTO> {
-    const result: SettlementsResponseDTO = await this.vtexService.settlements(settlementsRequest);
+    const result: SettlementsResponseDTO = await this.vtexService.settlements(settlementsRequest, headers.appSession);
 
     response
       .status(result.settleId ? 200 : 500)

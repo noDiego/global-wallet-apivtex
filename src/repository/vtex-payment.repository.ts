@@ -5,6 +5,7 @@ import { PaymentStatus } from '../interfaces/enums/vtex.enum';
 import { VtexPayment } from './entities/vtex-payment';
 import { PaymentDto } from '../interfaces/dto/payment.dto';
 import { UpdatePaymentDto } from '../interfaces/dto/update-payment.dto';
+import { cleanObject } from '../utils/validation';
 
 @EntityRepository(VtexPayment)
 export class VtexPaymentRepository extends Repository<VtexPayment> {
@@ -46,16 +47,18 @@ export class VtexPaymentRepository extends Repository<VtexPayment> {
   }
 
   async updatePaymentStatus({ amount, coreId, paymentId, status }: UpdatePaymentDto): Promise<boolean> {
+    const updateData = {
+      status: status,
+      coreId: coreId,
+      amount: amount,
+    };
+
     try {
       await this.update(
         {
           paymentId: paymentId,
         },
-        {
-          status: status,
-          coreId: coreId || undefined,
-          amount: amount || undefined,
-        },
+        cleanObject(updateData),
       );
       return true;
     } catch (e) {

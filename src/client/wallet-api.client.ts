@@ -64,10 +64,6 @@ export class WalletApiClient {
       'X-VTEX-API-AppToken': envConfig.vtex.jumbo.apptoken,
     };
 
-    //TODO: FIX PARA BUG DE VTEX EN PREPROD
-    if (envConfig.environment == 'staging')
-      callbackUrl = callbackUrl.replace('jumbo.vtexpayments.com.br', 'jumboprepro.vtexpayments.com.br'); //FIX TEMPORAL PARA BUG DE VTEX;
-
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
       headers: headers,

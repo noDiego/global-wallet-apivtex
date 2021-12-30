@@ -47,6 +47,15 @@ export class VtexService {
           callbackUrl: paymentRequest.callbackUrl,
           status: PaymentStatus.INIT,
         };
+
+        //TODO: FIX PARA BUG DE VTEX EN PREPROD
+        if (envConfig.environment == 'staging')
+          paymentData.callbackUrl = paymentRequest.callbackUrl.replace(
+            'jumbo.vtexpayments.com.br',
+            'jumboprepro.vtexpayments.com.br',
+          );
+        //TODO: FIN FIX
+
         payment = await this.paymentRepository.createInitPayment(paymentData);
       }
 
@@ -187,7 +196,7 @@ export class VtexService {
         message: 'Payment ya se encuentra cancelado',
         requestId: cancellationRequest.requestId,
       };
-    } else if (payment.status == PaymentStatus.APPROVED || payment.status == PaymentStatus.DENIED) {
+    } else if (payment.status != PaymentStatus.INIT) {
       cancelResp = await this.walletApiClient.refund(payment.coreId, payment.amount, commerceSession);
       if (cancelResp.code != 0) throw new InternalServerErrorException(cancelResp.message);
     }
@@ -195,7 +204,7 @@ export class VtexService {
     try {
       const transactionData: PaymentTransactionDto = {
         amount: payment.amount,
-        authorizationId: cancelResp.data.authorizationCode || undefined,
+        authorizationId: cancelResp?.data.authorizationCode || undefined,
         operationType: PaymentOperation.CANCELLATION,
         paymentId: cancellationRequest.paymentId,
       };
@@ -302,64 +311,71 @@ export class VtexService {
     return response;
   }
 
-  async settlements(settlementReq: SettlementsRequestDTO): Promise<SettlementsResponseDTO> {
+  async settlements(request: SettlementsRequestDTO, commerceSession: string): Promise<SettlementsResponseDTO> {
     let response: SettlementsResponseDTO;
-    this.logger.log(`Settlements - Iniciada | paymentId:${settlementReq.paymentId} - Amount:${settlementReq.value}`);
+    this.logger.log(`Settlements - Iniciada | paymentId:${request.paymentId} - Settlement Value:${request.value}`);
     try {
-      const payment: PaymentDto = await this.paymentRepository.getPayment(settlementReq.paymentId);
+      const payment: PaymentDto = await this.paymentRepository.getPayment(request.paymentId);
+      this.validateCancelled(payment);
+
       this.logger.log(`Settlements - Payment valor actual :${payment.amount}`);
 
-      if (payment.amount != settlementReq.value) {
-        //TODO: Here
+      if (request.value < payment.amount) {
+        const diffAmount = payment.amount - request.value;
+        const refundResp: CoreResponse = await this.walletApiClient.refund(
+          request.paymentId,
+          diffAmount,
+          commerceSession,
+        );
+        if (refundResp.code != 0) throw new InternalServerErrorException(refundResp.message);
+      } else if (request.value > payment.amount) {
+        // const refundResp: CoreResponse = await this.walletApiClient.payment(
+        //     request.paymentId,
+        //     diffAmount,
+        //     commerceSession,
+        // );
+        // if (refundResp.code != 0) throw new InternalServerErrorException(refundResp.message);
       }
-
-      this.validateCancelled(payment);
 
       const transactionData: PaymentTransactionDto = {
         operationType: PaymentOperation.SETTLEMENT,
-        paymentId: settlementReq.paymentId,
-        requestId: settlementReq.requestId,
-        settleId: settlementReq.settleId,
-        amount: settlementReq.value,
-        authorizationId: settlementReq.authorizationId,
+        paymentId: request.paymentId,
+        requestId: request.requestId,
+        settleId: request.settleId,
+        amount: request.value,
+        authorizationId: request.authorizationId,
       };
 
       await this.transactionFlowRepository.saveTransaction(transactionData);
-      // await this.paymentRepository.updatePaymentStatus({
-      //   paymentId: settlementReq.paymentId,
-      //   status:
-      // })
+
+      await this.paymentRepository.updatePaymentStatus({
+        paymentId: request.paymentId,
+        amount: request.value,
+        status: PaymentStatus.SETTLED,
+      });
 
       response = {
-        paymentId: settlementReq.paymentId,
-        settleId: settlementReq.settleId,
-        value: settlementReq.value,
+        paymentId: request.paymentId,
+        settleId: request.settleId,
+        value: request.value,
         code: '0',
         message: 'Sucessfully settled',
-        requestId: settlementReq.requestId,
+        requestId: request.requestId,
       };
     } catch (e) {
-      this.logger.error(
-        `Settlements - Error en Settlement | paymentId:${settlementReq.paymentId} - Error: ${e.message}`,
-        e,
-      );
+      this.logger.error(`Settlements - Error en Settlement | paymentId:${request.paymentId} - Error: ${e.message}`, e);
       response = {
-        paymentId: settlementReq.paymentId,
+        paymentId: request.paymentId,
         settleId: null,
         code: 'cancel-manually',
-        value: settlementReq.value,
+        value: request.value,
         message: 'Cancellation should be done manually',
-        requestId: settlementReq.requestId,
+        requestId: request.requestId,
       };
     }
 
-    await this.recordRepository.createRecord(
-      settlementReq.paymentId,
-      PaymentOperation.SETTLEMENT,
-      settlementReq,
-      response,
-    );
-    this.logger.log(`Settlements - Terminado OK| paymentId:${settlementReq.paymentId}`);
+    await this.recordRepository.createRecord(request.paymentId, PaymentOperation.SETTLEMENT, request, response);
+    this.logger.log(`Settlements - Terminado OK| paymentId:${request.paymentId}`);
     return response;
   }
 

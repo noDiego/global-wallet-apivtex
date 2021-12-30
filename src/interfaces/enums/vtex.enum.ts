@@ -3,7 +3,7 @@ export enum PaymentStatus {
   DENIED = 'DENIED',
   INIT = 'INIT',
   CANCELED = 'CANCELED',
-  CONFIRMED = 'CONFIRMED',
+  SETTLED = 'SETTLED',
 }
 
 export enum VtexStatus {
