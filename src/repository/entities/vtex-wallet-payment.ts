@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { PaymentOperation } from '../../interfaces/enums/vtex.enum';
 import { VtexPayment } from './vtex-payment';
 

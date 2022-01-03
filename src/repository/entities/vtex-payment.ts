@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn, } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { VtexTransactionFlow } from './vtex-transaction-flow';
 import { VtexWalletPayment } from './vtex-wallet-payment';
 
