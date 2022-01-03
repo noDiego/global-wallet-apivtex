@@ -17,7 +17,7 @@ export class WalletApiClient {
       'x-api-token': MerchantKeys[origin],
     };
     this.logger.debug(headers);
-    const url = URLS.walletApi.payment;
+    const url = URLS.walletApi.vtexpayment;
 
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
@@ -35,25 +35,25 @@ export class WalletApiClient {
     }
   }
 
-  public async refund(paymentId: string, amount: number, commerceSession: string): Promise<CoreResponse> {
+  public async refund(coreId: string, amount: number, origin: string, commerceSession: string): Promise<CoreResponse> {
     const headers: any = {
-      'x-api-session': commerceSession,
+      'x-api-session': commerceSession || '0',
       'x-api-token': MerchantKeys[origin],
     };
-    const url = `${URLS.walletApi.payment}/${paymentId}/vtexrefunds`;
+    const url = `${URLS.walletApi.payment}/${coreId}/vtexrefunds`;
 
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
       headers: headers,
       url: url,
-      params: { amount: amount },
+      data: { amount: amount },
     };
     this.logger.debug('URL:' + url);
     try {
       const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
       return response.data;
     } catch (e) {
-      this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(paymentId)}`, e.stack);
+      this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(coreId)}`, e.stack);
       throw new InternalServerErrorException(e.message);
     }
   }

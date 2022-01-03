@@ -214,9 +214,9 @@ export class VtexService {
       //Se obtienen todos los pagos asociados a paymentId y se cancelan (quedan en 0)
       for (const wp of payment.walletPayments) {
         if (wp.amount > 0) {
-          cancelResp = await this.walletApiClient.refund(payment.coreId, wp.amount, commerceSession);
+          cancelResp = await this.walletApiClient.refund(wp.coreId, wp.amount, payment.merchantName, commerceSession);
           if (cancelResp.code != 0) throw new InternalServerErrorException(cancelResp.message);
-          await this.walletRepository.updatePayment(payment.coreId, 0);
+          await this.walletRepository.updatePayment(wp.coreId, 0);
         }
       }
     }
@@ -384,15 +384,25 @@ export class VtexService {
       for (const wp of payment.walletPayments) {
         if (totalRefunded <= wp.amount && wp.amount > 0) {
           //Refund reduce un pago.
-          const refundResp = await this.walletApiClient.refund(payment.coreId, totalRefunded, commerceSession);
+          const refundResp = await this.walletApiClient.refund(
+            wp.coreId,
+            totalRefunded,
+            payment.merchantName,
+            commerceSession,
+          );
           if (refundResp.code != 0) throw new InternalServerErrorException(refundResp.message);
-          await this.walletRepository.updatePayment(payment.coreId, wp.amount - totalRefunded);
+          await this.walletRepository.updatePayment(wp.coreId, wp.amount - totalRefunded);
           break;
         } else if (totalRefunded > wp.amount && wp.amount > 0) {
           //Refun reduce un pago completo
-          const refundResp = await this.walletApiClient.refund(payment.coreId, wp.amount, commerceSession);
+          const refundResp = await this.walletApiClient.refund(
+            wp.coreId,
+            wp.amount,
+            payment.merchantName,
+            commerceSession,
+          );
           if (refundResp.code != 0) throw new InternalServerErrorException(refundResp.message);
-          await this.walletRepository.updatePayment(payment.coreId, 0);
+          await this.walletRepository.updatePayment(wp.coreId, 0);
           totalRefunded -= wp.amount;
         }
       }

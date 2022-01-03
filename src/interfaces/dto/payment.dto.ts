@@ -11,7 +11,6 @@ export class PaymentDto {
   orderId?: string;
   tld?: string;
   authorizationId?: string;
-  coreId?: string;
   date?: Date;
   status?: PaymentStatus;
   walletPayments?: WalletPaymentDto[];
