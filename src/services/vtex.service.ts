@@ -21,6 +21,7 @@ import {
 import { VtexTransactionFlowRepository } from '../repository/vtex-transaction-flow.repository';
 import { VtexWalletPaymentRepository } from '../repository/vtex-wallet-payment.repository';
 import { WalletPaymentDto } from '../interfaces/dto/wallet-payment.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class VtexService {
@@ -70,10 +71,10 @@ export class VtexService {
         delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
         delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
         delayToCancel: envConfig.vtex.development.delayToCancel,
-        nsu: String(payment.id),
+        nsu: payment.orderId,
         paymentId: payment.paymentId,
         status: vtexStatus,
-        tid: String(payment.id),
+        tid: payment.orderId,
         code: String(0),
         message:
           vtexStatus == VtexStatus.UNDEFINED
@@ -169,10 +170,10 @@ export class VtexService {
         delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
         delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
         delayToCancel: envConfig.vtex.development.delayToCancel,
-        nsu: String(payment.id),
+        nsu: String(payment.orderId),
         paymentId: paymentId,
         status: paymentData.status == TransactionStatus.APPROVED ? VtexStatus.APPROVED : VtexStatus.DENIED,
-        tid: String(payment.id),
+        tid: String(payment.orderId),
         paymentUrl: payment.callbackUrl,
         code: String(paymentWalletRes.code),
         message: paymentWalletRes.message,
@@ -324,6 +325,7 @@ export class VtexService {
   }
 
   async settlements(request: SettlementsRequestDTO, commerceSession: string): Promise<SettlementsResponseDTO> {
+    const settleId = request.settleId || uuidv4(); //En algunos calls no viene el settleId
     let response: SettlementsResponseDTO;
     this.logger.log(`Settlements - Iniciada | paymentId:${request.paymentId} - Settlement Value:${request.value}`);
     try {
@@ -339,7 +341,7 @@ export class VtexService {
         operationType: PaymentOperation.SETTLEMENT,
         paymentId: request.paymentId,
         requestId: request.requestId,
-        settleId: request.settleId,
+        settleId: settleId,
         amount: request.value,
         authorizationId: request.authorizationId,
       };
@@ -354,7 +356,7 @@ export class VtexService {
 
       response = {
         paymentId: request.paymentId,
-        settleId: request.settleId,
+        settleId: settleId,
         value: request.value,
         code: '0',
         message: 'Sucessfully settled',
