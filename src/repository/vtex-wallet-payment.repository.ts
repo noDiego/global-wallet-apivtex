@@ -31,7 +31,7 @@ export class VtexWalletPaymentRepository extends Repository<VtexWalletPayment> {
     }
   }
 
-  async updatePayment(coreId: string, newAmount: number): Promise<void> {
+  async updateWalletPayment(coreId: string, newAmount: number): Promise<void> {
     await this.update(coreId, { amount: newAmount });
   }
 }

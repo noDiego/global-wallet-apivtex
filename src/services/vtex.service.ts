@@ -179,7 +179,9 @@ export class VtexService {
         message: paymentWalletRes.message,
       };
       this.logger.log(`Confirmation - Enviando respuesta a VTEX | paymentId:${paymentId}`);
-      await this.walletApiClient.callback(payment.callbackUrl, callbackBody);
+      this.walletApiClient.callback(payment.callbackUrl, callbackBody).then((r) => {
+        this.logger.log(`Confirmation - Callback for ${payment.paymentId} - Status: ${r}`);
+      });
 
       return { code: paymentWalletRes.code, message: paymentWalletRes.message };
     } catch (e) {
@@ -217,7 +219,7 @@ export class VtexService {
         if (wp.amount > 0) {
           cancelResp = await this.walletApiClient.refund(wp.coreId, wp.amount, payment.merchantName, commerceSession);
           if (cancelResp.code != 0) throw new InternalServerErrorException(cancelResp.message);
-          await this.walletRepository.updatePayment(wp.coreId, 0);
+          await this.walletRepository.updateWalletPayment(wp.coreId, 0);
         }
       }
     }
@@ -393,7 +395,7 @@ export class VtexService {
             commerceSession,
           );
           if (refundResp.code != 0) throw new InternalServerErrorException(refundResp.message);
-          await this.walletRepository.updatePayment(wp.coreId, wp.amount - totalRefunded);
+          await this.walletRepository.updateWalletPayment(wp.coreId, wp.amount - totalRefunded);
           break;
         } else if (totalRefunded > wp.amount && wp.amount > 0) {
           //Refun reduce un pago completo
@@ -404,7 +406,7 @@ export class VtexService {
             commerceSession,
           );
           if (refundResp.code != 0) throw new InternalServerErrorException(refundResp.message);
-          await this.walletRepository.updatePayment(wp.coreId, 0);
+          await this.walletRepository.updateWalletPayment(wp.coreId, 0);
           totalRefunded -= wp.amount;
         }
       }

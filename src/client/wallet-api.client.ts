@@ -58,7 +58,7 @@ export class WalletApiClient {
     }
   }
 
-  public async callback(callbackUrl: string, body: PaymentResponseDto): Promise<void> {
+  public async callback(callbackUrl: string, body: PaymentResponseDto): Promise<number> {
     const headers: any = {
       'X-VTEX-API-AppKey': envConfig.vtex.jumbo.appkey,
       'X-VTEX-API-AppToken': envConfig.vtex.jumbo.apptoken,
@@ -74,7 +74,7 @@ export class WalletApiClient {
     try {
       const resp: AxiosResponse = await axios(requestConfig);
       this.logger.log(`Response de CallBack - status:${resp.status} - response:${JSON.stringify(resp.data)}`);
-      return;
+      return resp.status;
     } catch (e) {
       let errorMsg = `Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(
         body,

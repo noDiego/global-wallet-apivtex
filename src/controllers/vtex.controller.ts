@@ -140,7 +140,7 @@ export class VtexController {
    */
   @Post('/payments/:paymentId/refunds')
   async refund(
-    @RequestHeader(HeadersSessionDTO) headers: any,
+    @RequestHeader(HeadersDTO) headers: any,
     @Param('paymentId') paymentId: string,
     @Body() refundRequest: RefundRequestDTO,
     @Res() response: Response,
