@@ -1,4 +1,5 @@
 import { PaymentStatus } from '../enums/vtex.enum';
+import { WalletPaymentDto } from './wallet-payment.dto';
 
 export class PaymentDto {
   id?: number; //Identificador unico para Response de VTEX (NSU y TID)
@@ -13,4 +14,5 @@ export class PaymentDto {
   coreId?: string;
   date?: Date;
   status?: PaymentStatus;
+  walletPayments?: WalletPaymentDto[];
 }

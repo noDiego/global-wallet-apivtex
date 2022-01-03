@@ -6,9 +6,17 @@ import { VtexRecordRepository } from '../repository/vtex-record.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { VtexPaymentRepository } from '../repository/vtex-payment.repository';
 import { VtexTransactionFlowRepository } from '../repository/vtex-transaction-flow.repository';
+import { VtexWalletPaymentRepository } from '../repository/vtex-wallet-payment.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([VtexRecordRepository, VtexPaymentRepository, VtexTransactionFlowRepository])],
+  imports: [
+    TypeOrmModule.forFeature([
+      VtexRecordRepository,
+      VtexPaymentRepository,
+      VtexTransactionFlowRepository,
+      VtexWalletPaymentRepository,
+    ]),
+  ],
   controllers: [VtexController],
   providers: [VtexService, WalletApiClient],
 })

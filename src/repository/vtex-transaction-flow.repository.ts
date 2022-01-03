@@ -1,17 +1,18 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, getRepository, Repository } from 'typeorm';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { PaymentOperation } from '../interfaces/enums/vtex.enum';
 import { PaymentTransactionDto } from '../interfaces/dto/payment-transaction.dto';
 import { VtexTransactionFlow } from './entities/vtex-transaction-flow';
+import { VtexPayment } from './entities/vtex-payment';
 
 @EntityRepository(VtexTransactionFlow)
 export class VtexTransactionFlowRepository extends Repository<VtexTransactionFlow> {
-  private logger = new Logger('VtexTransactionRepository');
+  private logger = new Logger('VtexTransactionFlowRepository');
 
   async saveTransaction(transactionsData: PaymentTransactionDto): Promise<PaymentTransactionDto> {
     const transaction: VtexTransactionFlow = new VtexTransactionFlow();
-    transaction.paymentId = transactionsData.paymentId;
+    transaction.payment = await getRepository(VtexPayment).findOne(transactionsData.paymentId);
     transaction.requestId = transactionsData.requestId;
     transaction.settleId = transactionsData.settleId;
     transaction.amount = transactionsData.amount;

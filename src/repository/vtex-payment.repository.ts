@@ -9,7 +9,7 @@ import { cleanObject } from '../utils/validation';
 
 @EntityRepository(VtexPayment)
 export class VtexPaymentRepository extends Repository<VtexPayment> {
-  private logger = new Logger('VtexTransactionRepository');
+  private logger = new Logger('VtexPaymentRepository');
 
   async createInitPayment(data: PaymentDto, rejected = false): Promise<PaymentDto> {
     const payment: VtexPayment = new VtexPayment();
@@ -42,14 +42,14 @@ export class VtexPaymentRepository extends Repository<VtexPayment> {
       where: {
         paymentId: paymentId,
       },
+      relations: ['walletPayments'],
     });
     return plainToClass(PaymentDto, payment);
   }
 
-  async updatePaymentStatus({ amount, coreId, paymentId, status }: UpdatePaymentDto): Promise<boolean> {
+  async updatePayment({ amount, paymentId, status }: UpdatePaymentDto): Promise<boolean> {
     const updateData = {
       status: status,
-      coreId: coreId,
       amount: amount,
     };
 

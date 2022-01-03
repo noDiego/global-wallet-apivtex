@@ -1,17 +1,14 @@
-import { BaseEntity, Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { PaymentOperation } from '../../interfaces/enums/vtex.enum';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn, } from 'typeorm';
 import { VtexTransactionFlow } from './vtex-transaction-flow';
+import { VtexWalletPayment } from './vtex-wallet-payment';
 
 @Entity()
 export class VtexPayment extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  paymentId: string;
 
   @Column()
   date: Date;
-
-  @Column({ nullable: false, unique: false })
-  paymentId: string;
 
   @Column({ nullable: true })
   status: string;
@@ -26,9 +23,6 @@ export class VtexPayment extends BaseEntity {
   orderId: string;
 
   @Column({ nullable: true, unique: false })
-  coreId: string;
-
-  @Column({ nullable: true, unique: false })
   authorizationId: string;
 
   @Column({ nullable: true, unique: false })
@@ -40,6 +34,9 @@ export class VtexPayment extends BaseEntity {
   @Column({ nullable: true, unique: false })
   callbackUrl: string;
 
-  @OneToMany(() => VtexTransactionFlow, (transfer: VtexTransactionFlow) => transfer.paymentId)
+  @OneToMany(() => VtexTransactionFlow, (transaction: VtexTransactionFlow) => transaction.payment)
   transactions: VtexTransactionFlow[];
+
+  @OneToMany(() => VtexWalletPayment, (walletPayment: VtexWalletPayment) => walletPayment.payment)
+  walletPayments: VtexWalletPayment[];
 }

@@ -18,6 +18,7 @@ export enum PaymentOperation {
   CANCELLATION = 'cancellation',
   SETTLEMENT = 'settlement',
   REFUND = 'refund',
+  UPSELLING = 'upselling',
 }
 
 export enum MerchantKeys {

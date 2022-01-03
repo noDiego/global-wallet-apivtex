@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { PaymentOperation } from '../../interfaces/enums/vtex.enum';
+import { VtexPayment } from './vtex-payment';
 
 @Entity()
 export class VtexTransactionFlow extends BaseEntity {
@@ -9,7 +10,13 @@ export class VtexTransactionFlow extends BaseEntity {
   @Column()
   date: Date;
 
-  @Column({ nullable: false, unique: false })
+  @ManyToOne(() => VtexPayment, (payment) => payment.transactions, {
+    cascade: ['insert', 'update'],
+  })
+  @JoinColumn({ name: 'paymentId', referencedColumnName: 'paymentId' })
+  payment: VtexPayment;
+
+  @Column()
   paymentId: string;
 
   @Column({ nullable: false })
