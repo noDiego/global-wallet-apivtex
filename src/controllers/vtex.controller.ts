@@ -45,6 +45,8 @@ export class VtexController {
     const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
     this.logger.log('request.cookies');
     this.logger.log(request.cookies);
+    this.logger.log('request.headers');
+    this.logger.log(request.headers);
 
     response.status(200).send(result).end();
     return;
@@ -62,11 +64,6 @@ export class VtexController {
     @Param('paymentId') paymentId,
   ): Promise<ResponseDTO<null>> {
     return await this.vtexService.paymentConfirmation(paymentId, headers.appSession);
-  }
-
-  @Post('/payments/test')
-  async paymentTest(@RequestHeader(HeadersDTO) headers: any): Promise<string> {
-    return 'hola mundo';
   }
 
   /**
