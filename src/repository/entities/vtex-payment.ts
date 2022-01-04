@@ -1,10 +1,10 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { VtexTransactionFlow } from './vtex-transaction-flow';
 import { VtexWalletPayment } from './vtex-wallet-payment';
 
 @Entity()
 export class VtexPayment extends BaseEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column({ nullable: false, unique: true })
