@@ -1,15 +1,13 @@
-import { EntityRepository, getRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { VtexWalletPayment } from './entities/vtex-wallet-payment';
 import { WalletPaymentDto } from '../interfaces/dto/wallet-payment.dto';
-import { VtexPayment } from './entities/vtex-payment';
 
 @EntityRepository(VtexWalletPayment)
 export class VtexWalletPaymentRepository extends Repository<VtexWalletPayment> {
   private logger = new Logger('VtexWalletPaymentRepository');
 
-  async savePayment(data: WalletPaymentDto): Promise<WalletPaymentDto> {
+  savePayment(data: WalletPaymentDto): void {
     const walletPay: VtexWalletPayment = new VtexWalletPayment();
     walletPay.paymentId = data.paymentId;
     walletPay.amount = data.amount;
@@ -18,8 +16,11 @@ export class VtexWalletPaymentRepository extends Repository<VtexWalletPayment> {
     walletPay.date = new Date();
 
     try {
-      const paymentSaved = await walletPay.save();
-      return plainToClass(WalletPaymentDto, paymentSaved);
+      walletPay
+        .save()
+        .then((r) =>
+          this.logger.log(`WalletPayment paymentId:${data.paymentId}, coreId:${data.coreId} - Saved successful`),
+        );
     } catch (e) {
       this.logger.error(
         `Error al crear Wallet Payment, Data: ${JSON.stringify({
@@ -31,7 +32,9 @@ export class VtexWalletPaymentRepository extends Repository<VtexWalletPayment> {
     }
   }
 
-  async updateWalletPayment(coreId: string, newAmount: number): Promise<void> {
-    await this.update(coreId, { amount: newAmount });
+  updateWalletPayment(coreId: string, newAmount: number) {
+    this.update(coreId, { amount: newAmount }).then(() => {
+      this.logger.log(`UpdateWalletPayment - coreId:${coreId} - OK`);
+    });
   }
 }

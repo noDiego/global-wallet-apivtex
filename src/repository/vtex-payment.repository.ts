@@ -47,23 +47,23 @@ export class VtexPaymentRepository extends Repository<VtexPayment> {
     return plainToClass(PaymentDto, payment);
   }
 
-  async updatePayment({ amount, paymentId, status }: UpdatePaymentDto): Promise<boolean> {
+  updatePayment({ amount, paymentId, status }: UpdatePaymentDto): void {
     const updateData = {
       status: status,
       amount: amount,
     };
 
     try {
-      await this.update(
+      this.update(
         {
           paymentId: paymentId,
         },
         cleanObject(updateData),
-      );
-      return true;
+      ).then(() => {
+        this.logger.log(`VtexPaymentRepository: UpdatePayment ${paymentId}, amount:${amount} - Update successful`);
+      });
     } catch (e) {
       this.logger.error('Error al actualizar status de Payment: ' + e.message + ' PayId: ' + paymentId);
-      return false;
     }
   }
   // /*

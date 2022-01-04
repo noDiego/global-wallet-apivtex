@@ -7,3 +7,10 @@ export class WalletPaymentDto {
   amount: number;
   operationType: PaymentOperation;
 }
+
+export class UpdatePaymentResult {
+  responseCode: number;
+  responseMessage: string;
+  refundId?: string;
+  authorizationCode?: string;
+}
