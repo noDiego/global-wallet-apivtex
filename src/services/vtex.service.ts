@@ -25,14 +25,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class VtexService {
+  private logger = new Logger('VtexService');
+
   constructor(
     private walletApiClient: WalletApiClient,
     private paymentRepository: VtexPaymentRepository,
     private recordRepository: VtexRecordRepository,
-
     private walletRepository: VtexWalletPaymentRepository,
     private transactionFlowRepository: VtexTransactionFlowRepository,
-    private readonly logger: Logger,
   ) {}
 
   async payment(paymentRequest: PaymentRequestDTO): Promise<PaymentResponseDto> {

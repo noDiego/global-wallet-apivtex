@@ -66,22 +66,4 @@ export class VtexPaymentRepository extends Repository<VtexPayment> {
       this.logger.error('Error al actualizar status de Payment: ' + e.message + ' PayId: ' + paymentId);
     }
   }
-  // /*
-  // Se obtiene valor final luego de upselling/downselling
-  //  */
-  // async getPaymentTotalAmount(paymentId: string): Promise<number> {
-  //   try {
-  //     const payment: VtexPayment = await this.findOne({ where: { paymentId: paymentId }, relations: ['transactions'] });
-  //     let sum = payment.amount;
-  //     payment.transactions.forEach((tx) => {
-  //       if (tx.operationType == PaymentOperation.REFUND) {
-  //         sum = sum - tx.amount;
-  //       }
-  //     });
-  //     return sum;
-  //   } catch (e) {
-  //     this.logger.error('Error al actualizar status: ' + e.message);
-  //     throw e;
-  //   }
-  // }
 }
