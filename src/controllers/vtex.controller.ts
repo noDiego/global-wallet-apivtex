@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Logger, Param, Post, Req, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { PaymentMethodsDto } from '../interfaces/wallet/payment-methods.dto';
 import { HeadersSessionDTO, HeadersDTO } from '../interfaces/wallet/headers.dto';
 import { RequestHeader } from '../interfaces/wallet/request-header.decorator';
@@ -43,8 +43,8 @@ export class VtexController {
     @Req() request: Request,
   ): Promise<PaymentResponseDto> {
     const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
-    this.logger.log(headers);
-    this.logger.log(request.headers);
+    this.logger.log('request.cookies');
+    this.logger.log(request.cookies);
 
     response.status(200).send(result).end();
     return;

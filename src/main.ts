@@ -10,6 +10,7 @@ import { envConfig } from './config';
 import { CustomValidationPipe } from './common/pipes/custom-validation-pipe.service';
 import { ErrorExceptionFilter } from './common/middleware/http-exception.filter';
 import { LoggingInterceptor } from './common/middleware/logging.interceptor';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   if (envConfig.environment != 'local') require('newrelic');
@@ -21,6 +22,7 @@ async function bootstrap() {
   };
 
   const app = await NestFactory.create(AppModule, options);
+  app.use(cookieParser());
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new ErrorExceptionFilter());
   app.useGlobalPipes(new CustomValidationPipe());
