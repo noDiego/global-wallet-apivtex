@@ -18,9 +18,7 @@ export class VtexWalletPaymentRepository extends Repository<VtexWalletPayment> {
     try {
       walletPay
         .save()
-        .then((r) =>
-          this.logger.log(`WalletPayment paymentId:${data.paymentId}, coreId:${data.coreId} - Saved successful`),
-        );
+        .then((r) => this.logger.log(`WalletPayment paymentId:${data.paymentId}, coreId:${data.coreId} - OK`));
     } catch (e) {
       this.logger.error(
         `Error al crear Wallet Payment, Data: ${JSON.stringify({

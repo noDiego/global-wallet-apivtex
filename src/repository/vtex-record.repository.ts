@@ -17,9 +17,7 @@ export class VtexRecordRepository extends Repository<VtexRecord> {
     try {
       record
         .save()
-        .then(() =>
-          this.logger.log(`Creating Record for ${recordInput.paymentId}, ${recordInput.operationType} - Successful`),
-        );
+        .then(() => this.logger.log(`Creating Record for ${recordInput.paymentId}, ${recordInput.operationType} - OK`));
     } catch (e) {
       this.logger.error(`Error al crear VtexRecord, Data: ${JSON.stringify(recordInput)}`, e.stack);
       throw new InternalServerErrorException();

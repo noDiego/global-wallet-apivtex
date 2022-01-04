@@ -160,15 +160,6 @@ export class VtexService {
         coreId: paymentData.id,
       });
 
-      //Creando registro de evento
-      this.recordRepository.createRecord({
-        operationType: PaymentOperation.CONFIRMATION,
-        paymentId: paymentId,
-        requestData: {
-          code: paymentWalletRes.code,
-          message: paymentWalletRes.message,
-        },
-      });
       //Enviando callback a Vtex
       const callbackBody: PaymentResponseDto = {
         acquirer: null, // paymentRequest.card.holder || 'VTEX',
@@ -197,7 +188,7 @@ export class VtexService {
       );
       response = { code: -1, message: 'Error: ' + e.message };
     }
-
+    //Creando registro de evento
     this.recordRepository.createRecord({
       operationType: PaymentOperation.CONFIRMATION,
       paymentId: paymentId,

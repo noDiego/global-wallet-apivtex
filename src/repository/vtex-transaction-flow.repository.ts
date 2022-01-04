@@ -20,9 +20,7 @@ export class VtexTransactionFlowRepository extends Repository<VtexTransactionFlo
       transaction
         .save()
         .then(() =>
-          this.logger.log(
-            `Transaction paymentId:${transactionsData.paymentId}, ${transaction.operationType} - Saved successful`,
-          ),
+          this.logger.log(`Transaction paymentId:${transactionsData.paymentId}, ${transaction.operationType} - OK`),
         );
     } catch (e) {
       this.logger.error(
