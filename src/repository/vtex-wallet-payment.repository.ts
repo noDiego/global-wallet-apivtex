@@ -11,7 +11,7 @@ export class VtexWalletPaymentRepository extends Repository<VtexWalletPayment> {
 
   async savePayment(data: WalletPaymentDto): Promise<WalletPaymentDto> {
     const walletPay: VtexWalletPayment = new VtexWalletPayment();
-    walletPay.payment = await getRepository(VtexPayment).findOne(data.paymentId);
+    walletPay.paymentId = data.paymentId;
     walletPay.amount = data.amount;
     walletPay.operationType = data.operationType;
     walletPay.coreId = data.coreId;

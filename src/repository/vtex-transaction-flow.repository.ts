@@ -12,7 +12,7 @@ export class VtexTransactionFlowRepository extends Repository<VtexTransactionFlo
 
   async saveTransaction(transactionsData: PaymentTransactionDto): Promise<PaymentTransactionDto> {
     const transaction: VtexTransactionFlow = new VtexTransactionFlow();
-    transaction.payment = await getRepository(VtexPayment).findOne(transactionsData.paymentId);
+    transaction.paymentId = transactionsData.paymentId;
     transaction.requestId = transactionsData.requestId;
     transaction.settleId = transactionsData.settleId;
     transaction.amount = transactionsData.amount;
