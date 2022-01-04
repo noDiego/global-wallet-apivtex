@@ -17,3 +17,7 @@ export function cleanObject<T>(obj: T): T {
   }
   return obj;
 }
+
+export function clone<T>(a: T): T {
+  return JSON.parse(JSON.stringify(a));
+}

@@ -5,6 +5,9 @@ import { VtexWalletPayment } from './vtex-wallet-payment';
 @Entity()
 export class VtexPayment extends BaseEntity {
   @PrimaryColumn()
+  id: string;
+
+  @Column({ nullable: false, unique: true })
   paymentId: string;
 
   @Column()

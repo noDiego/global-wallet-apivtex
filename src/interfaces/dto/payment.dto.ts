@@ -2,6 +2,7 @@ import { PaymentStatus } from '../enums/vtex.enum';
 import { WalletPaymentDto } from './wallet-payment.dto';
 
 export class PaymentDto {
+  id?: string;
   paymentId: string;
   amount: number;
   clientEmail?: string;
