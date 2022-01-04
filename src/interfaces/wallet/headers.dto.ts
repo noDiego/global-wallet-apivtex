@@ -21,6 +21,6 @@ export class HeadersDTO {
 export class HeadersSessionDTO extends HeadersDTO {
   @IsString()
   @IsDefined()
-  @Expose({ name: 'x-api-session' })
-  appSession: string;
+  @Expose({ name: 'cookie' })
+  cookie: string;
 }

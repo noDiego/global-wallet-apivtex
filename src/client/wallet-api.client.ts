@@ -37,7 +37,7 @@ export class WalletApiClient {
 
   public async refund(coreId: string, amount: number, origin: string, commerceSession: string): Promise<CoreResponse> {
     const headers: any = {
-      'x-api-session': commerceSession || '0',
+      'x-api-session': commerceSession,
       'x-api-token': MerchantKeys[origin],
     };
     const url = `${URLS.walletApi.payment}/${coreId}/vtexrefunds`;
