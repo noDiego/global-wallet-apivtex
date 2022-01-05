@@ -35,12 +35,42 @@ export class WalletApiClient {
     }
   }
 
+  public async upselling(
+    data: CoreTransactionReq,
+    parentId: string,
+    origin: string,
+    commerceSession?: string,
+  ): Promise<CoreResponse> {
+    // (como id puede venir el commerceUserId, userDni, emailUser, userId)
+    const headers: any = {
+      'x-api-session': commerceSession,
+      'x-api-token': MerchantKeys[origin],
+    };
+    this.logger.debug(headers);
+    const url = `${URLS.walletApi.vtexpayment}/${data}/upselling`;
+
+    const requestConfig: AxiosRequestConfig = {
+      method: 'POST',
+      headers: headers,
+      url: url,
+      data: data,
+    };
+    this.logger.debug('URL:' + url);
+    try {
+      const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
+      return response.data;
+    } catch (e) {
+      this.logger.error(`Error al conectar con api wallet para upselling, Data: ${JSON.stringify(data)}`, e.stack);
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
   public async refund(coreId: string, amount: number, origin: string, commerceSession: string): Promise<CoreResponse> {
     const headers: any = {
       'x-api-session': commerceSession,
       'x-api-token': MerchantKeys[origin],
     };
-    const url = `${URLS.walletApi.payment}/${coreId}/vtexrefunds`;
+    const url = `${URLS.walletApi.vtexpayment}/${coreId}/refunds`;
 
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',

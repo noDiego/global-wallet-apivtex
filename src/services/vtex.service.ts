@@ -421,9 +421,11 @@ export class VtexService {
         orderId: payment.orderId,
       };
       //Ejecutando pago en Core Wallet
-      operationResponse = await this.walletApiClient.payment(
+      const parentId = payment.walletPayments[0].coreId; //Id de Pago original usado para generar un upselling
+      operationResponse = await this.walletApiClient.upselling(
         paymentWalletReq,
-        'JUMBO', //vtexTransaction.merchantName, //TODO: Ver esto
+        parentId,
+        payment.merchantName,
         commerceSession,
       );
       if (operationResponse.code != 0) throw new InternalServerErrorException(operationResponse.message);
