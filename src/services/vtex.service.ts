@@ -324,7 +324,7 @@ export class VtexService {
     return response;
   }
 
-  async settlements(request: SettlementsRequestDTO, commerceSession: string): Promise<SettlementsResponseDTO> {
+  async settlements(request: SettlementsRequestDTO): Promise<SettlementsResponseDTO> {
     const settleId = request.settleId || uuidv4(); //En algunos calls no viene el settleId
     let response: SettlementsResponseDTO;
     this.logger.log(`Settlements - Iniciada | paymentId:${request.paymentId} - Settlement Value:${request.value}`);
@@ -334,7 +334,7 @@ export class VtexService {
 
       if (request.value != payment.amount) {
         this.logger.log(`Settlements - Actualizando Amount final :${payment.amount}`);
-        await this.updatePaymentAmount(payment, request.value, commerceSession);
+        await this.updatePaymentAmount(payment, request.value);
       }
 
       const transactionData: PaymentTransactionDto = {
@@ -383,7 +383,11 @@ export class VtexService {
     return response;
   }
 
-  async updatePaymentAmount(payment: PaymentDto, newAmount: number, commerceSession): Promise<UpdatePaymentResult> {
+  async updatePaymentAmount(
+    payment: PaymentDto,
+    newAmount: number,
+    commerceSession?: string,
+  ): Promise<UpdatePaymentResult> {
     let operationResponse: CoreResponse;
     if (newAmount < payment.amount) {
       //Caso de Refund
@@ -422,12 +426,7 @@ export class VtexService {
       };
       //Ejecutando pago en Core Wallet
       const parentId = payment.walletPayments[0].coreId; //Id de Pago original usado para generar un upselling
-      operationResponse = await this.walletApiClient.upselling(
-        paymentWalletReq,
-        parentId,
-        payment.merchantName,
-        commerceSession,
-      );
+      operationResponse = await this.walletApiClient.upselling(paymentWalletReq, parentId, payment.merchantName);
       if (operationResponse.code != 0) throw new InternalServerErrorException(operationResponse.message);
 
       //Guardando Informacion de Pago Wallet

@@ -35,15 +35,9 @@ export class WalletApiClient {
     }
   }
 
-  public async upselling(
-    data: CoreTransactionReq,
-    parentId: string,
-    origin: string,
-    commerceSession?: string,
-  ): Promise<CoreResponse> {
+  public async upselling(data: CoreTransactionReq, parentId: string, origin: string): Promise<CoreResponse> {
     // (como id puede venir el commerceUserId, userDni, emailUser, userId)
     const headers: any = {
-      'x-api-session': commerceSession,
       'x-api-token': MerchantKeys[origin],
     };
     this.logger.debug(headers);
