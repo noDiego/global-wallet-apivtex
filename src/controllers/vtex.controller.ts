@@ -74,11 +74,13 @@ export class VtexController {
    */
   @Post('/payments/:paymentId/cancellations')
   async cancellation(
-    @RequestHeader(HeadersSessionDTO) headers: any,
+    @RequestHeader(HeadersDTO) headers: any,
     @Param('paymentId') paymentId: string,
     @Body() cancellationRequest: CancellationRequestDTO,
     @Res() response: Response,
+    @Req() request: Request,
   ): Promise<CancellationResponseDTO> {
+    this.logger.log('Cancellation Headers: ' + JSON.stringify(request.headers));
     const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest, headers.cookie);
     response
       .status(result.cancellationId ? 200 : 500)
