@@ -108,7 +108,9 @@ export class VtexController {
     @Param('paymentId') paymentId: string,
     @Body() settlementsRequest: SettlementsRequestDTO,
     @Res() response: Response,
+    @Req() request: Request,
   ): Promise<SettlementsResponseDTO> {
+    this.logger.log('Settlemet Headers: ' + JSON.stringify(request.headers));
     const result: SettlementsResponseDTO = await this.vtexService.settlements(settlementsRequest);
 
     response
