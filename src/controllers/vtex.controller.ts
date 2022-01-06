@@ -81,7 +81,7 @@ export class VtexController {
     @Req() request: Request,
   ): Promise<CancellationResponseDTO> {
     this.logger.log('Cancellation Headers: ' + JSON.stringify(request.headers));
-    const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest, headers.cookie);
+    const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest);
     response
       .status(result.cancellationId ? 200 : 500)
       .send(result)
@@ -139,7 +139,9 @@ export class VtexController {
     @Param('paymentId') paymentId: string,
     @Body() refundRequest: RefundRequestDTO,
     @Res() response: Response,
+    @Req() request: Request,
   ): Promise<SettlementsResponseDTO> {
+    this.logger.log('Refund Headers: ' + JSON.stringify(request.headers));
     const result: RefundResponseDTO = await this.vtexService.refund(refundRequest, headers.cookie);
 
     response

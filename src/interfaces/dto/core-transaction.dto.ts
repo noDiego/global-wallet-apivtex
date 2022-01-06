@@ -3,6 +3,7 @@ export class CoreTransactionReq {
   amount?: number;
   currency?: string;
   paymentId?: string;
+  email?: string;
 }
 
 export class CoreTransactionRes {

@@ -35,6 +35,7 @@ export class VtexService {
     private transactionFlowRepository: VtexTransactionFlowRepository,
   ) {}
 
+  //Solo se genera en BD local
   async payment(paymentRequest: PaymentRequestDTO): Promise<PaymentResponseDto> {
     let payment: PaymentDto;
     let response: PaymentResponseDto;
@@ -109,6 +110,7 @@ export class VtexService {
     }
   }
 
+  //Se comunica con Wallet y genera el pago
   async paymentConfirmation(paymentId: string, commerceSession: string): Promise<ResponseDTO<null>> {
     const payment: PaymentDto = await this.paymentRepository.getPayment(paymentId);
     let response;
@@ -198,10 +200,7 @@ export class VtexService {
     return response;
   }
 
-  async cancellation(
-    cancellationRequest: CancellationRequestDTO,
-    commerceSession: string,
-  ): Promise<CancellationResponseDTO> {
+  async cancellation(cancellationRequest: CancellationRequestDTO): Promise<CancellationResponseDTO> {
     let response: CancellationResponseDTO;
     let cancelResp: CoreResponse;
 
@@ -221,7 +220,7 @@ export class VtexService {
       //Se obtienen todos los pagos asociados a paymentId y se cancelan (quedan en 0)
       for (const wp of payment.walletPayments) {
         if (wp.amount > 0) {
-          cancelResp = await this.walletApiClient.refund(wp.coreId, wp.amount, payment.merchantName, commerceSession);
+          cancelResp = await this.walletApiClient.refund(wp.coreId, wp.amount, payment.merchantName);
           if (cancelResp.code != 0) throw new InternalServerErrorException(cancelResp.message);
           await this.walletRepository.updateWalletPayment(wp.coreId, 0);
         }
@@ -395,23 +394,13 @@ export class VtexService {
       for (const wp of payment.walletPayments) {
         if (totalRefunded <= wp.amount && wp.amount > 0) {
           //Refund reduce un pago.
-          operationResponse = await this.walletApiClient.refund(
-            wp.coreId,
-            totalRefunded,
-            payment.merchantName,
-            commerceSession,
-          );
+          operationResponse = await this.walletApiClient.refund(wp.coreId, totalRefunded, payment.merchantName);
           if (operationResponse.code != 0) throw new InternalServerErrorException(operationResponse.message);
           this.walletRepository.updateWalletPayment(wp.coreId, wp.amount - totalRefunded);
           break;
         } else if (totalRefunded > wp.amount && wp.amount > 0) {
           //Refun reduce un pago completo
-          operationResponse = await this.walletApiClient.refund(
-            wp.coreId,
-            wp.amount,
-            payment.merchantName,
-            commerceSession,
-          );
+          operationResponse = await this.walletApiClient.refund(wp.coreId, wp.amount, payment.merchantName);
           if (operationResponse.code != 0) throw new InternalServerErrorException(operationResponse.message);
           this.walletRepository.updateWalletPayment(wp.coreId, 0);
           totalRefunded -= wp.amount;
@@ -423,6 +412,7 @@ export class VtexService {
       const paymentWalletReq: CoreTransactionReq = {
         amount: newPaymentAmount,
         orderId: payment.orderId,
+        email: payment.clientEmail,
       };
       //Ejecutando pago en Core Wallet
       const parentId = payment.walletPayments[0].coreId; //Id de Pago original usado para generar un upselling
