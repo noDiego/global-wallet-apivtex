@@ -41,7 +41,7 @@ export class WalletApiClient {
       'x-api-token': MerchantKeys[origin],
     };
     this.logger.debug(headers);
-    const url = `${URLS.walletApi.vtexpayment}/${data}/upselling`;
+    const url = `${URLS.walletApi.vtexpayment}/${parentId}/upselling`;
 
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
