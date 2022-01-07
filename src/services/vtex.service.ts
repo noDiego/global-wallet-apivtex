@@ -111,7 +111,7 @@ export class VtexService {
   }
 
   //Se comunica con Wallet y genera el pago
-  async paymentConfirmation(paymentId: string, commerceSession: string): Promise<ResponseDTO<null>> {
+  async paymentConfirmation(paymentId: string, commerceSession: string): Promise<CoreResponse> {
     const payment: PaymentDto = await this.paymentRepository.getPayment(paymentId);
     let response;
     if (payment.status != PaymentStatus.INIT) {
@@ -173,7 +173,6 @@ export class VtexService {
         paymentId: paymentId,
         status: paymentData.status == TransactionStatus.APPROVED ? VtexStatus.APPROVED : VtexStatus.DENIED,
         tid: String(payment.id),
-        paymentUrl: payment.callbackUrl,
         code: String(paymentWalletRes.code),
         message: paymentWalletRes.message,
       };
@@ -182,7 +181,8 @@ export class VtexService {
         this.logger.log(`Confirmation - Callback for ${payment.paymentId} - Status: ${r}`);
       });
 
-      response = { code: paymentWalletRes.code, message: paymentWalletRes.message };
+      paymentWalletRes.data.status = callbackBody.status;
+      response = paymentWalletRes;
     } catch (e) {
       this.logger.error(
         `Confirmation - Error al ejecutar Async Payment | paymentId:${paymentId}. Error: ${e.message}`,
@@ -271,7 +271,7 @@ export class VtexService {
     return response;
   }
 
-  async refund(refundReq: RefundRequestDTO, commerceSession: string): Promise<RefundResponseDTO> {
+  async refund(refundReq: RefundRequestDTO): Promise<RefundResponseDTO> {
     let response: RefundResponseDTO;
     this.logger.log(`Refund - Iniciando... | paymentId:${refundReq.paymentId} - Value: ${refundReq.value}`);
     try {
@@ -281,7 +281,7 @@ export class VtexService {
 
       //Se realiza refund
       const newAmount = payment.amount - refundReq.value;
-      const updateResult: UpdatePaymentResult = await this.updatePaymentAmount(payment, newAmount, commerceSession);
+      const updateResult: UpdatePaymentResult = await this.updatePaymentAmount(payment, newAmount);
 
       const transactionData: PaymentTransactionDto = {
         operationType: PaymentOperation.REFUND,
@@ -366,9 +366,9 @@ export class VtexService {
       response = {
         paymentId: request.paymentId,
         settleId: null,
-        code: 'cancel-manually',
+        code: 'settlement-error',
         value: request.value,
-        message: 'Cancellation should be done manually',
+        message: e.message,
         requestId: request.requestId,
       };
     }
@@ -382,11 +382,7 @@ export class VtexService {
     return response;
   }
 
-  async updatePaymentAmount(
-    payment: PaymentDto,
-    newAmount: number,
-    commerceSession?: string,
-  ): Promise<UpdatePaymentResult> {
+  async updatePaymentAmount(payment: PaymentDto, newAmount: number): Promise<UpdatePaymentResult> {
     let operationResponse: CoreResponse;
     if (newAmount < payment.amount) {
       //Caso de Refund
@@ -444,7 +440,7 @@ export class VtexService {
 
   private valideActiveStatus(tx: PaymentDto): void {
     if (tx.status != PaymentStatus.APPROVED && tx.status != PaymentStatus.SETTLED) {
-      throw new InternalServerErrorException(`Invalid Transaction. Payment Status: ${tx.status}`);
+      throw new InternalServerErrorException(`Invalid Transaction. Incorrect Payment status`);
     }
   }
 }
