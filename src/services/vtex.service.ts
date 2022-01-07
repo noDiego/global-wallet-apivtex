@@ -386,20 +386,20 @@ export class VtexService {
     let operationResponse: CoreResponse;
     if (newAmount < payment.amount) {
       //Caso de Refund
-      let totalRefunded = newAmount;
+      newAmount;
       for (const wp of payment.walletPayments) {
-        if (totalRefunded <= wp.amount && wp.amount > 0) {
+        if (newAmount <= wp.amount && wp.amount > 0) {
           //Refund reduce un pago.
-          operationResponse = await this.walletApiClient.refund(wp.coreId, totalRefunded, payment.merchantName);
+          operationResponse = await this.walletApiClient.refund(wp.coreId, wp.amount - newAmount, payment.merchantName);
           if (operationResponse.code != 0) throw new InternalServerErrorException(operationResponse.message);
-          this.walletRepository.updateWalletPayment(wp.coreId, wp.amount - totalRefunded);
+          this.walletRepository.updateWalletPayment(wp.coreId, newAmount);
           break;
-        } else if (totalRefunded > wp.amount && wp.amount > 0) {
+        } else if (newAmount > wp.amount && wp.amount > 0) {
           //Refun reduce un pago completo
           operationResponse = await this.walletApiClient.refund(wp.coreId, wp.amount, payment.merchantName);
           if (operationResponse.code != 0) throw new InternalServerErrorException(operationResponse.message);
           this.walletRepository.updateWalletPayment(wp.coreId, 0);
-          totalRefunded -= wp.amount;
+          newAmount -= wp.amount;
         }
       }
     } else if (newAmount > payment.amount) {
