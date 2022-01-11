@@ -44,6 +44,7 @@ export class VtexPaymentRepository extends Repository<VtexPayment> {
       },
       relations: ['walletPayments'],
     });
+    if (!payment) throw new InternalServerErrorException(`Payment ${paymentId} not found.`);
     return plainToClass(PaymentDto, payment);
   }
 
