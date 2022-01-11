@@ -112,7 +112,7 @@ export class VtexService {
 
   //Se comunica con Wallet y genera el pago
   async paymentConfirmation(paymentId: string, commerceSession: string): Promise<CoreResponse> {
-    const payment: PaymentDto = await this.paymentRepository.getPayment(paymentId);
+    const payment: PaymentDto = await this.getPayment(paymentId);
     let response;
     if (payment.status != PaymentStatus.INIT) {
       throw new InternalServerErrorException('Estado de Payment invalido');
@@ -206,7 +206,7 @@ export class VtexService {
 
     this.logger.log(`Cancellation - Iniciada | paymentId:${cancellationRequest.paymentId}`);
 
-    const payment: PaymentDto = await this.paymentRepository.getPayment(cancellationRequest.paymentId);
+    const payment: PaymentDto = await this.getPayment(cancellationRequest.paymentId);
 
     if (payment.status == PaymentStatus.CANCELED) {
       return {
@@ -275,7 +275,7 @@ export class VtexService {
     let response: RefundResponseDTO;
     this.logger.log(`Refund - Iniciando... | paymentId:${refundReq.paymentId} - Value: ${refundReq.value}`);
     try {
-      const payment: PaymentDto = await this.paymentRepository.getPayment(refundReq.paymentId);
+      const payment: PaymentDto = await this.getPayment(refundReq.paymentId);
 
       this.valideActiveStatus(payment);
 
@@ -328,7 +328,7 @@ export class VtexService {
     let response: SettlementsResponseDTO;
     this.logger.log(`Settlements - Iniciada | paymentId:${request.paymentId} - Settlement Value:${request.value}`);
     try {
-      const payment: PaymentDto = await this.paymentRepository.getPayment(request.paymentId);
+      const payment: PaymentDto = await this.getPayment(request.paymentId);
       this.valideActiveStatus(payment);
 
       if (request.value != payment.amount) {
@@ -442,8 +442,14 @@ export class VtexService {
     };
   }
 
-  private valideActiveStatus(tx: PaymentDto): void {
-    if (tx.status != PaymentStatus.APPROVED && tx.status != PaymentStatus.SETTLED) {
+  private async getPayment(paymentId: string) {
+    const payment: PaymentDto = await this.paymentRepository.getPayment(paymentId);
+    if (!payment) throw new InternalServerErrorException(`Payment: ${payment.paymentId}. Not Found.`);
+    return payment;
+  }
+
+  private valideActiveStatus(payment: PaymentDto): void {
+    if (payment.status != PaymentStatus.APPROVED && payment.status != PaymentStatus.SETTLED) {
       throw new InternalServerErrorException(`Invalid Transaction. Incorrect Payment status`);
     }
   }
