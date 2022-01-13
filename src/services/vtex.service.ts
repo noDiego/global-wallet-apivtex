@@ -43,7 +43,7 @@ export class VtexService {
     let payment: PaymentDto;
     let response: PaymentResponseDto;
     try {
-      this.logger.log(`[PaymentId:${paymentRequest.paymentId} | Payment - Iniciando...`);
+      this.logger.log(`PaymentId:${paymentRequest.paymentId} | Payment - Iniciando...`);
 
       payment = await this.paymentRepository.getPayment(paymentRequest.paymentId);
       if (!payment) {
