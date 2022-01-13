@@ -1,5 +1,6 @@
 import { PaymentStatus } from '../enums/vtex.enum';
 import { WalletPaymentDto } from './wallet-payment.dto';
+import { CommerceDto } from './commerce.dto';
 
 export class PaymentDto {
   id?: string;
@@ -7,7 +8,7 @@ export class PaymentDto {
   amount: number;
   clientEmail?: string;
   merchantName?: string;
-  commerceCode?: string;
+  commerce?: CommerceDto;
   callbackUrl?: string;
   orderId?: string;
   authorizationId?: string;

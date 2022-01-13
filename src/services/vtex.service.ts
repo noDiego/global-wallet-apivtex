@@ -164,7 +164,7 @@ export class VtexService {
         paymentId: paymentId,
         status: paymentData.status == TransactionStatus.APPROVED ? PaymentStatus.APPROVED : PaymentStatus.DENIED,
         coreId: paymentData.id,
-        commerceCode: commerce.code,
+        commerceId: commerce.id,
       });
 
       //Enviando callback a Vtex
@@ -223,10 +223,9 @@ export class VtexService {
       };
     } else if (payment.status == PaymentStatus.APPROVED) {
       //Se obtienen todos los pagos asociados a paymentId y se cancelan (quedan en 0)
-      const commerce: CommerceDto = await this.commerceRepository.getCommerceByCode(payment.commerceCode);
       for (const wp of payment.walletPayments) {
         if (wp.amount > 0) {
-          cancelResp = await this.walletApiClient.refund(wp.coreId, wp.amount, commerce.token);
+          cancelResp = await this.walletApiClient.refund(wp.coreId, wp.amount, payment.commerce.token);
           if (cancelResp.code != 0) throw new InternalServerErrorException(cancelResp.message);
           await this.walletRepository.updateWalletPayment(wp.coreId, 0);
         }
@@ -283,11 +282,14 @@ export class VtexService {
     try {
       const payment: PaymentDto = await this.getPayment(refundReq.paymentId);
       this.valideActiveStatus(payment);
-      const commerce: CommerceDto = await this.commerceRepository.getCommerceByCode(payment.commerceCode);
 
       //Se realiza refund
       const newAmount = payment.amount - refundReq.value;
-      const updateResult: UpdatePaymentResult = await this.updatePaymentAmount(payment, newAmount, commerce.token);
+      const updateResult: UpdatePaymentResult = await this.updatePaymentAmount(
+        payment,
+        newAmount,
+        payment.commerce.token,
+      );
 
       const transactionData: PaymentTransactionDto = {
         operationType: PaymentOperation.REFUND,
@@ -336,11 +338,10 @@ export class VtexService {
     try {
       const payment: PaymentDto = await this.getPayment(request.paymentId);
       this.valideActiveStatus(payment);
-      const commerce: CommerceDto = await this.commerceRepository.getCommerceByCode(payment.commerceCode);
 
       if (request.value != payment.amount) {
         this.logger.log(`Settlements - Actualizando Amount final :${payment.amount}`);
-        await this.updatePaymentAmount(payment, request.value, commerce.token);
+        await this.updatePaymentAmount(payment, request.value, payment.commerce.token);
       }
 
       const transactionData: PaymentTransactionDto = {

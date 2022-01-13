@@ -1,6 +1,7 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { VtexTransactionFlow } from './vtex-transaction-flow';
 import { VtexWalletPayment } from './vtex-wallet-payment';
+import { Commerce } from './commerce.entity';
 
 @Entity()
 export class VtexPayment extends BaseEntity {
@@ -31,8 +32,9 @@ export class VtexPayment extends BaseEntity {
   @Column({ nullable: true, unique: false })
   merchantName: string;
 
-  @Column({ nullable: true, unique: false })
-  commerceCode: string;
+  @OneToOne(() => Commerce, (c) => c.id)
+  @JoinColumn()
+  commerce: Commerce;
 
   @Column({ nullable: true, unique: false })
   clientEmail: string;

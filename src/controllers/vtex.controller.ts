@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Logger, Param, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ManifestDTO, PaymentMethodsDto } from '../interfaces/wallet/payment-methods.dto';
-import { ConfirmationHeaders, HeadersDTO, HeadersSessionDTO } from '../interfaces/wallet/headers.dto';
+import { ConfirmationHeaders, HeadersDTO } from '../interfaces/wallet/headers.dto';
 import { RequestHeader } from '../interfaces/wallet/request-header.decorator';
 import { PaymentRequestDTO } from '../interfaces/wallet/payment-request.dto';
 import { VtexService } from '../services/vtex.service';

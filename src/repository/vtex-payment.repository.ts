@@ -42,16 +42,16 @@ export class VtexPaymentRepository extends Repository<VtexPayment> {
       where: {
         paymentId: paymentId,
       },
-      relations: ['walletPayments'],
+      relations: ['walletPayments', 'commerce'],
     });
     return plainToClass(PaymentDto, payment);
   }
 
-  updatePayment({ amount, paymentId, status, commerceCode }: UpdatePaymentDto): void {
+  updatePayment({ amount, paymentId, status, commerceId }: UpdatePaymentDto): void {
     const updateData = {
       status: status,
       amount: amount,
-      commerceCode: commerceCode,
+      commerceId: commerceId,
     };
 
     try {

@@ -10,13 +10,10 @@ export class CommerceRepository extends Repository<Commerce> {
 
   async getCommerceByToken(commerceToken: string): Promise<CommerceDto> {
     const commerce: Commerce = await this.findOne({ token: commerceToken });
-    if (!commerce) throw new InternalServerErrorException(`Token: ${commerceToken} doesn't exist`);
-    return plainToClass(CommerceDto, commerce);
-  }
-
-  async getCommerceByCode(code: string): Promise<CommerceDto> {
-    const commerce: Commerce = await this.findOne({ code: code });
-    if (!commerce) throw new InternalServerErrorException('');
+    if (!commerce) {
+      this.logger.error(`Token: ${commerceToken} doesn't exist`);
+      throw new InternalServerErrorException(`Token: ${commerceToken} doesn't exist`);
+    }
     return plainToClass(CommerceDto, commerce);
   }
 }
