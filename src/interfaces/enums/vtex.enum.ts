@@ -15,6 +15,7 @@ export enum VtexStatus {
 export enum PaymentOperation {
   PAYMENT = 'payment',
   CONFIRMATION = 'confirmation',
+  CALLBACK = 'callback',
   CANCELLATION = 'cancellation',
   SETTLEMENT = 'settlement',
   REFUND = 'refund',

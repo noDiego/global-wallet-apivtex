@@ -35,7 +35,10 @@ export class WalletApiClient {
       const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
       return response.data;
     } catch (e) {
-      this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(data)}`, e.stack);
+      this.logger.error(
+        `PaymentId:${data.paymentId} | Error al conectar con api wallet para payment, Data: ${JSON.stringify(data)}`,
+        e.stack,
+      );
       throw new InternalServerErrorException(e.message);
     }
   }
@@ -59,7 +62,10 @@ export class WalletApiClient {
       const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
       return response.data;
     } catch (e) {
-      this.logger.error(`Error al conectar con api wallet para upselling, Data: ${JSON.stringify(data)}`, e.stack);
+      this.logger.error(
+        `PaymentId:${data.paymentId} | Error al conectar con api wallet para upselling, Data: ${JSON.stringify(data)}`,
+        e.stack,
+      );
       throw new InternalServerErrorException(e.message);
     }
   }
@@ -87,7 +93,7 @@ export class WalletApiClient {
     }
   }
 
-  public async callback(callbackUrl: string, body: PaymentResponseDto, commerce: CommerceDto): Promise<number> {
+  public async callback(callbackUrl: string, body: PaymentResponseDto, commerce: CommerceDto): Promise<any> {
     const headers: any = {
       'X-VTEX-API-AppKey': commerce.vtexAppKey,
       'X-VTEX-API-AppToken': commerce.vtexAppToken,
@@ -99,13 +105,18 @@ export class WalletApiClient {
       url: callbackUrl,
       data: body,
     };
-    this.logger.debug('Realizando Callback a URL:' + callbackUrl);
+
+    this.logger.debug(`PaymentId:${body.paymentId} | Callback - Realizando Callback a URL:` + callbackUrl);
     try {
       const resp: AxiosResponse = await axios(requestConfig);
-      this.logger.log(`Response de CallBack - status:${resp.status} - response:${JSON.stringify(resp.data)}`);
-      return resp.status;
+      this.logger.log(
+        `PaymentId:${body.paymentId} | Callback - Response de CallBack - status:${
+          resp.status
+        } - response:${JSON.stringify(resp.data)}`,
+      );
+      return resp.data;
     } catch (e) {
-      let errorMsg = `Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(
+      let errorMsg = `Callback - Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(
         body,
       )}`;
       if (e.isAxiosError) {
@@ -113,7 +124,7 @@ export class WalletApiClient {
         errorMsg =
           errorMsg + ' Response - Status:' + a.response.status + ' ResponseBody:' + JSON.stringify(e.response.data);
       }
-      this.logger.error(errorMsg, e.stack);
+      this.logger.error(`PaymentId:${body.paymentId} | ${errorMsg}`, e.stack);
       throw new InternalServerErrorException(errorMsg);
     }
   }

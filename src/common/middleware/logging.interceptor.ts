@@ -2,6 +2,7 @@ import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } fr
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import winLogger from '../../config/winston.config';
+import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -11,13 +12,26 @@ export class LoggingInterceptor implements NestInterceptor {
       : context.switchToHttp().getRequest().url;
     return next.handle().pipe(
       tap(() => {
-        if (context.switchToHttp().getRequest().url != '/health')
-          winLogger.info(`Response ${serviceName} - OK`, {
+        if (context.switchToHttp().getRequest().url != '/health') {
+          const paymentId = this.extractPaymentId(context.switchToHttp());
+          const msg = (paymentId ? `PaymentId:${paymentId} | ` : ``) + `Response ${serviceName} - OK`;
+          winLogger.info(`test`);
+          winLogger.info(this.extractPaymentId(context.switchToHttp()));
+          winLogger.info(msg, {
             context: context.getClass().name,
             status: context.switchToHttp().getResponse().statusCode,
             serviceName: serviceName,
           });
+        }
       }),
     );
+  }
+
+  private extractPaymentId(httpArg: HttpArgumentsHost) {
+    return httpArg.getRequest().body?.paymentId
+      ? httpArg.getRequest().body.paymentId
+      : httpArg.getRequest().data?.paymentId
+      ? httpArg.getRequest().data.paymentId
+      : undefined;
   }
 }

@@ -43,7 +43,7 @@ export class VtexService {
     let payment: PaymentDto;
     let response: PaymentResponseDto;
     try {
-      this.logger.log(`Payment - Iniciando... | paymentId:${paymentRequest.paymentId}`);
+      this.logger.log(`[PaymentId:${paymentRequest.paymentId} | Payment - Iniciando...`);
 
       payment = await this.paymentRepository.getPayment(paymentRequest.paymentId);
       if (!payment) {
@@ -96,7 +96,7 @@ export class VtexService {
         responseData: response,
       });
 
-      this.logger.log(`Payment - Terminado | paymentId:${paymentRequest.paymentId} - status: ${response.status}`);
+      this.logger.log(`PaymentId:${paymentRequest.paymentId} | Payment - Terminado | status: ${response.status}`);
       return response;
     } catch (e) {
       this.recordRepository.createRecord({
@@ -106,7 +106,7 @@ export class VtexService {
         responseData: e.stack,
       });
       this.logger.error(
-        `Payment - Error al ejecutar Payment | paymentId:${paymentRequest.paymentId} - Error:${e.message}`,
+        `PaymentId:${paymentRequest.paymentId} | Payment - Error al ejecutar Payment | Error:${e.message}`,
         e.stack,
       );
       throw e;
@@ -118,11 +118,11 @@ export class VtexService {
     const payment: PaymentDto = await this.getPayment(paymentId);
     let response;
     if (payment.status != PaymentStatus.INIT) {
-      throw new InternalServerErrorException('Estado de Payment invalido');
+      throw new InternalServerErrorException(`PaymentId:${paymentId} | Estado de Payment invalido`);
     }
     const commerce: CommerceDto = await this.commerceRepository.getCommerceByToken(commerceToken);
 
-    this.logger.log(`Confirmation - Iniciando... | paymentId:${paymentId}`);
+    this.logger.log(`PaymentId:${paymentId} | Confirmation - Iniciando...`);
 
     try {
       const paymentWalletReq: CoreTransactionReq = {
@@ -181,22 +181,15 @@ export class VtexService {
         code: String(paymentWalletRes.code),
         message: paymentWalletRes.message,
       };
-      this.logger.log(`Confirmation - Enviando respuesta a VTEX | paymentId:${paymentId}`);
-      this.walletApiClient.callback(payment.callbackUrl, callbackBody, commerce).then(
-        (r) => {
-          this.logger.log(`Confirmation - Callback for ${payment.paymentId} - Status: ${r}`);
-        },
-        (e) => {
-          this.logger.error(`Confirmation - Callback for ${payment.paymentId} FAILED - Exception: ${e}`);
-        },
-      );
+      this.logger.log(`PaymentId:${paymentId} | Confirmation - Enviando respuesta a VTEX`);
+      this.sendVtexCallback(payment, callbackBody, commerce);
       //Fin Callback
 
       paymentWalletRes.data.status = callbackBody.status;
       response = paymentWalletRes;
     } catch (e) {
       this.logger.error(
-        `Confirmation - Error al ejecutar Async Payment | paymentId:${paymentId}. Error: ${e.message}`,
+        `PaymentId:${paymentId} | Confirmation - Error al ejecutar Async Payment | Error: ${e.message}`,
         e,
       );
       response = { code: -1, message: 'Error: ' + e.message };
@@ -215,7 +208,7 @@ export class VtexService {
     let response: CancellationResponseDTO;
     let cancelResp: CoreResponse;
 
-    this.logger.log(`Cancellation - Iniciada | paymentId:${cancellationRequest.paymentId}`);
+    this.logger.log(`PaymentId:${cancellationRequest.paymentId} | Cancellation - Iniciada`);
 
     const payment: PaymentDto = await this.getPayment(cancellationRequest.paymentId);
 
@@ -261,7 +254,7 @@ export class VtexService {
       };
     } catch (e) {
       this.logger.error(
-        `Cancellation - Error al Cancelar | paymentId:${cancellationRequest.paymentId}. Error: ${e.message}`,
+        `PaymentId:${cancellationRequest.paymentId} | Cancellation - Error al Cancelar. Error: ${e.message}`,
         e,
       );
       response = {
@@ -278,13 +271,13 @@ export class VtexService {
       requestData: cancellationRequest,
       responseData: response,
     });
-    this.logger.log(`Cancellation - Terminada OK | paymentId:${cancellationRequest.paymentId}`);
+    this.logger.log(`PaymentId:${cancellationRequest.paymentId} | Cancellation - Terminada OK`);
     return response;
   }
 
   async refund(refundReq: RefundRequestDTO): Promise<RefundResponseDTO> {
     let response: RefundResponseDTO;
-    this.logger.log(`Refund - Iniciando... | paymentId:${refundReq.paymentId} - Value: ${refundReq.value}`);
+    this.logger.log(`PaymentId:${refundReq.paymentId} | Refund - Iniciando... - Value: ${refundReq.value}`);
     try {
       const payment: PaymentDto = await this.getPayment(refundReq.paymentId);
       this.valideActiveStatus(payment);
@@ -317,7 +310,7 @@ export class VtexService {
         requestId: refundReq.requestId,
       };
     } catch (e) {
-      this.logger.error(`Refund - Error en Refund | paymentId:${refundReq.paymentId}. Error: ${e.message}`, e.stack);
+      this.logger.error(`PaymentId:${refundReq.paymentId} | Refund - Error en Refund. Error: ${e.message}`, e.stack);
       response = {
         paymentId: refundReq.paymentId,
         refundId: null,
@@ -333,20 +326,20 @@ export class VtexService {
       requestData: refundReq,
       responseData: response,
     });
-    this.logger.log(`Refund - Terminado OK| paymentId:${refundReq.paymentId}`);
+    this.logger.log(`PaymentId:${refundReq.paymentId} | Refund - Terminado OK`);
     return response;
   }
 
   async settlements(request: SettlementsRequestDTO): Promise<SettlementsResponseDTO> {
     const settleId = request.settleId || uuidv4(); //En algunos calls no viene el settleId
     let response: SettlementsResponseDTO;
-    this.logger.log(`Settlements - Iniciada | paymentId:${request.paymentId} - Settlement Value:${request.value}`);
+    this.logger.log(`PaymentId:${request.paymentId} | Settlements - Iniciada - Value:${request.value}`);
     try {
       const payment: PaymentDto = await this.getPayment(request.paymentId);
       this.valideActiveStatus(payment);
 
       if (request.value != payment.amount) {
-        this.logger.log(`Settlements - Actualizando Amount final :${payment.amount}`);
+        this.logger.log(`PaymentId:${request.paymentId} | Settlements - Actualizando Amount final :${payment.amount}`);
         await this.updatePaymentAmount(payment, request.value, payment.commerce.token);
       }
 
@@ -376,7 +369,7 @@ export class VtexService {
         requestId: request.requestId,
       };
     } catch (e) {
-      this.logger.error(`Settlements - Error en Settlement | paymentId:${request.paymentId} - Error: ${e.message}`, e);
+      this.logger.error(`PaymentId:${request.paymentId} | Settlements - Error en Settlement | Error: ${e.message}`, e);
       response = {
         paymentId: request.paymentId,
         settleId: null,
@@ -392,8 +385,31 @@ export class VtexService {
       requestData: request,
       responseData: response,
     });
-    this.logger.log(`Settlements - Terminado OK| paymentId:${request.paymentId}`);
+    this.logger.log(`PaymentId:${request.paymentId} | Settlements - Terminado OK`);
     return response;
+  }
+
+  sendVtexCallback(payment: PaymentDto, callbackBody: PaymentResponseDto, commerce: CommerceDto) {
+    this.walletApiClient.callback(payment.callbackUrl, callbackBody, commerce).then(
+      (r) => {
+        this.logger.log(`PaymentId:${payment.paymentId} | Confirmation - Callback Response Status: ${r.status}`);
+        this.recordRepository.createRecord({
+          operationType: PaymentOperation.CALLBACK,
+          paymentId: payment.paymentId,
+          requestData: callbackBody,
+          responseData: r,
+        });
+      },
+      (e) => {
+        this.logger.error(`PaymentId:${payment.paymentId} | Confirmation - Callback FAILED - Exception: ${e}`);
+        this.recordRepository.createRecord({
+          operationType: PaymentOperation.CALLBACK,
+          paymentId: payment.paymentId,
+          requestData: callbackBody,
+          responseData: e.data || e,
+        });
+      },
+    );
   }
 
   async updatePaymentAmount(
