@@ -28,7 +28,6 @@ export class HeadersSessionDTO extends HeadersDTO {
 export class ConfirmationHeaders {
   @IsString()
   @IsDefined()
-  @Contains(envConfig.server.vtexAppToken)
   @Expose({ name: 'x-api-token' })
   xapitoken: string;
 

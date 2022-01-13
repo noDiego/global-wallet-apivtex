@@ -37,6 +37,9 @@ export class VtexPayment extends BaseEntity {
   commerce: Commerce;
 
   @Column({ nullable: true, unique: false })
+  commerceId: number;
+
+  @Column({ nullable: true, unique: false })
   clientEmail: string;
 
   @Column({ nullable: true, unique: false })

@@ -182,9 +182,15 @@ export class VtexService {
         message: paymentWalletRes.message,
       };
       this.logger.log(`Confirmation - Enviando respuesta a VTEX | paymentId:${paymentId}`);
-      this.walletApiClient.callback(payment.callbackUrl, callbackBody, commerce).then((r) => {
-        this.logger.log(`Confirmation - Callback for ${payment.paymentId} - Status: ${r}`);
-      });
+      this.walletApiClient.callback(payment.callbackUrl, callbackBody, commerce).then(
+        (r) => {
+          this.logger.log(`Confirmation - Callback for ${payment.paymentId} - Status: ${r}`);
+        },
+        (e) => {
+          this.logger.error(`Confirmation - Callback for ${payment.paymentId} FAILED - Exception: ${e}`);
+        },
+      );
+      //Fin Callback
 
       paymentWalletRes.data.status = callbackBody.status;
       response = paymentWalletRes;

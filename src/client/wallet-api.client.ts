@@ -11,11 +11,15 @@ import { CommerceDto } from '../interfaces/dto/commerce.dto';
 export class WalletApiClient {
   private logger = new Logger('WalletApiClient');
 
-  public async payment(data: CoreTransactionReq, origin: string, commerceSession?: string): Promise<CoreResponse> {
+  public async payment(
+    data: CoreTransactionReq,
+    commerceToken: string,
+    commerceSession?: string,
+  ): Promise<CoreResponse> {
     // (como id puede venir el commerceUserId, userDni, emailUser, userId)
     const headers: any = {
       'x-api-session': commerceSession,
-      'x-api-token': MerchantKeys[origin],
+      'x-api-token': commerceToken,
     };
     this.logger.debug(headers);
     const url = URLS.walletApi.vtexpayment;
