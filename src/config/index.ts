@@ -17,7 +17,8 @@ export const envConfig = {
     vtexAppToken: process.env.X_VTEX_API_APPTOKEN,
   },
   walletApi: {
-    core: process.env.WALLET_URL,
+    core: process.env.WALLET_CORE_URL,
+    corePriv: process.env.WALLET_PRIV_URL,
     balance: process.env.WALLET_BALANCE_URL,
     apiKey: process.env.WALLET_CORE_API_KEY,
   },
@@ -32,6 +33,10 @@ export const envConfig = {
     synchronize: true,
   },
   vtex: {
+    jumbo: {
+      apptoken: process.env.VTEX_JUMBO_APPTOKEN,
+      appkey: process.env.VTEX_JUMBO_APPKEY,
+    },
     development: {
       port: process.env.APP_PORT,
       timeout: 45000,

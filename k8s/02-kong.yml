@@ -43,7 +43,7 @@ metadata:
     kubernetes.io/ingress.class: api-gw-internal
 config:
   key_names:
-    - X-VTEX-API-AppToken
+    - x-api-token
 plugin: key-auth
 ---
 apiVersion: v1

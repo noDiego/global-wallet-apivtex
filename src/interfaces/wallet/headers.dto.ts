@@ -21,6 +21,19 @@ export class HeadersDTO {
 export class HeadersSessionDTO extends HeadersDTO {
   @IsString()
   @IsDefined()
+  @Expose({ name: 'cookie' })
+  cookie: string;
+}
+
+export class ConfirmationHeaders {
+  @IsString()
+  @IsDefined()
+  @Contains(envConfig.server.vtexAppToken)
+  @Expose({ name: 'x-api-token' })
+  xapitoken: string;
+
+  @IsString()
+  @IsDefined()
   @Expose({ name: 'x-api-session' })
-  appSession: string;
+  xapisession: string;
 }
