@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Logger, Param, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { PaymentMethodsDto } from '../interfaces/wallet/payment-methods.dto';
+import { ManifestDTO, PaymentMethodsDto } from '../interfaces/wallet/payment-methods.dto';
 import { ConfirmationHeaders, HeadersDTO, HeadersSessionDTO } from '../interfaces/wallet/headers.dto';
 import { RequestHeader } from '../interfaces/wallet/request-header.decorator';
 import { PaymentRequestDTO } from '../interfaces/wallet/payment-request.dto';
@@ -29,6 +29,19 @@ export class VtexController {
     };
   }
 
+  @Get('/manifest')
+  async manifest(): Promise<ManifestDTO> {
+    return {
+      customFields: [],
+      paymentMethods: [
+        {
+          name: 'Promissories',
+          allowsSplit: 'disabled',
+        },
+      ],
+    };
+  }
+
   /**
    * @api {post} /payments Receive information about the transaction
    * @apiName Payments
@@ -52,13 +65,13 @@ export class VtexController {
    *
    * @apiDescription
    */
-  @Post('/confirmation/:paymentId')
+  @Post('/pvt/confirmation/:paymentId')
   async paymentConfirmation(
     @RequestHeader(ConfirmationHeaders) headers: any,
     @Param('paymentId') paymentId,
     @Req() request,
   ): Promise<CoreResponse> {
-    return await this.vtexService.paymentConfirmation(paymentId, headers.xapisession);
+    return await this.vtexService.paymentConfirmation(paymentId, headers.xapisession, headers.xapitoken);
   }
   /**
    * @api {post} /payments/:paymentId/cancellations Cancels a payment that was not yet approved or captured

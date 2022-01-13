@@ -7,6 +7,7 @@ export class PaymentDto {
   amount: number;
   clientEmail?: string;
   merchantName?: string;
+  commerceCode?: string;
   callbackUrl?: string;
   orderId?: string;
   authorizationId?: string;

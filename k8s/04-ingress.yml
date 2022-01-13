@@ -56,7 +56,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "api-gw-internal"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    konghq.com/plugins: "${CI_PROJECT_NAME}-apitoken-internal"
   labels:
     app: ${CI_PROJECT_NAME}
 spec:
@@ -64,7 +63,7 @@ spec:
     - host: ${CI_PROJECT_NAME}-pvt.${ENDPOINT}
       http:
         paths:
-          - path: /confirmation
+          - path: /pvt
             pathType: Prefix
             backend:
               serviceName: ${CI_PROJECT_NAME}-internal

@@ -47,10 +47,11 @@ export class VtexPaymentRepository extends Repository<VtexPayment> {
     return plainToClass(PaymentDto, payment);
   }
 
-  updatePayment({ amount, paymentId, status }: UpdatePaymentDto): void {
+  updatePayment({ amount, paymentId, status, commerceCode }: UpdatePaymentDto): void {
     const updateData = {
       status: status,
       amount: amount,
+      commerceCode: commerceCode,
     };
 
     try {

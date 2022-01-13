@@ -5,6 +5,7 @@ import { URLS } from '../constants/urls';
 import { MerchantKeys } from '../interfaces/enums/vtex.enum';
 import { CoreResponse, CoreTransactionReq } from '../interfaces/dto/core-transaction.dto';
 import { PaymentResponseDto } from '../interfaces/wallet/payment-response.dto';
+import { CommerceDto } from '../interfaces/dto/commerce.dto';
 
 @Injectable()
 export class WalletApiClient {
@@ -59,10 +60,10 @@ export class WalletApiClient {
     }
   }
 
-  public async refund(coreId: string, amount: number, origin: string): Promise<CoreResponse> {
+  public async refund(coreId: string, amount: number, commerceToken: string): Promise<CoreResponse> {
     const headers: any = {
       // 'x-api-session': commerceSession,
-      'x-api-token': MerchantKeys[origin],
+      'x-api-token': commerceToken,
     };
     const url = `${URLS.walletApi.vtexpayment}/${coreId}/refunds`;
 
@@ -82,10 +83,10 @@ export class WalletApiClient {
     }
   }
 
-  public async callback(callbackUrl: string, body: PaymentResponseDto): Promise<number> {
+  public async callback(callbackUrl: string, body: PaymentResponseDto, commerce: CommerceDto): Promise<number> {
     const headers: any = {
-      'X-VTEX-API-AppKey': envConfig.vtex.jumbo.appkey,
-      'X-VTEX-API-AppToken': envConfig.vtex.jumbo.apptoken,
+      'X-VTEX-API-AppKey': commerce.vtexAppKey,
+      'X-VTEX-API-AppToken': commerce.vtexAppToken,
     };
 
     const requestConfig: AxiosRequestConfig = {

@@ -5,4 +5,5 @@ export interface UpdatePaymentDto {
   status?: PaymentStatus;
   coreId?: string;
   amount?: number;
+  commerceCode?: string;
 }

@@ -7,10 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { VtexPaymentRepository } from '../repository/vtex-payment.repository';
 import { VtexTransactionFlowRepository } from '../repository/vtex-transaction-flow.repository';
 import { VtexWalletPaymentRepository } from '../repository/vtex-wallet-payment.repository';
+import { CommerceRepository } from '../repository/commerce.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      CommerceRepository,
       VtexRecordRepository,
       VtexPaymentRepository,
       VtexTransactionFlowRepository,
