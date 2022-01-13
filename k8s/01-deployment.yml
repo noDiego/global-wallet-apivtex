@@ -37,7 +37,7 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: failure-domain.beta.kubernetes.io/zone
+            - topologyKey: topology.kubernetes.io/zone
           preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
                 topologyKey: kubernetes.io/hostname
