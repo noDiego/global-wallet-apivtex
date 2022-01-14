@@ -35,10 +35,7 @@ export class WalletApiClient {
       const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
       return response.data;
     } catch (e) {
-      this.logger.error(
-        `PaymentId:${data.paymentId} | Error al conectar con api wallet para payment, Data: ${JSON.stringify(data)}`,
-        e.stack,
-      );
+      this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(data)}`, e.stack);
       throw new InternalServerErrorException(e.message);
     }
   }
@@ -62,17 +59,13 @@ export class WalletApiClient {
       const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
       return response.data;
     } catch (e) {
-      this.logger.error(
-        `PaymentId:${data.paymentId} | Error al conectar con api wallet para upselling, Data: ${JSON.stringify(data)}`,
-        e.stack,
-      );
+      this.logger.error(`Error al conectar con api wallet para upselling, Data: ${JSON.stringify(data)}`, e.stack);
       throw new InternalServerErrorException(e.message);
     }
   }
 
   public async refund(coreId: string, amount: number, commerceToken: string): Promise<CoreResponse> {
     const headers: any = {
-      // 'x-api-session': commerceSession,
       'x-api-token': commerceToken,
     };
     const url = `${URLS.walletApi.vtexpayment}/${coreId}/refunds`;

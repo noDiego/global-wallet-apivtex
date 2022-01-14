@@ -53,7 +53,9 @@ export class VtexController {
     @RequestHeader(HeadersDTO) headers,
     @Body() paymentRequest: PaymentRequestDTO,
     @Res() response: Response,
+    @Req() request: Request,
   ): Promise<PaymentResponseDto> {
+    this.logger.log('[DEBUG] Payment Headers: ' + JSON.stringify(request.headers));
     const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
     response.status(200).send(result).end();
     return;
@@ -71,6 +73,7 @@ export class VtexController {
     @Param('paymentId') paymentId,
     @Req() request,
   ): Promise<CoreResponse> {
+    this.logger.log('[DEBUG] Confirmation Headers: ' + JSON.stringify(request.headers));
     return await this.vtexService.paymentConfirmation(paymentId, headers.xapisession, headers.xapitoken);
   }
   /**
@@ -93,7 +96,7 @@ export class VtexController {
     @Res() response: Response,
     @Req() request: Request,
   ): Promise<CancellationResponseDTO> {
-    this.logger.log('Cancellation Headers: ' + JSON.stringify(request.headers));
+    this.logger.log('[DEBUG] Cancellation Headers: ' + JSON.stringify(request.headers));
     const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest);
     response
       .status(result.cancellationId ? 200 : 500)
@@ -123,7 +126,7 @@ export class VtexController {
     @Res() response: Response,
     @Req() request: Request,
   ): Promise<SettlementsResponseDTO> {
-    this.logger.log('Settlemet Headers: ' + JSON.stringify(request.headers));
+    this.logger.log('[DEBUG] Settlemet Headers: ' + JSON.stringify(request.headers));
     const result: SettlementsResponseDTO = await this.vtexService.settlements(settlementsRequest);
 
     response
@@ -154,7 +157,7 @@ export class VtexController {
     @Res() response: Response,
     @Req() request: Request,
   ): Promise<SettlementsResponseDTO> {
-    this.logger.log('Refund Headers: ' + JSON.stringify(request.headers));
+    this.logger.log('[DEBUG] Refund Headers: ' + JSON.stringify(request.headers));
     const result: RefundResponseDTO = await this.vtexService.refund(refundRequest);
 
     response
