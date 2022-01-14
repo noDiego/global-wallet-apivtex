@@ -14,7 +14,10 @@ export class LoggingInterceptor implements NestInterceptor {
       tap(() => {
         if (context.switchToHttp().getRequest().url != '/health') {
           const paymentId = this.extractPaymentId(context.switchToHttp());
-          const msg = (paymentId ? `PaymentId:${paymentId} | ` : ``) + `Response ${serviceName} - OK`;
+          const statusCode = context.switchToHttp().getResponse().statusCode;
+          const msg =
+            (paymentId ? `PaymentId:${paymentId} | ` : ``) +
+            `Response ${serviceName} - ${statusCode >= 400 ? 'ERROR' : 'OK'}`;
           winLogger.info(msg, {
             context: context.getClass().name,
             status: context.switchToHttp().getResponse().statusCode,

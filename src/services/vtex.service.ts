@@ -8,7 +8,6 @@ import { RefundRequestDTO, RefundResponseDTO } from '../interfaces/wallet/refund
 import { VtexRecordRepository } from '../repository/vtex-record.repository';
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { getVtexStatus, PaymentOperation, PaymentStatus, VtexStatus } from '../interfaces/enums/vtex.enum';
-import { ResponseDTO } from '../interfaces/wallet/api-response.dto';
 import { VtexPaymentRepository } from '../repository/vtex-payment.repository';
 import { PaymentTransactionDto } from '../interfaces/dto/payment-transaction.dto';
 import { PaymentDto } from '../interfaces/dto/payment.dto';
@@ -271,7 +270,11 @@ export class VtexService {
       requestData: cancellationRequest,
       responseData: response,
     });
-    this.logger.log(`PaymentId:${cancellationRequest.paymentId} | Cancellation - Terminada OK`);
+    this.logger.log(
+      `PaymentId:${cancellationRequest.paymentId} | Cancellation - Terminada ${
+        response.code == 'cancel-manually' ? 'con Error' : 'OK'
+      }`,
+    );
     return response;
   }
 
@@ -314,7 +317,7 @@ export class VtexService {
       response = {
         paymentId: refundReq.paymentId,
         refundId: null,
-        code: 'ERR123',
+        code: 'ERR',
         value: 0,
         message: 'Refund has failed due to an internal error',
         requestId: refundReq.requestId,
@@ -326,7 +329,9 @@ export class VtexService {
       requestData: refundReq,
       responseData: response,
     });
-    this.logger.log(`PaymentId:${refundReq.paymentId} | Refund - Terminado OK`);
+    this.logger.log(
+      `PaymentId:${refundReq.paymentId} | Refund - Terminado ${response.code == 'ERR' ? 'con Error' : 'OK'}`,
+    );
     return response;
   }
 
@@ -385,7 +390,9 @@ export class VtexService {
       requestData: request,
       responseData: response,
     });
-    this.logger.log(`PaymentId:${request.paymentId} | Settlements - Terminado OK`);
+    this.logger.log(
+      `PaymentId:${request.paymentId} | Settlements - Terminado ${response.code != '0' ? 'con Error' : 'OK'}`,
+    );
     return response;
   }
 
