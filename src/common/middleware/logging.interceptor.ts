@@ -11,9 +11,9 @@ export class LoggingInterceptor implements NestInterceptor {
       ? context.switchToHttp().getRequest().route.path
       : context.switchToHttp().getRequest().url;
     return next.handle().pipe(
-      tap(() => {
+      tap((responseData) => {
         if (context.switchToHttp().getRequest().url != '/health') {
-          const paymentId = this.extractPaymentId(context.switchToHttp());
+          const paymentId = this.extractPaymentId(context.switchToHttp(), responseData);
           const statusCode = context.switchToHttp().getResponse().statusCode;
           const msg =
             (paymentId ? `PaymentId:${paymentId} | ` : ``) +
@@ -28,11 +28,13 @@ export class LoggingInterceptor implements NestInterceptor {
     );
   }
 
-  private extractPaymentId(httpArg: HttpArgumentsHost) {
+  private extractPaymentId(httpArg: HttpArgumentsHost, resData: { paymentId: string }) {
     return httpArg.getRequest().body?.paymentId
       ? httpArg.getRequest().body.paymentId
       : httpArg.getRequest().data?.paymentId
       ? httpArg.getRequest().data.paymentId
+      : resData?.paymentId
+      ? resData.paymentId
       : undefined;
   }
 }

@@ -40,10 +40,10 @@ export class WalletApiClient {
     }
   }
 
-  public async upselling(data: CoreTransactionReq, parentId: string, origin: string): Promise<CoreResponse> {
+  public async upselling(data: CoreTransactionReq, parentId: string, commerceToken: string): Promise<CoreResponse> {
     // (como id puede venir el commerceUserId, userDni, emailUser, userId)
     const headers: any = {
-      'x-api-token': MerchantKeys[origin],
+      'x-api-token': commerceToken,
     };
     this.logger.debug(headers);
     const url = `${URLS.walletApi.vtexpayment}/${parentId}/upselling`;
