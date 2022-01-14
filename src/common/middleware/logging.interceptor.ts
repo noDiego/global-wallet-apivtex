@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import winLogger from '../../config/winston.config';
@@ -13,7 +13,7 @@ export class LoggingInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap((responseData) => {
         if (context.switchToHttp().getRequest().url != '/health') {
-          const paymentId = this.extractPaymentId(context.switchToHttp(), responseData);
+          const paymentId = extractPaymentId(context.switchToHttp(), responseData);
           const statusCode = context.switchToHttp().getResponse().statusCode;
           const msg =
             (paymentId ? `PaymentId:${paymentId} | ` : ``) +
@@ -27,14 +27,14 @@ export class LoggingInterceptor implements NestInterceptor {
       }),
     );
   }
+}
 
-  private extractPaymentId(httpArg: HttpArgumentsHost, resData: { paymentId: string }) {
-    return httpArg.getRequest().body?.paymentId
-      ? httpArg.getRequest().body.paymentId
-      : httpArg.getRequest().data?.paymentId
-      ? httpArg.getRequest().data.paymentId
-      : resData?.paymentId
-      ? resData.paymentId
-      : undefined;
-  }
+function extractPaymentId(httpArg: HttpArgumentsHost, resData: { paymentId: string }) {
+  return httpArg.getRequest().body?.paymentId
+    ? httpArg.getRequest().body.paymentId
+    : httpArg.getRequest().data?.paymentId
+    ? httpArg.getRequest().data.paymentId
+    : resData?.paymentId
+    ? resData.paymentId
+    : undefined;
 }

@@ -5,6 +5,7 @@ export class WalletPaymentDto {
   date?: Date;
   paymentId: string;
   amount: number;
+  authorizationId: string;
   operationType: PaymentOperation;
 }
 

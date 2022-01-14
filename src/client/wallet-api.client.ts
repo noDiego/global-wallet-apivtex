@@ -1,8 +1,6 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { envConfig } from '../config';
 import { URLS } from '../constants/urls';
-import { MerchantKeys } from '../interfaces/enums/vtex.enum';
 import { CoreResponse, CoreTransactionReq } from '../interfaces/dto/core-transaction.dto';
 import { PaymentResponseDto } from '../interfaces/wallet/payment-response.dto';
 import { CommerceDto } from '../interfaces/dto/commerce.dto';

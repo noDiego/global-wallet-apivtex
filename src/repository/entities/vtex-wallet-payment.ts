@@ -20,6 +20,9 @@ export class VtexWalletPayment extends BaseEntity {
   paymentId: string;
 
   @Column()
+  authorizationId: string;
+
+  @Column()
   amount: number;
 
   @Column({ nullable: false })

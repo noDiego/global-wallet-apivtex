@@ -71,7 +71,7 @@ export class VtexService {
 
       response = {
         acquirer: null,
-        authorizationId: payment.status == PaymentStatus.APPROVED ? payment.authorizationId : null,
+        authorizationId: payment.status == PaymentStatus.APPROVED ? payment.walletPayments[0].authorizationId : null,
         delayToAutoSettle: envConfig.vtex.development.delayToAutoSettle,
         delayToAutoSettleAfterAntifraud: envConfig.vtex.development.delayToAutoSettleAfterAntifraud,
         delayToCancel: envConfig.vtex.development.delayToCancel,
@@ -142,6 +142,7 @@ export class VtexService {
       //Guardando Informacion de Pago Wallet
       const walletPayment: WalletPaymentDto = {
         amount: paymentData.amount,
+        authorizationId: paymentData.authorizationCode,
         coreId: paymentData.id,
         operationType: PaymentOperation.PAYMENT,
         paymentId: paymentId,
@@ -459,6 +460,7 @@ export class VtexService {
       //Guardando Informacion de Pago Wallet
       const walletPayment: WalletPaymentDto = {
         amount: newPaymentAmount,
+        authorizationId: operationResponse.data.authorizationCode,
         coreId: operationResponse.data.id,
         operationType: PaymentOperation.PAYMENT,
         paymentId: payment.paymentId,

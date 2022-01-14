@@ -1,6 +1,4 @@
 /* eslint-disable */
-import { Connection, getConnectionManager } from 'typeorm';
-
 global.ENV = require('./config/index').ENV;
 /* eslint-enable */
 import { NestFactory } from '@nestjs/core';
@@ -33,14 +31,14 @@ async function bootstrap() {
     app.enableCors({ origin: envConfig.server.origin });
   }
 
-  logger.log('Configuracion de Migracion');
-  const resultBD: boolean = getConnectionManager().connections[0].isConnected;
-  logger.log('connection status: ' + JSON.stringify(resultBD));
-  if (resultBD) {
-    const conn: Connection = getConnectionManager().connections[0];
-    logger.log('runMigrations');
-    await conn.runMigrations();
-  }
+  // logger.log('Configuracion de Migracion');
+  // const resultBD: boolean = getConnectionManager().connections[0].isConnected;
+  // logger.log('connection status: ' + JSON.stringify(resultBD));
+  // if (resultBD) {
+  //   const conn: Connection = getConnectionManager().connections[0];
+  //   logger.log('runMigrations');
+  //   await conn.runMigrations();
+  // }
 
   await app.listen(envConfig.server.port);
 }
