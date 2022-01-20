@@ -13,11 +13,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .exclude(
-        { path: '/api/health', method: RequestMethod.ALL },
-        // { path: '/api/transactions/payment', method: RequestMethod.POST },
-        // { path: '/api/transactions', method: RequestMethod.PUT },
-      )
+      .exclude({ path: '/api/health', method: RequestMethod.ALL })
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

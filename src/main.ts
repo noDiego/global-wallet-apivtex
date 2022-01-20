@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { Connection, getConnectionManager } from 'typeorm';
 global.ENV = require('./config/index').ENV;
 /* eslint-enable */
 import { NestFactory } from '@nestjs/core';
@@ -14,7 +15,6 @@ import { LoggingInterceptor } from './common/middleware/logging.interceptor';
 async function bootstrap() {
   if (envConfig.environment != 'local') require('newrelic');
 
-  const logger = new Logger('bootstrap');
   const options = {
     logger: WinstonModule.createLogger(winstonConfig), //Iniciar app con Winston como Logger
     cors: true,
@@ -24,23 +24,27 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new ErrorExceptionFilter());
   app.useGlobalPipes(new CustomValidationPipe());
+  app.enableCors();
 
-  if (envConfig.environment == 'development') app.enableCors();
-  else {
-    logger.log(`Accepting requests from origin "${envConfig.server.origin}`);
-    app.enableCors({ origin: envConfig.server.origin });
-  }
-
-  // logger.log('Configuracion de Migracion');
-  // const resultBD: boolean = getConnectionManager().connections[0].isConnected;
-  // logger.log('connection status: ' + JSON.stringify(resultBD));
-  // if (resultBD) {
-  //   const conn: Connection = getConnectionManager().connections[0];
-  //   logger.log('runMigrations');
-  //   await conn.runMigrations();
-  // }
+  await runMigrations();
 
   await app.listen(envConfig.server.port);
+}
+
+async function runMigrations() {
+  const logger = new Logger('Migrations');
+  const resultBD: boolean = getConnectionManager().connections[0].isConnected;
+  if (resultBD) {
+    const conn: Connection = getConnectionManager().connections[0];
+    logger.log('Running Migrations...');
+    try {
+      await conn.runMigrations();
+    } catch (e) {
+      logger.error('Error executing Migration: ' + e.message());
+      // logger.error('Reverting Last Migration...');
+      // await conn.undoLastMigration();
+    }
+  }
 }
 
 bootstrap();

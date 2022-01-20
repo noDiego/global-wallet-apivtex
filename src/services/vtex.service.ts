@@ -397,7 +397,7 @@ export class VtexService {
     return response;
   }
 
-  sendVtexCallback(payment: PaymentDto, callbackBody: PaymentResponseDto, commerce: CommerceDto) {
+  private sendVtexCallback(payment: PaymentDto, callbackBody: PaymentResponseDto, commerce: CommerceDto) {
     this.walletApiClient.callback(payment.callbackUrl, callbackBody, commerce).then(
       (r) => {
         this.logger.log(`PaymentId:${payment.paymentId} | Confirmation - Callback Response Status: ${r.status}`);
@@ -420,7 +420,7 @@ export class VtexService {
     );
   }
 
-  async updatePaymentAmount(
+  private async updatePaymentAmount(
     payment: PaymentDto,
     newAmount: number,
     commerceToken: string,

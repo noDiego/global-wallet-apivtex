@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Logger, Param, Post, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { ManifestDTO, PaymentMethodsDto } from '../interfaces/wallet/payment-methods.dto';
 import { ConfirmationHeaders, HeadersDTO } from '../interfaces/wallet/headers.dto';
 import { RequestHeader } from '../interfaces/wallet/request-header.decorator';
@@ -14,7 +14,7 @@ import { CoreResponse } from '../interfaces/dto/core-transaction.dto';
 
 @Controller(envConfig.vtexTesting ? 'api' : '')
 export class VtexController {
-  constructor(private vtexService: VtexService, private readonly logger: Logger) {}
+  constructor(private vtexService: VtexService) {}
 
   /**
    * @api {get} /payment-methods Request information on payment methods
@@ -53,9 +53,7 @@ export class VtexController {
     @RequestHeader(HeadersDTO) headers,
     @Body() paymentRequest: PaymentRequestDTO,
     @Res() response: Response,
-    @Req() request: Request,
   ): Promise<PaymentResponseDto> {
-    this.logger.log('[DEBUG] Payment Headers: ' + JSON.stringify(request.headers));
     const result: PaymentResponseDto = await this.vtexService.payment(paymentRequest);
     response.status(200).send(result).end();
     return;
@@ -71,9 +69,7 @@ export class VtexController {
   async paymentConfirmation(
     @RequestHeader(ConfirmationHeaders) headers: any,
     @Param('paymentId') paymentId,
-    @Req() request,
   ): Promise<CoreResponse> {
-    this.logger.log('[DEBUG] Confirmation Headers: ' + JSON.stringify(request.headers));
     return await this.vtexService.paymentConfirmation(paymentId, headers.xapisession, headers.xapitoken);
   }
   /**
@@ -94,9 +90,7 @@ export class VtexController {
     @Param('paymentId') paymentId: string,
     @Body() cancellationRequest: CancellationRequestDTO,
     @Res() response: Response,
-    @Req() request: Request,
   ): Promise<CancellationResponseDTO> {
-    this.logger.log('[DEBUG] Cancellation Headers: ' + JSON.stringify(request.headers));
     const result: CancellationResponseDTO = await this.vtexService.cancellation(cancellationRequest);
     response
       .status(result.cancellationId ? 200 : 500)
@@ -124,11 +118,8 @@ export class VtexController {
     @Param('paymentId') paymentId: string,
     @Body() settlementsRequest: SettlementsRequestDTO,
     @Res() response: Response,
-    @Req() request: Request,
   ): Promise<SettlementsResponseDTO> {
-    this.logger.log('[DEBUG] Settlemet Headers: ' + JSON.stringify(request.headers));
     const result: SettlementsResponseDTO = await this.vtexService.settlements(settlementsRequest);
-
     response
       .status(result.settleId ? 200 : 500)
       .send(result)
@@ -155,9 +146,7 @@ export class VtexController {
     @Param('paymentId') paymentId: string,
     @Body() refundRequest: RefundRequestDTO,
     @Res() response: Response,
-    @Req() request: Request,
   ): Promise<SettlementsResponseDTO> {
-    this.logger.log('[DEBUG] Refund Headers: ' + JSON.stringify(request.headers));
     const result: RefundResponseDTO = await this.vtexService.refund(refundRequest);
 
     response
