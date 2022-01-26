@@ -33,7 +33,10 @@ export class WalletApiClient {
       const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
       return response.data;
     } catch (e) {
-      this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(data)}`, e.stack);
+      this.logger.error(
+        `Error al conectar con api wallet para payment, Data: ${JSON.stringify(data)}. Message: ${e.message}`,
+        e.stack,
+      );
       throw new InternalServerErrorException(e.message);
     }
   }
@@ -57,7 +60,10 @@ export class WalletApiClient {
       const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
       return response.data;
     } catch (e) {
-      this.logger.error(`Error al conectar con api wallet para upselling, Data: ${JSON.stringify(data)}`, e.stack);
+      this.logger.error(
+        `Error al conectar con api wallet para upselling, Data: ${JSON.stringify(data)}. Message: ${e.message}`,
+        e.stack,
+      );
       throw new InternalServerErrorException(e.message);
     }
   }
@@ -79,7 +85,10 @@ export class WalletApiClient {
       const response: AxiosResponse<CoreResponse> = await axios(requestConfig);
       return response.data;
     } catch (e) {
-      this.logger.error(`Error al conectar con api wallet para payment, Data: ${JSON.stringify(coreId)}`, e.stack);
+      this.logger.error(
+        `Error al conectar con api wallet para payment, Data: ${JSON.stringify(coreId)}. Message: ${e.message}`,
+        e.stack,
+      );
       throw new InternalServerErrorException(e.message);
     }
   }
@@ -109,7 +118,7 @@ export class WalletApiClient {
     } catch (e) {
       let errorMsg = `Callback - Error al conectar con url: ${callbackUrl}. Para respuesta asincrona, Data: ${JSON.stringify(
         body,
-      )}`;
+      )}. Message: ${e.message}`;
       if (e.isAxiosError) {
         const a = e as AxiosError;
         errorMsg =
