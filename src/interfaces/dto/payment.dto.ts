@@ -11,6 +11,7 @@ export class PaymentDto {
   commerce?: CommerceDto;
   callbackUrl?: string;
   orderId?: string;
+  reference?: string;
   date?: Date;
   status?: PaymentStatus;
   walletPayments?: WalletPaymentDto[];

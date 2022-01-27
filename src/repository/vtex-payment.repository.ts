@@ -15,6 +15,7 @@ export class VtexPaymentRepository extends Repository<VtexPayment> {
     const payment: VtexPayment = new VtexPayment();
     payment.paymentId = data.paymentId;
     payment.orderId = data.orderId;
+    payment.reference = data.reference;
     payment.amount = data.amount;
     payment.originalAmount = data.amount;
     payment.callbackUrl = data.callbackUrl;

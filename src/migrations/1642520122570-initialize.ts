@@ -14,7 +14,8 @@ export class initialize1622520122570 implements MigrationInterface {
       `CREATE TABLE \`vtex_wallet_payment\` (\`coreId\` varchar(255) NOT NULL, \`date\` datetime NOT NULL, \`paymentId\` varchar(255) NOT NULL, \`authorizationId\` varchar(255) NOT NULL, \`amount\` int NOT NULL, \`operationType\` varchar(255) NOT NULL, PRIMARY KEY (\`coreId\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`vtex_payment\` (\`id\` int NOT NULL AUTO_INCREMENT, \`paymentId\` varchar(255) NOT NULL, \`date\` datetime NOT NULL, \`status\` varchar(255) NULL, \`amount\` int NOT NULL, \`originalAmount\` int NOT NULL, \`orderId\` varchar(255) NULL, \`authorizationId\` varchar(255) NULL, \`merchantName\` varchar(255) NULL, \`commerceId\` int NULL, \`clientEmail\` varchar(255) NULL, \`callbackUrl\` varchar(255) NULL, UNIQUE INDEX \`IDX_0bd3ab34d3d5bbed8b0f6f8f3e\` (\`paymentId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`vtex_payment\` (\`id\` int NOT NULL AUTO_INCREMENT, \`paymentId\` varchar(255) NOT NULL, \`date\` datetime NOT NULL, \`status\` varchar(255) NULL, \`amount\` int NOT NULL, \`originalAmount\` int NOT NULL, \`orderId\` varchar(255) NULL,
+                                      \`reference\` varchar(255) NULL, \`authorizationId\` varchar(255) NULL, \`merchantName\` varchar(255) NULL, \`commerceId\` int NULL, \`clientEmail\` varchar(255) NULL, \`callbackUrl\` varchar(255) NULL, UNIQUE INDEX \`IDX_0bd3ab34d3d5bbed8b0f6f8f3e\` (\`paymentId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`vtex_record\` (\`id\` int NOT NULL AUTO_INCREMENT, \`paymentId\` varchar(255) NOT NULL, \`operationType\` varchar(255) NOT NULL, \`requestHeaders\` longtext NULL, \`requestData\` longtext NOT NULL, \`responseData\` longtext NULL, \`date\` datetime NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,

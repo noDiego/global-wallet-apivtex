@@ -9,8 +9,8 @@ import { PaymentResponseDto } from '../interfaces/wallet/payment-response.dto';
 import { CancellationRequestDTO, CancellationResponseDTO } from '../interfaces/wallet/cancellation.dto';
 import { SettlementsRequestDTO, SettlementsResponseDTO } from '../interfaces/wallet/settlements.dto';
 import { RefundRequestDTO, RefundResponseDTO } from '../interfaces/wallet/refund.dto';
-import { envConfig } from '../config';
 import { CoreResponse } from '../interfaces/dto/core-transaction.dto';
+import { envConfig } from '../config';
 
 @Controller(envConfig.vtexTesting ? 'api' : '')
 export class VtexController {

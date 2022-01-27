@@ -26,6 +26,9 @@ export class VtexPayment extends BaseEntity {
   @Column({ nullable: true, unique: false })
   orderId: string;
 
+  @Column({ nullable: true, unique: true })
+  reference: string;
+
   @Column({ nullable: true, unique: false })
   authorizationId: string;
 

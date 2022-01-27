@@ -48,6 +48,7 @@ export class VtexService {
       if (!payment) {
         const paymentData: PaymentDto = {
           orderId: paymentRequest.orderId,
+          reference: paymentRequest.reference,
           paymentId: paymentRequest.paymentId,
           amount: paymentRequest.value,
           clientEmail: paymentRequest.miniCart.buyer.email,
@@ -66,9 +67,6 @@ export class VtexService {
 
         payment = await this.paymentRepository.createInitPayment(paymentData);
       }
-
-      const vtexStatus: VtexStatus = getVtexStatus(payment.status);
-
       response = {
         acquirer: null,
         authorizationId: payment.status == PaymentStatus.APPROVED ? payment.walletPayments[0].authorizationId : null,
@@ -77,13 +75,13 @@ export class VtexService {
         delayToCancel: envConfig.vtex.development.delayToCancel,
         nsu: payment.id,
         paymentId: payment.paymentId,
-        status: vtexStatus,
+        status: getVtexStatus(payment.status),
         tid: payment.id,
         code: String(0),
         message:
-          vtexStatus == VtexStatus.UNDEFINED
+          getVtexStatus(payment.status) == VtexStatus.UNDEFINED
             ? 'Waiting for Confirmation'
-            : vtexStatus == VtexStatus.APPROVED
+            : getVtexStatus(payment.status) == VtexStatus.APPROVED
             ? 'Transaction Approved'
             : 'Transaction Denied',
       };
@@ -126,7 +124,7 @@ export class VtexService {
     try {
       const paymentWalletReq: CoreTransactionReq = {
         amount: payment.amount,
-        orderId: payment.orderId,
+        orderId: payment.reference, //Se utliza reference en lugar de orderId para facilitar seguimiento
       };
 
       //Ejecutando pago en Core Wallet
